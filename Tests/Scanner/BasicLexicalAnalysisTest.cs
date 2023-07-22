@@ -54,5 +54,75 @@ namespace Tests.Scanner
             var actual = Utils.MapTokensToBasic(Utils.GetTokens("abc"));
             Assert.Equal(actual, primaryExpected);
         }
+
+        [Fact]
+        public static void LexicalException1()
+        {
+            var lexer = new Lexer("Hello world!");
+            lexer.LexAll();
+
+            Assert.Throws<Exception>(lexer.Lex);
+        }
+
+        [Fact]
+        public static void LexicalException2()
+        {
+            var lexer = new Lexer("Hello world!");
+            lexer.LexAll();
+
+            Assert.Throws<Exception>(lexer.LexAll);
+        }
+
+        [Fact]
+        public static void RandomTest()
+        {
+            var operations = new[] { '+', '-', '/', '*' };
+            var nodesCount = new Random().Next(0, 100);
+
+            var source = "";
+            for (int i = 0; i < nodesCount; i++)
+            {
+                var MakeParenthesizedExpression = new Random().Next(0, 2);
+                if (MakeParenthesizedExpression == 1)
+                {
+                    if (source.Length != 0 && source[^1] == ')')
+                        source += operations[new Random().Next(0, 4)];
+
+                    source += '(';
+                    source += new Random().Next();
+                    source += operations[new Random().Next(0, 4)];
+                    source += new Random().Next();
+                    source += ')';
+                }
+                else
+                {
+                    if (source.Length != 0 && source[^1] == ')')
+                    {
+                        source += operations[new Random().Next(0, 4)];
+                        source += new Random().Next();
+                    }
+                    else
+                    {
+                        if (source.Length != 0 && char.IsDigit(source[^1]))
+                            source += operations[new Random().Next(0, 4)];
+
+                        source += new Random().Next();
+                        source += operations[new Random().Next(0, 4)];
+                    }
+
+                }
+            }
+
+            if (operations.Contains(source[^1]))
+                source += new Random().Next();
+
+            var actual = Utils.GetTokens(source)
+                              .MapTokensToBasic();
+            var expected = Utils.GetDescendantTokens(source)
+                                .MapTokensToBasic();
+
+            Assert.Equal(actual, expected);
+        }
+
     }
 }

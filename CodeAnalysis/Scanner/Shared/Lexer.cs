@@ -18,11 +18,17 @@ public class Lexer
     private void Next() => _position++;
     public SyntaxToken Lex()
     {
+        if (isAlreadyLexicalized)
+            throw new Exception("The source program is already lexicalized");
+
         // numbers 
         // + - * / ()
         // <whitespace>
         if (CurrentChar is '\0')
+        {
+            isAlreadyLexicalized = true;
             return new SyntaxToken(SyntaxKind.EofToken, _position, CurrentChar.ToString(), null);
+        }
 
 
         if (char.IsDigit(CurrentChar))
@@ -79,7 +85,6 @@ public class Lexer
         if (isAlreadyLexicalized)
             throw new Exception("The source program is already lexicalized");
 
-        isAlreadyLexicalized = true;
         var tokens = new List<SyntaxToken>();
         var currToken = Lex();
         while (currToken.Kind != SyntaxKind.EofToken)
