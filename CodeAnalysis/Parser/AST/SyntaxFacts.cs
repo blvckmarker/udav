@@ -6,15 +6,15 @@ internal static class SyntaxFacts
 {
     public static int GetBinaryOperatorPrecedence(this SyntaxKind kind) => kind switch
     {
-        SyntaxKind.SlashToken or SyntaxKind.StarToken => 2,
-        SyntaxKind.Minus or SyntaxKind.Plus => 1,
+        SyntaxKind.SlashToken or SyntaxKind.AsteriskToken => 2,
+        SyntaxKind.MinusToken or SyntaxKind.PlusToken => 1,
         _ => 0
     };
     public static int GetUnaryOperatorPrecedence(this SyntaxKind kind) => kind switch
     {
-        SyntaxKind.Minus or SyntaxKind.Plus => 3,
+        SyntaxKind.MinusToken or SyntaxKind.PlusToken => 3,
         _ => 0
     };
 
-    
+
 }

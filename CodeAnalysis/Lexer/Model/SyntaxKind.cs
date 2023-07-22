@@ -2,17 +2,17 @@ namespace CodeAnalysis.Lexer.Model;
 
 public enum SyntaxKind
 {
-    Plus,
-    Minus,
-    StarToken,
+    PlusToken,
+    MinusToken,
+    AsteriskToken,
     SlashToken,
-    LeftBracket,
-    RightBracket,
-    
-    Whitespace,
+    OpenParenToken,
+    CloseParenToken,
+
+    WhitespaceToken,
     BadToken,
-    Eof,
-    
+    EofToken,
+
     LiteralExpression,
     BinaryExpression,
     ParenthesizedExpression,

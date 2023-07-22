@@ -3,7 +3,6 @@
 using CodeAnalysis.Lexer.Model;
 using CodeAnalysis.Parser.Expressions;
 using CodeAnalysis.Parser.Expressions.AST;
-using CodeAnalysis.Lexer;
 
 #endregion
 
@@ -20,9 +19,9 @@ public class Parser
         var lexer = new Lexer.Lexer(text);
 
         var token = lexer.Lex();
-        while (token.Kind is not SyntaxKind.Eof)
+        while (token.Kind is not SyntaxKind.EofToken)
         {
-            if (token.Kind is not SyntaxKind.Whitespace or SyntaxKind.BadToken)
+            if (token.Kind is not SyntaxKind.WhitespaceToken or SyntaxKind.BadToken)
                 _tokens.Add(token);
             token = lexer.Lex();
         }
@@ -52,7 +51,7 @@ public class Parser
     public SyntaxTree Parse()
     {
         var expression = ParseExpression();
-        var eofToken = MatchToken(SyntaxKind.Eof);
+        var eofToken = MatchToken(SyntaxKind.EofToken);
         return new SyntaxTree(_diagnostics, expression, eofToken);
     }
 
@@ -91,11 +90,11 @@ public class Parser
 
     private ExpressionSyntax ParsePrimaryExpression()
     {
-        if (Current.Kind is SyntaxKind.LeftBracket)
+        if (Current.Kind is SyntaxKind.OpenParenToken)
         {
             var left = NextToken();
             var expression = ParseExpression();
-            var right = MatchToken(SyntaxKind.RightBracket);
+            var right = MatchToken(SyntaxKind.CloseParenToken);
 
             return new ParenthesizedExpressionSyntax(left, expression, right);
         }

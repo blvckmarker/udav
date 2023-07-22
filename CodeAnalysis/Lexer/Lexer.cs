@@ -16,17 +16,17 @@ public class Lexer
 
     private char CurrentChar => _position >= _text.Length ? '\0' : _text[_position];
     public IEnumerable<string> Diagnostics => _diagnostics;
-    
+
     public Lexer(string text) => _text = text;
     private void Next() => _position++;
-    
+
     public SyntaxToken Lex()
     {
         // numbers 
         // + - * / ()
         // <whitespace>
         if (CurrentChar is '\0')
-            return new SyntaxToken(SyntaxKind.Eof, _position, CurrentChar.ToString(), null);
+            return new SyntaxToken(SyntaxKind.EofToken, _position, CurrentChar.ToString(), null);
 
 
         if (char.IsDigit(CurrentChar))
@@ -38,7 +38,7 @@ public class Lexer
 
             var length = _position - start;
             var text = _text[start.._position];
-            
+
             if (!int.TryParse(text, out var value))
                 _diagnostics.Add($"ERROR: The number {text} cannot be represented as int32");
 
@@ -55,24 +55,24 @@ public class Lexer
             var length = _position - start;
             var text = _text[start.._position];
 
-            return new SyntaxToken(SyntaxKind.Whitespace, start, text, null);
+            return new SyntaxToken(SyntaxKind.WhitespaceToken, start, text, null);
         }
 
 
         switch (CurrentChar)
         {
             case '+':
-                return new SyntaxToken(SyntaxKind.Plus, _position++, "+", null);
+                return new SyntaxToken(SyntaxKind.PlusToken, _position++, "+", null);
             case '-':
-                return new SyntaxToken(SyntaxKind.Minus, _position++, "-", null);
+                return new SyntaxToken(SyntaxKind.MinusToken, _position++, "-", null);
             case '*':
-                return new SyntaxToken(SyntaxKind.StarToken, _position++, "*", null);
+                return new SyntaxToken(SyntaxKind.AsteriskToken, _position++, "*", null);
             case '/':
                 return new SyntaxToken(SyntaxKind.SlashToken, _position++, "/", null);
             case '(':
-                return new SyntaxToken(SyntaxKind.LeftBracket, _position++, "(", null);
+                return new SyntaxToken(SyntaxKind.OpenParenToken, _position++, "(", null);
             case ')':
-                return new SyntaxToken(SyntaxKind.RightBracket, _position++, ")", null);
+                return new SyntaxToken(SyntaxKind.CloseParenToken, _position++, ")", null);
             default:
                 _diagnostics.Add($"ERROR: Bad character input: {CurrentChar}");
                 return new SyntaxToken(SyntaxKind.BadToken, _position++, _text.Substring(_position - 1, 1), null);

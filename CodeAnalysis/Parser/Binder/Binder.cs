@@ -52,8 +52,8 @@ internal sealed class Binder
 
         return operatorTokenKind switch
         {
-            SyntaxKind.Minus => BoundUnaryOperatorKind.Negation,
-            SyntaxKind.Plus => BoundUnaryOperatorKind.Identity,
+            SyntaxKind.MinusToken => BoundUnaryOperatorKind.Negation,
+            SyntaxKind.PlusToken => BoundUnaryOperatorKind.Identity,
             _ => throw new InvalidOperationException($"Unexpected unary operator {operatorTokenKind}")
         };
     }
@@ -80,10 +80,10 @@ internal sealed class Binder
 
         return operatorTokenKind switch
         {
-            SyntaxKind.Minus => BoundBinaryOperatorKind.Subtraction,
-            SyntaxKind.Plus => BoundBinaryOperatorKind.Addition,
+            SyntaxKind.MinusToken => BoundBinaryOperatorKind.Subtraction,
+            SyntaxKind.PlusToken => BoundBinaryOperatorKind.Addition,
             SyntaxKind.SlashToken => BoundBinaryOperatorKind.Division,
-            SyntaxKind.StarToken => BoundBinaryOperatorKind.Multiplication,
+            SyntaxKind.AsteriskToken => BoundBinaryOperatorKind.Multiplication,
             _ => throw new Exception($"Unexpected operator token kind {operatorTokenKind}")
         };
     }
