@@ -8,4 +8,8 @@
         <RootNamespace>Compilier101</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.3" />
+    </ItemGroup>
+
 </Project>

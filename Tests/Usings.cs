@@ -1,4 +1,3 @@
-global using NUnit.Framework;
-using CodeAnalysis.Parser;
-using CodeAnalysis.Parser.Binder;
-using CodeAnalysis.Lexer;
+global using CodeAnalysis.Lexer;
+global using CodeAnalysis.Lexer.Model;
+global using Xunit;
