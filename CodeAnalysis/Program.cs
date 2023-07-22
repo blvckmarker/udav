@@ -1,6 +1,7 @@
 ﻿#region
 
 using CodeAnalysis;
+using CodeAnalysis.Lexer;
 using CodeAnalysis.Lexer.Model;
 using CodeAnalysis.Parser.Binder;
 using CodeAnalysis.Parser.Expressions.AST;
@@ -20,6 +21,11 @@ while (true)
         showTree = !showTree;
         continue;
     }
+    var lexer = Lexer.LexTokens(line);
+
+    foreach (var token in lexer)
+        Console.WriteLine(token.Text + " " + token.Kind);
+
     var expressionTree = SyntaxTree.Parse(line);
     var binder = new Binder();
     var boundExpression = binder.BindExpression(expressionTree.Root);
