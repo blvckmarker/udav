@@ -1,10 +1,10 @@
 ﻿#region
 
 using CodeAnalysis;
-using CodeAnalysis.Lexer;
-using CodeAnalysis.Lexer.Model;
 using CodeAnalysis.Parser.Binder;
 using CodeAnalysis.Parser.Expressions.AST;
+using CodeAnalysis.Scanner.Model;
+using CodeAnalysis.Scanner.Shared;
 
 #endregion
 
@@ -21,12 +21,9 @@ while (true)
         showTree = !showTree;
         continue;
     }
-    var lexer = Lexer.LexTokens(line);
+    var lexer = new Lexer(line);
+    var expressionTree = SyntaxTree.Parse(lexer);
 
-    foreach (var token in lexer)
-        Console.WriteLine(token.Text + " " + token.Kind);
-
-    var expressionTree = SyntaxTree.Parse(line);
     var binder = new Binder();
     var boundExpression = binder.BindExpression(expressionTree.Root);
 

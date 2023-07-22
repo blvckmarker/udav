@@ -1,10 +1,10 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
-using SyntaxKind = CodeAnalysis.Lexer.Model.SyntaxKind;
-using SyntaxToken = CodeAnalysis.Lexer.Model.SyntaxToken;
+using SyntaxKind = CodeAnalysis.Scanner.Model.SyntaxKind;
+using SyntaxToken = CodeAnalysis.Scanner.Model.SyntaxToken;
 
-namespace Tests.Lexer
+namespace Tests.Scanner
 {
     internal static class Utils
     {
@@ -55,7 +55,7 @@ namespace Tests.Lexer
         /// <returns></returns>
         internal static IEnumerable<SyntaxToken> GetTokens(string source)
         {
-            var lexer = new CodeAnalysis.Lexer.Lexer(source);
+            var lexer = new Lexer(source);
             var tokens = new List<SyntaxToken>();
 
             SyntaxToken currentToken;

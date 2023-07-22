@@ -1,8 +1,9 @@
 #region
 
-using CodeAnalysis.Lexer.Model;
 using CodeAnalysis.Parser.Expressions;
 using CodeAnalysis.Parser.Expressions.AST;
+using CodeAnalysis.Scanner.Model;
+using CodeAnalysis.Scanner.Shared;
 
 #endregion
 
@@ -16,7 +17,7 @@ public class Parser
 
     public Parser(string text)
     {
-        var lexer = new Lexer.Lexer(text);
+        var lexer = new Lexer(text);
 
         var token = lexer.Lex();
         while (token.Kind is not SyntaxKind.EofToken)
@@ -29,6 +30,14 @@ public class Parser
         _tokens.Add(token); //eof
         _diagnostics.AddRange(lexer.Diagnostics);
     }
+    public Parser(Lexer lexer)
+    {
+        _tokens = lexer.LexAll()
+            .Where(token => token.Kind is not SyntaxKind.WhitespaceToken and not SyntaxKind.BadToken)
+            .ToList();
+        _diagnostics.AddRange(lexer.Diagnostics);
+    }
+
 
     private SyntaxToken Current => Peek(0);
     public IEnumerable<string> Diagnostics => _diagnostics;

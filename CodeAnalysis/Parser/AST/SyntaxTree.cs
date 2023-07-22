@@ -1,5 +1,6 @@
+using CodeAnalysis.Scanner.Model;
+using CodeAnalysis.Scanner.Shared;
 using System.Collections.Immutable;
-using CodeAnalysis.Lexer.Model;
 
 namespace CodeAnalysis.Parser.Expressions.AST;
 
@@ -17,4 +18,5 @@ public sealed class SyntaxTree
     }
 
     public static SyntaxTree Parse(string text) => new Parser(text).Parse();
+    public static SyntaxTree Parse(Lexer lexer) => new Parser(lexer).Parse();
 }

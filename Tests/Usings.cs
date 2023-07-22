@@ -1,3 +1,4 @@
-global using CodeAnalysis.Lexer;
-global using CodeAnalysis.Lexer.Model;
+global using CodeAnalysis.Scanner.Shared;
 global using Xunit;
+
+

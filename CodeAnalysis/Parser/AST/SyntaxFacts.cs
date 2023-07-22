@@ -1,4 +1,4 @@
-using CodeAnalysis.Lexer.Model;
+using CodeAnalysis.Scanner.Model;
 
 namespace CodeAnalysis.Parser.Expressions.AST;
 

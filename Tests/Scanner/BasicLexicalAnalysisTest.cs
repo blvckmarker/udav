@@ -1,6 +1,6 @@
-using SyntaxKind = CodeAnalysis.Lexer.Model.SyntaxKind;
+using SyntaxKind = CodeAnalysis.Scanner.Model.SyntaxKind;
 
-namespace Tests.Lexer
+namespace Tests.Scanner
 {
     public class BasicLexicalAnalysisTest
     {
