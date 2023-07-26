@@ -8,6 +8,8 @@ public enum SyntaxKind
     SlashToken,
     OpenParenToken,
     CloseParenToken,
+    TrueKeyword,
+    FalseKeyword,
 
     WhitespaceToken,
     BadToken,
@@ -18,7 +20,5 @@ public enum SyntaxKind
     ParenthesizedExpression,
     UnaryExpression,
     LiteralExpression,
-    TrueKeyword,
-    FalseKeyword,
     NameExpression,
 }

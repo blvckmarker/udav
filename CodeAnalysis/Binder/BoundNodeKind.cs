@@ -1,4 +1,4 @@
-namespace CodeAnalysis.Parser.Binder;
+namespace Compilier101.Binder;
 
 internal enum BoundNodeKind
 {

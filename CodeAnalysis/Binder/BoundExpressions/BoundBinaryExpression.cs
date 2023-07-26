@@ -1,4 +1,5 @@
 using CodeAnalysis.Parser.Binder.BoundExpressions;
+using Compilier101.Binder;
 
 namespace CodeAnalysis.Parser.Binder;
 

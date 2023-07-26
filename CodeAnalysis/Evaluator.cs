@@ -1,8 +1,9 @@
 #region
 
-using CodeAnalysis.Parser.Binder;
 
 #endregion
+
+using CodeAnalysis.Parser.Binder;
 
 namespace CodeAnalysis;
 

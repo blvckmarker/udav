@@ -18,6 +18,31 @@ namespace Tests.Scanner
         }
 
         [Fact]
+        public static void AllTokensTest()
+        {
+            var source = "+ - * / ( ) true false";
+
+            var expected = Utils.GetTokens(source).MapTokensToBasic().ToList();
+
+            var actual = new SyntaxKind[]
+            {
+                SyntaxKind.PlusToken,
+                SyntaxKind.MinusToken,
+                SyntaxKind.AsteriskToken,
+                SyntaxKind.SlashToken,
+                SyntaxKind.OpenParenToken,
+                SyntaxKind.CloseParenToken,
+                SyntaxKind.TrueKeyword,
+                SyntaxKind.FalseKeyword,
+            };
+
+            Assert.True(actual.Length == expected.Count(), "Size of `expected` not equal to `actual`");
+
+            for (int i = 0; i < actual.Length; i++)
+                Assert.Equal(expected[i].Kind, actual[i]);
+        }
+
+        [Fact]
         public static void EmptyTextTest()
         {
             var expected = new List<BasicTokenModel>();
