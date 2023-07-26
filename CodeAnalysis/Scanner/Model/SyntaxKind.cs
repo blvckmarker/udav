@@ -13,8 +13,12 @@ public enum SyntaxKind
     BadToken,
     EofToken,
 
-    LiteralExpression,
+    NumberExpression,
     BinaryExpression,
     ParenthesizedExpression,
-    UnaryExpression
+    UnaryExpression,
+    LiteralExpression,
+    TrueKeyword,
+    FalseKeyword,
+    NameExpression,
 }

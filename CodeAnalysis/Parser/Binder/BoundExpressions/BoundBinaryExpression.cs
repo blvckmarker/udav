@@ -1,8 +1,10 @@
+using CodeAnalysis.Parser.Binder.BoundExpressions;
+
 namespace CodeAnalysis.Parser.Binder;
 
 internal sealed class BoundBinaryExpression : BoundExpression
 {
-    public BoundBinaryExpression(BoundExpression left, BoundBinaryOperatorKind? operatorToken, BoundExpression right)
+    public BoundBinaryExpression(BoundExpression left, BoundBinaryOperator operatorToken, BoundExpression right)
     {
         Left = left;
         OperatorToken = operatorToken;
@@ -10,7 +12,7 @@ internal sealed class BoundBinaryExpression : BoundExpression
     }
 
     public BoundExpression Left { get; }
-    public BoundBinaryOperatorKind? OperatorToken { get; }
+    public BoundBinaryOperator OperatorToken { get; }
     public BoundExpression Right { get; }
 
     public override BoundNodeKind Kind => BoundNodeKind.BinaryExpression;

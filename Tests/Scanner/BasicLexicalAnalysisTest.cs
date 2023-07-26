@@ -31,8 +31,8 @@ namespace Tests.Scanner
         {
             var expected = new List<BasicTokenModel>
             {
-                new(SyntaxKind.LiteralExpression, "111"),
-                new(SyntaxKind.BadToken, "a"),
+                new(SyntaxKind.NumberExpression, "111"),
+                new(SyntaxKind.LiteralExpression, "a"),
                 new(SyntaxKind.MinusToken, "-"),
                 new(SyntaxKind.PlusToken, "+"),
             };
@@ -47,9 +47,7 @@ namespace Tests.Scanner
         {
             var primaryExpected = new List<BasicTokenModel>
             {
-                new(SyntaxKind.BadToken, "a"),
-                new(SyntaxKind.BadToken, "b"),
-                new(SyntaxKind.BadToken, "c"),
+                new(SyntaxKind.LiteralExpression, "abc"),
             };
             var actual = Utils.MapTokensToBasic(Utils.GetTokens("abc"));
             Assert.Equal(actual, primaryExpected);

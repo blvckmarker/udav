@@ -31,7 +31,7 @@ namespace Tests.Scanner
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.EndOfFileToken => SyntaxKind.EofToken,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.OpenParenToken => SyntaxKind.OpenParenToken,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.CloseParenToken => SyntaxKind.CloseParenToken,
-                Microsoft.CodeAnalysis.CSharp.SyntaxKind.NumericLiteralToken => SyntaxKind.LiteralExpression,
+                Microsoft.CodeAnalysis.CSharp.SyntaxKind.NumericLiteralToken => SyntaxKind.NumberExpression,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.UnaryMinusExpression or Microsoft.CodeAnalysis.CSharp.SyntaxKind.UnaryPlusExpression => SyntaxKind.UnaryExpression,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.ParenthesizedExpression => SyntaxKind.ParenthesizedExpression,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.WhitespaceTrivia => SyntaxKind.WhitespaceToken,
@@ -56,20 +56,7 @@ namespace Tests.Scanner
         internal static IEnumerable<SyntaxToken> GetTokens(string source)
         {
             var lexer = new Lexer(source);
-            var tokens = new List<SyntaxToken>();
-
-            SyntaxToken currentToken;
-            do
-            {
-                currentToken = lexer.Lex();
-
-                if (currentToken.Kind is SyntaxKind.WhitespaceToken)
-                    continue;
-
-                tokens.Add(currentToken);
-            } while (currentToken.Kind is not SyntaxKind.EofToken);
-
-            return tokens;
+            return lexer.LexAll().Where(x => x.Kind is not SyntaxKind.BadToken and not SyntaxKind.WhitespaceToken);
         }
     }
     internal record BasicTokenModel(SyntaxKind Kind, string Text);

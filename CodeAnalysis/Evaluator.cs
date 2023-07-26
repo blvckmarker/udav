@@ -1,7 +1,6 @@
 #region
 
 using CodeAnalysis.Parser.Binder;
-using CodeAnalysis.Parser.Expressions;
 
 #endregion
 
@@ -16,12 +15,12 @@ internal class Evaluator
         _root = root;
     }
 
-    public int Evaluate() => EvaluateExpression(_root);
+    public object Evaluate() => EvaluateExpression(_root);
 
-    private int EvaluateExpression(BoundNode node)
+    private object EvaluateExpression(BoundNode node)
     {
         if (node is BoundLiteralExpression number)
-            return (int)number.Value;
+            return number.Value;
 
         if (node is BoundUnaryExpression u)
         {
@@ -30,9 +29,9 @@ internal class Evaluator
             switch (u.OperatorToken)
             {
                 case BoundUnaryOperatorKind.Negation:
-                    return -operand;
+                    return -(int)operand;
                 case BoundUnaryOperatorKind.Identity:
-                    return operand;
+                    return (int)operand;
                 default:
                     throw new InvalidOperationException($"Unexpected unary expression {u.OperatorToken}");
             }
@@ -43,12 +42,12 @@ internal class Evaluator
             var left = EvaluateExpression(b.Left);
             var right = EvaluateExpression(b.Right);
 
-            return b.OperatorToken switch
+            return b.OperatorToken.Kind switch
             {
-                BoundBinaryOperatorKind.Addition => left + right,
-                BoundBinaryOperatorKind.Subtraction => left - right,
-                BoundBinaryOperatorKind.Multiplication => left * right,
-                BoundBinaryOperatorKind.Division => left / right,
+                BoundBinaryOperatorKind.Addition => (int)left - (int)right,
+                BoundBinaryOperatorKind.Subtraction => (int)left - (int)right,
+                BoundBinaryOperatorKind.Multiplication => (int)left * (int)right,
+                BoundBinaryOperatorKind.Division => (int)left / (int)right,
                 _ => throw new InvalidOperationException($"Unexpected binary operator {b.OperatorToken}")
             };
         }

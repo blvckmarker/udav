@@ -1,4 +1,5 @@
 #region
+using CodeAnalysis.Parser.Expressions.AST;
 using CodeAnalysis.Scanner.Model;
 #endregion
 
@@ -30,7 +31,6 @@ public class Lexer
             return new SyntaxToken(SyntaxKind.EofToken, _position, CurrentChar.ToString(), null);
         }
 
-
         if (char.IsDigit(CurrentChar))
         {
             var start = _position;
@@ -44,7 +44,7 @@ public class Lexer
             if (!int.TryParse(text, out var value))
                 _diagnostics.Add($"ERROR: The number {text} cannot be represented as int32");
 
-            return new SyntaxToken(SyntaxKind.LiteralExpression, start, text, value);
+            return new SyntaxToken(SyntaxKind.NumberExpression, start, text, value);
         }
 
         if (char.IsWhiteSpace(CurrentChar))
@@ -60,6 +60,20 @@ public class Lexer
             return new SyntaxToken(SyntaxKind.WhitespaceToken, start, text, null);
         }
 
+        if (char.IsLetter(CurrentChar))
+        {
+            var start = _position;
+            while (char.IsLetterOrDigit(CurrentChar))
+                Next();
+
+            var length = _position - start;
+            var text = _text[start.._position];
+
+            if (SyntaxFacts.GetKeywordKind(text) is { } keywordKind && keywordKind != SyntaxKind.LiteralExpression)
+                return new SyntaxToken(keywordKind, start, text, text);
+
+            return new SyntaxToken(SyntaxKind.LiteralExpression, start, text, text);
+        }
 
         switch (CurrentChar)
         {

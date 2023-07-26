@@ -1,5 +1,6 @@
 #region
 
+using CodeAnalysis.Parser.Binder.BoundExpressions;
 using CodeAnalysis.Parser.Expressions;
 using CodeAnalysis.Scanner.Model;
 
@@ -61,36 +62,21 @@ internal sealed class Binder
     private BoundExpression BindBinaryExpression(BinaryExpressionSyntax syntax)
     {
         var left = BindExpression(syntax.Left);
-        var operatorToken = BindBinaryOperatorKind(syntax.OperatorToken.Kind, left.Type);
         var right = BindExpression(syntax.Right);
+        var operatorToken = BoundBinaryOperator.Bind(syntax.OperatorToken.Kind, left.Type, right.Type);
 
         if (operatorToken is null)
         {
-            _diagnostics.Add($"Unknown type for left expression {left.Type}");
+            _diagnostics.Add($"Unknown operator `{syntax.OperatorToken.Kind}` for types `{left.Type}` and `{right.Type}`");
             return left;
         }
 
         return new BoundBinaryExpression(left, operatorToken, right);
     }
 
-    private BoundBinaryOperatorKind? BindBinaryOperatorKind(SyntaxKind operatorTokenKind, Type leftType)
-    {
-        if (leftType != typeof(int))
-            return null;
-
-        return operatorTokenKind switch
-        {
-            SyntaxKind.MinusToken => BoundBinaryOperatorKind.Subtraction,
-            SyntaxKind.PlusToken => BoundBinaryOperatorKind.Addition,
-            SyntaxKind.SlashToken => BoundBinaryOperatorKind.Division,
-            SyntaxKind.AsteriskToken => BoundBinaryOperatorKind.Multiplication,
-            _ => throw new Exception($"Unexpected operator token kind {operatorTokenKind}")
-        };
-    }
-
     private BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax)
     {
-        var value = syntax.LiteralToken.Value as int? ?? 0;
+        var value = syntax.Value ?? 0;
         return new BoundLiteralExpression(value);
     }
 }

@@ -29,10 +29,10 @@ while (true)
 
     var diagnostics = expressionTree.Diagnostics.Concat(binder.Diagnostics);
     if (showTree)
-        PrettyPrint(expressionTree.Root);
+        PrettySyntaxPrint(expressionTree.Root);
 
     if (diagnostics.Any())
-        foreach (var diagnostic in expressionTree.Diagnostics)
+        foreach (var diagnostic in diagnostics)
             Console.WriteLine(diagnostic);
     else
     {
@@ -41,10 +41,10 @@ while (true)
     }
 }
 
-static void PrettyPrint(SyntaxNode node, string shift = "")
+static void PrettySyntaxPrint(SyntaxNode node, string shift = "")
 {
     Console.Write(shift);
-    Console.Write(node);
+    Console.Write(node.Kind);
 
     if (node is SyntaxToken { Value: { } } t)
         Console.Write(" " + t.Value);
@@ -53,5 +53,5 @@ static void PrettyPrint(SyntaxNode node, string shift = "")
     shift += "    ";
 
     foreach (var child in node.GetChildren())
-        PrettyPrint(child, shift);
+        PrettySyntaxPrint(child, shift);
 }
