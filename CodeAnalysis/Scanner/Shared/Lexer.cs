@@ -1,5 +1,5 @@
 #region
-using CodeAnalysis.Parser.Expressions.AST;
+using CodeAnalysis.Parser.Syntax;
 using CodeAnalysis.Scanner.Model;
 #endregion
 

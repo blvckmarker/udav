@@ -2,7 +2,7 @@
 
 using CodeAnalysis;
 using CodeAnalysis.Binder;
-using CodeAnalysis.Parser.Expressions.AST;
+using CodeAnalysis.Parser.Syntax;
 using CodeAnalysis.Scanner.Model;
 using CodeAnalysis.Scanner.Shared;
 #endregion

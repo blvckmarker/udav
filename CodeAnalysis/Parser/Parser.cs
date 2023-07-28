@@ -1,7 +1,7 @@
 #region
 
 using CodeAnalysis.Parser.Expressions;
-using CodeAnalysis.Parser.Expressions.AST;
+using CodeAnalysis.Parser.Syntax;
 using CodeAnalysis.Scanner.Model;
 using CodeAnalysis.Scanner.Shared;
 #endregion

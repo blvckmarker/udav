@@ -4,7 +4,7 @@ using CodeAnalysis.Scanner.Model;
 
 #endregion
 
-namespace CodeAnalysis.Parser.Expressions.AST;
+namespace CodeAnalysis.Parser.Syntax;
 
 public abstract class SyntaxNode
 {

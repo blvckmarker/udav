@@ -1,6 +1,6 @@
 using CodeAnalysis.Scanner.Model;
 
-namespace CodeAnalysis.Parser.Expressions.AST;
+namespace CodeAnalysis.Parser.Syntax;
 
 internal static class SyntaxFacts
 {

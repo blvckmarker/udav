@@ -1,8 +1,9 @@
 #region
 
-using CodeAnalysis.Parser.Expressions.AST;
 
 #endregion
+
+using CodeAnalysis.Parser.Syntax;
 
 namespace CodeAnalysis.Parser.Expressions;
 
