@@ -90,47 +90,22 @@ namespace Tests.Scanner
         }
 
         [Fact]
-        public static void RandomTest()
+        public static void RandomNumericalTest()
         {
-            var operations = new[] { '+', '-', '/', '*' };
-            var nodesCount = new Random().Next(0, 100);
+            var source = Utils.GenerateRandomNumericalSequence();
 
-            var source = "";
-            for (int i = 0; i < nodesCount; i++)
-            {
-                var MakeParenthesizedExpression = new Random().Next(0, 2);
-                if (MakeParenthesizedExpression == 1)
-                {
-                    if (source.Length != 0 && source[^1] == ')')
-                        source += operations[new Random().Next(0, 4)];
+            var actual = Utils.GetTokens(source)
+                              .MapTokensToBasic();
+            var expected = Utils.GetDescendantTokens(source)
+                                .MapTokensToBasic();
 
-                    source += '(';
-                    source += new Random().Next();
-                    source += operations[new Random().Next(0, 4)];
-                    source += new Random().Next();
-                    source += ')';
-                }
-                else
-                {
-                    if (source.Length != 0 && source[^1] == ')')
-                    {
-                        source += operations[new Random().Next(0, 4)];
-                        source += new Random().Next();
-                    }
-                    else
-                    {
-                        if (source.Length != 0 && char.IsDigit(source[^1]))
-                            source += operations[new Random().Next(0, 4)];
+            Assert.Equal(actual, expected);
+        }
 
-                        source += new Random().Next();
-                        source += operations[new Random().Next(0, 4)];
-                    }
-
-                }
-            }
-
-            if (operations.Contains(source[^1]))
-                source += new Random().Next();
+        [Fact]
+        public static void RandomBooleanTest()
+        {
+            var source = Utils.GenerateRandomBooleanSequence();
 
             var actual = Utils.GetTokens(source)
                               .MapTokensToBasic();
