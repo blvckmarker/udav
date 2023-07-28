@@ -1,7 +1,4 @@
-using CodeAnalysis.Parser.Binder.BoundExpressions;
-using Compilier101.Binder;
-
-namespace CodeAnalysis.Parser.Binder;
+namespace CodeAnalysis.Binder.BoundExpressions;
 
 internal sealed class BoundBinaryExpression : BoundExpression
 {

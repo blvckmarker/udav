@@ -1,15 +1,15 @@
 ﻿using CodeAnalysis.Scanner.Model;
 
-namespace CodeAnalysis.Parser.Binder.BoundExpressions;
+namespace CodeAnalysis.Binder.BoundExpressions;
+
 internal class BoundBinaryOperator
 {
-    private static readonly BoundBinaryOperator[] _operators =
+    private static BoundBinaryOperator[] _operators = new[]
     {
         new BoundBinaryOperator(SyntaxKind.AsteriskToken, BoundBinaryOperatorKind.Multiplication,typeof(int), typeof(int)),
         new BoundBinaryOperator(SyntaxKind.SlashToken, BoundBinaryOperatorKind.Division, typeof(int), typeof(int)),
         new BoundBinaryOperator(SyntaxKind.MinusToken, BoundBinaryOperatorKind.Subtraction, typeof(int), typeof(int)),
         new BoundBinaryOperator(SyntaxKind.PlusToken, BoundBinaryOperatorKind.Addition, typeof(int), typeof(int)),
-
     };
 
     public SyntaxKind SyntaxKind { get; }
@@ -17,6 +17,7 @@ internal class BoundBinaryOperator
     public Type LeftType { get; }
     public Type RightType { get; }
     public Type ResultType { get; }
+
 
     public BoundBinaryOperator(SyntaxKind syntaxKind, BoundBinaryOperatorKind kind, Type operandType, Type resultType)
         : this(syntaxKind, kind, operandType, operandType, resultType) { }

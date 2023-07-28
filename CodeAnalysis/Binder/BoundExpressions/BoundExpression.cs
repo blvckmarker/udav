@@ -1,4 +1,4 @@
-namespace CodeAnalysis.Parser.Binder;
+namespace CodeAnalysis.Binder.BoundExpressions;
 
 internal abstract class BoundExpression : BoundNode
 {

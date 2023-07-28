@@ -1,12 +1,12 @@
 #region
 
-using CodeAnalysis.Parser.Binder.BoundExpressions;
+using CodeAnalysis.Binder.BoundExpressions;
 using CodeAnalysis.Parser.Expressions;
 using CodeAnalysis.Scanner.Model;
 
 #endregion
 
-namespace CodeAnalysis.Parser.Binder;
+namespace CodeAnalysis.Binder;
 
 internal sealed class Binder
 {
@@ -38,10 +38,10 @@ internal sealed class Binder
     private BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
     {
         var operand = BindExpression(syntax.Operand);
-        var operatorToken = BindUnaryOperatorKind(syntax.OperatorToken.Kind, operand.Type);
+        var operatorToken = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, operand.Type);
 
         if (operatorToken is null)
-            _diagnostics.Add($"Unary operator {operatorToken.ToString()} is not defined for type {operand.Type}");
+            _diagnostics.Add($"Unary operator {operatorToken} is not defined for type {operand.Type}");
 
         return new BoundUnaryExpression(operatorToken, operand);
     }

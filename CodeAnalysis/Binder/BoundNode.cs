@@ -1,6 +1,4 @@
-using Compilier101.Binder;
-
-namespace CodeAnalysis.Parser.Binder;
+namespace CodeAnalysis.Binder;
 
 internal abstract class BoundNode
 {

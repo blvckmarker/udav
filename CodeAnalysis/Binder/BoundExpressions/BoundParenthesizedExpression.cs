@@ -1,5 +1,4 @@
-using Compilier101.Binder;
-namespace CodeAnalysis.Parser.Binder;
+namespace CodeAnalysis.Binder.BoundExpressions;
 
 internal sealed class BoundParenthesizedExpression : BoundExpression
 {

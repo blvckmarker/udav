@@ -1,16 +1,14 @@
-using Compilier101.Binder;
-
-namespace CodeAnalysis.Parser.Binder;
+namespace CodeAnalysis.Binder.BoundExpressions;
 
 internal sealed class BoundUnaryExpression : BoundExpression
 {
-    public BoundUnaryExpression(BoundUnaryOperatorKind? operatorToken, BoundExpression operand)
+    public BoundUnaryExpression(BoundUnaryOperator? operatorToken, BoundExpression operand)
     {
         OperatorToken = operatorToken;
         Operand = operand;
     }
 
-    public BoundUnaryOperatorKind? OperatorToken { get; }
+    public BoundUnaryOperator? OperatorToken { get; }
     public BoundExpression Operand { get; }
 
     public override BoundNodeKind Kind => BoundNodeKind.UnaryExpression;

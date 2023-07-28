@@ -1,11 +1,10 @@
 ﻿#region
 
 using CodeAnalysis;
-using CodeAnalysis.Parser.Binder;
+using CodeAnalysis.Binder;
 using CodeAnalysis.Parser.Expressions.AST;
 using CodeAnalysis.Scanner.Model;
 using CodeAnalysis.Scanner.Shared;
-
 #endregion
 
 var showTree = false;

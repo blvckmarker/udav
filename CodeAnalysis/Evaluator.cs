@@ -3,7 +3,9 @@
 
 #endregion
 
-using CodeAnalysis.Parser.Binder;
+
+using CodeAnalysis.Binder;
+using CodeAnalysis.Binder.BoundExpressions;
 
 namespace CodeAnalysis;
 
@@ -27,7 +29,7 @@ internal class Evaluator
         {
             var operand = EvaluateExpression(u.Operand);
 
-            switch (u.OperatorToken)
+            switch (u.OperatorToken.BoundKind)
             {
                 case BoundUnaryOperatorKind.Negation:
                     return -(int)operand;

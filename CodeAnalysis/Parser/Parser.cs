@@ -4,7 +4,6 @@ using CodeAnalysis.Parser.Expressions;
 using CodeAnalysis.Parser.Expressions.AST;
 using CodeAnalysis.Scanner.Model;
 using CodeAnalysis.Scanner.Shared;
-
 #endregion
 
 namespace CodeAnalysis.Parser;
@@ -15,21 +14,8 @@ public class Parser
     private readonly List<SyntaxToken> _tokens = new();
     private int _position;
 
-    public Parser(string text)
-    {
-        var lexer = new Lexer(text);
+    public Parser(string text) : this(new Lexer(text)) { }
 
-        var token = lexer.Lex();
-        while (token.Kind is not SyntaxKind.EofToken)
-        {
-            if (token.Kind is not SyntaxKind.WhitespaceToken or SyntaxKind.BadToken)
-                _tokens.Add(token);
-            token = lexer.Lex();
-        }
-
-        _tokens.Add(token); //eof
-        _diagnostics.AddRange(lexer.Diagnostics);
-    }
     public Parser(Lexer lexer)
     {
         _tokens = lexer.LexAll()
