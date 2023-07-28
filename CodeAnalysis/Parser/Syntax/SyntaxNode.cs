@@ -1,6 +1,6 @@
 #region
 
-using CodeAnalysis.Scanner.Model;
+using CodeAnalysis.Scanner.Syntax;
 
 #endregion
 

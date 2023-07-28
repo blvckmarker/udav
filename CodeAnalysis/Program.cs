@@ -3,8 +3,8 @@
 using CodeAnalysis;
 using CodeAnalysis.Binder;
 using CodeAnalysis.Parser.Syntax;
-using CodeAnalysis.Scanner.Model;
 using CodeAnalysis.Scanner.Shared;
+using CodeAnalysis.Scanner.Syntax;
 #endregion
 
 var showTree = false;

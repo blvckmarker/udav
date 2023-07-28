@@ -1,6 +1,6 @@
 #region
 using CodeAnalysis.Parser.Syntax;
-using CodeAnalysis.Scanner.Model;
+using CodeAnalysis.Scanner.Syntax;
 #endregion
 
 namespace CodeAnalysis.Scanner.Shared;
@@ -17,6 +17,8 @@ public class Lexer
 
     public Lexer(string text) => _text = text;
     private void Next() => _position++;
+    private char Lookahead(int count) => _position + count >= _text.Length ? '\0' : _text[_position + count];
+
     public SyntaxToken Lex()
     {
         if (isAlreadyLexicalized)
@@ -75,7 +77,7 @@ public class Lexer
             return new SyntaxToken(SyntaxKind.LiteralExpression, start, text, text);
         }
 
-        switch (CurrentChar)
+        switch (CurrentChar) // &&  || !
         {
             case '+':
                 return new SyntaxToken(SyntaxKind.PlusToken, _position++, "+", null);
@@ -89,6 +91,24 @@ public class Lexer
                 return new SyntaxToken(SyntaxKind.OpenParenToken, _position++, "(", null);
             case ')':
                 return new SyntaxToken(SyntaxKind.CloseParenToken, _position++, ")", null);
+            case '!':
+                return new SyntaxToken(SyntaxKind.ExclamationToken, _position++, "!", null);
+            case '&':
+                if (Lookahead(1) == '&')
+                {
+                    _position += 2;
+                    return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, _position, "&&", null);
+                }
+                return new SyntaxToken(SyntaxKind.AmpersandToken, _position++, "&", null);
+
+            case '|':
+                if (Lookahead(1) == '|')
+                {
+                    _position += 2;
+                    return new SyntaxToken(SyntaxKind.PipePipeToken, _position, "||", null);
+                }
+                return new SyntaxToken(SyntaxKind.PipeToken, _position++, "|", null);
+
             default:
                 _diagnostics.Add($"ERROR: Bad character input: {CurrentChar}");
                 return new SyntaxToken(SyntaxKind.BadToken, _position++, _text.Substring(_position - 1, 1), null);

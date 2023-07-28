@@ -1,8 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
-using SyntaxKind = CodeAnalysis.Scanner.Model.SyntaxKind;
-using SyntaxToken = CodeAnalysis.Scanner.Model.SyntaxToken;
+using SyntaxKind = CodeAnalysis.Scanner.Syntax.SyntaxKind;
+using SyntaxToken = CodeAnalysis.Scanner.Syntax.SyntaxToken;
 
 namespace Tests.Scanner
 {

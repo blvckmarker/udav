@@ -1,5 +1,5 @@
 using CodeAnalysis.Parser.Syntax;
-using CodeAnalysis.Scanner.Model;
+using CodeAnalysis.Scanner.Syntax;
 
 namespace CodeAnalysis.Parser.Expressions;
 

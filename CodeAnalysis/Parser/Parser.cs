@@ -2,8 +2,9 @@
 
 using CodeAnalysis.Parser.Expressions;
 using CodeAnalysis.Parser.Syntax;
-using CodeAnalysis.Scanner.Model;
 using CodeAnalysis.Scanner.Shared;
+using CodeAnalysis.Scanner.Syntax;
+
 #endregion
 
 namespace CodeAnalysis.Parser;
@@ -50,7 +51,7 @@ public class Parser
         return new SyntaxTree(_diagnostics, expression, eofToken);
     }
 
-    private ExpressionSyntax ParseExpression(int parentPrecedence = 0) // true, false, &&, ||, !
+    private ExpressionSyntax ParseExpression(int parentPrecedence = 0)
     {
         ExpressionSyntax left;
         var operatorPrecedence = Current.Kind.GetUnaryOperatorPrecedence();

@@ -1,6 +1,6 @@
 using CodeAnalysis.Parser.Expressions;
-using CodeAnalysis.Scanner.Model;
 using CodeAnalysis.Scanner.Shared;
+using CodeAnalysis.Scanner.Syntax;
 using System.Collections.Immutable;
 
 namespace CodeAnalysis.Parser.Syntax;

@@ -1,4 +1,4 @@
-namespace CodeAnalysis.Scanner.Model;
+namespace CodeAnalysis.Scanner.Syntax;
 
 public enum SyntaxKind
 {
@@ -21,4 +21,9 @@ public enum SyntaxKind
     UnaryExpression,
     LiteralExpression,
     NameExpression,
+    ExclamationToken,
+    AmpersandAmpersandToken,
+    AmpersandToken,
+    PipePipeToken,
+    PipeToken,
 }
