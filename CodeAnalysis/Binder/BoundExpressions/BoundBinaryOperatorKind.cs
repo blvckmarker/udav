@@ -6,4 +6,6 @@ internal enum BoundBinaryOperatorKind
     Subtraction,
     Division,
     Multiplication,
+    LogicalOr,
+    LogicalAnd,
 }

@@ -8,6 +8,7 @@ namespace CodeAnalysis.Binder.BoundExpressions
         {
             new BoundUnaryOperator(SyntaxKind.MinusToken, BoundUnaryOperatorKind.Negation, typeof(int)),
             new BoundUnaryOperator(SyntaxKind.PlusToken, BoundUnaryOperatorKind.Identity, typeof(int)),
+            new BoundUnaryOperator(SyntaxKind.ExclamationToken, BoundUnaryOperatorKind.LogicalNot, typeof(bool))
         };
 
         public BoundUnaryOperator(SyntaxKind kind, BoundUnaryOperatorKind boundKind, Type operand)

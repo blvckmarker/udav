@@ -25,7 +25,6 @@ public class Parser
         _diagnostics.AddRange(lexer.Diagnostics);
     }
 
-
     private SyntaxToken Current => Peek(0);
     public IEnumerable<string> Diagnostics => _diagnostics;
 
@@ -51,15 +50,30 @@ public class Parser
         return new SyntaxTree(_diagnostics, expression, eofToken);
     }
 
-    private ExpressionSyntax ParseExpression(int parentPrecedence = 0)
+    /* expression : 
+     *            | ('-' | '+') expression
+     *            | expression op=('*' | '+') expression
+     *            | expression op=('+' | '-') expression
+     *            | '!' expression
+     *            | expression op=('&&'| '||') expression
+     *            | primary
+     * 
+     * 
+     * 
+     * primary : '(' expression ')'
+     *         | name
+     *         | number
+     *         | boolean
+     */
+    private ExpressionSyntax ParseExpression(int parentPrecedence = 0) // false || !false && false -> false || true && false -> false || false -> false
     {
         ExpressionSyntax left;
-        var operatorPrecedence = Current.Kind.GetUnaryOperatorPrecedence();
+        var unaryOperatorPrecedence = Current.Kind.GetUnaryOperatorPrecedence();
 
-        if (operatorPrecedence != 0 && operatorPrecedence > parentPrecedence)
+        if (unaryOperatorPrecedence != 0 && unaryOperatorPrecedence > parentPrecedence)
         {
             var operatorToken = TakeToken();
-            var operand = ParseExpression();
+            var operand = ParseExpression(unaryOperatorPrecedence);
 
             left = new UnaryExpressionSyntax(operatorToken, operand);
         }

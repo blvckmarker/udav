@@ -17,7 +17,7 @@ public class Lexer
 
     public Lexer(string text) => _text = text;
     private void Next() => _position++;
-    private char Lookahead(int count) => _position + count >= _text.Length ? '\0' : _text[_position + count];
+    private char Lookahead(int count) => _position + count >= _text.Length ? _text.Last() : _text[_position + count];
 
     public SyntaxToken Lex()
     {

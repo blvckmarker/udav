@@ -10,10 +10,13 @@ internal class BoundBinaryOperator
         new BoundBinaryOperator(SyntaxKind.SlashToken, BoundBinaryOperatorKind.Division, typeof(int), typeof(int)),
         new BoundBinaryOperator(SyntaxKind.MinusToken, BoundBinaryOperatorKind.Subtraction, typeof(int), typeof(int)),
         new BoundBinaryOperator(SyntaxKind.PlusToken, BoundBinaryOperatorKind.Addition, typeof(int), typeof(int)),
+
+        new BoundBinaryOperator(SyntaxKind.PipePipeToken, BoundBinaryOperatorKind.LogicalOr, typeof(bool), typeof(bool)),
+        new BoundBinaryOperator(SyntaxKind.AmpersandAmpersandToken, BoundBinaryOperatorKind.LogicalAnd, typeof(bool), typeof(bool)),
     };
 
     public SyntaxKind SyntaxKind { get; }
-    public BoundBinaryOperatorKind Kind { get; }
+    public BoundBinaryOperatorKind BoundKind { get; }
     public Type LeftType { get; }
     public Type RightType { get; }
     public Type ResultType { get; }
@@ -24,7 +27,7 @@ internal class BoundBinaryOperator
     public BoundBinaryOperator(SyntaxKind syntaxKind, BoundBinaryOperatorKind kind, Type leftType, Type rightType, Type resultType)
     {
         SyntaxKind = syntaxKind;
-        Kind = kind;
+        BoundKind = kind;
         LeftType = leftType;
         RightType = rightType;
         ResultType = resultType;
