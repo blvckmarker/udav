@@ -52,6 +52,11 @@ internal class Evaluator
 
                 BoundBinaryOperatorKind.LogicalOr => (bool)left || (bool)right,
                 BoundBinaryOperatorKind.LogicalAnd => (bool)left && (bool)right,
+
+                BoundBinaryOperatorKind.BitwiseAnd => (int)left & (int)right,
+                BoundBinaryOperatorKind.BitwiseOr => (int)left | (int)right,
+                BoundBinaryOperatorKind.BitwiseXor => (int)left ^ (int)right,
+
                 _ => throw new InvalidOperationException($"Unexpected binary operator {b.OperatorToken}")
             };
         }

@@ -93,6 +93,8 @@ public class Lexer
                 return new SyntaxToken(SyntaxKind.CloseParenToken, _position++, ")", null);
             case '!':
                 return new SyntaxToken(SyntaxKind.ExclamationToken, _position++, "!", null);
+            case '^':
+                return new SyntaxToken(SyntaxKind.CaretToken, _position++, "^", null);
             case '&':
                 if (Lookahead(1) == '&')
                 {

@@ -26,4 +26,5 @@ public enum SyntaxKind
     AmpersandToken,
     PipePipeToken,
     PipeToken,
+    CaretToken,
 }

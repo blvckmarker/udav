@@ -8,4 +8,7 @@ internal enum BoundBinaryOperatorKind
     Multiplication,
     LogicalOr,
     LogicalAnd,
+    BitwiseAnd,
+    BitwiseXor,
+    BitwiseOr,
 }
