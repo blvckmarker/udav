@@ -1,7 +1,13 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using CodeAnalysis;
+using CodeAnalysis.Binder;
+using DynamicExpresso;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using System.Data;
+using System.Numerics;
 using SyntaxKind = CodeAnalysis.Scanner.Syntax.SyntaxKind;
 using SyntaxToken = CodeAnalysis.Scanner.Syntax.SyntaxToken;
+using SyntaxTree = CodeAnalysis.Parser.Syntax.SyntaxTree;
 
 namespace Tests
 {
@@ -12,10 +18,9 @@ namespace Tests
             .SkipLast(1) // eof token is static 
             .Select(token => new BasicTokenModel(token.Kind, token.Text));
 
-
         internal static IEnumerable<BasicTokenModel> MapTokensToBasic(this IEnumerable<Microsoft.CodeAnalysis.SyntaxToken> tokens)
             => tokens
-            .Skip(3) /* To create a valide syntax tree using roslyn API, we should use source program such as `var _ = ...`,
+            .Skip(3) /* To create a valid syntax tree using roslyn API, we should use source program such as `var _ = ...`,
                       and skip three useless tokens: var, _, = */
             .SkipLast(2)
             .Select(token => new BasicTokenModel(MatchRoslynSyntaxKind(token.Kind()), token.ToString()));
@@ -43,11 +48,10 @@ namespace Tests
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.BadToken => SyntaxKind.BadToken,
                 _ => throw new NotImplementedException(kind.ToString()) // ? BinaryExpression
             };
+
         /// <summary>
         /// Provides syntax tokens using Roslyn API
         /// </summary>
-        /// <param name="source"></param>
-        /// <returns></returns>
         internal static IEnumerable<Microsoft.CodeAnalysis.SyntaxToken> GetDescendantTokens(string source)
             => SyntaxFactory.ParseSyntaxTree($"var _ = {source}")
                             .GetRoot()
@@ -56,19 +60,56 @@ namespace Tests
         /// <summary>
         /// Provides syntax tokens using Udav API
         /// </summary>
-        /// <param name="source"></param>
-        /// <returns></returns>
         internal static IEnumerable<SyntaxToken> GetTokens(string source)
         {
             var lexer = new Lexer(source);
             return lexer.LexAll().Where(x => x.Kind is not SyntaxKind.BadToken and not SyntaxKind.WhitespaceToken);
         }
 
-        internal static string GenerateRandomNumericalSequence()
-            => GenerateRandomNumericSequence(new string[] { "+", "-", "*", "/", "^", "|", "&" });
-        internal static string GenerateRandomNumericSequence(string[] operations)
+        /// <summary>
+        /// Provides evaluating using Roslyn API
+        /// </summary>
+        /// <typeparam name="TResult">Output type</typeparam>
+        internal static TResult EvaluateExternal<TResult>(string source)
         {
-            var nodesCount = new Random().Next(0, 100);
+            var interpreter = new Interpreter();
+            var result = interpreter.Eval<TResult>(source);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Provides evaluating using Udav API
+        /// </summary>
+        /// <typeparam name="TResult">Output type</typeparam>
+        internal static object EvaluateInternal<TResult>(string source)
+        {
+            var parser = SyntaxTree.Parse(source);
+            var binder = new Binder();
+            var boundTree = binder.BindExpression(parser.Root);
+            var eval = new Evaluator(boundTree);
+
+            return (TResult)eval.Evaluate();
+        }
+
+        /// <summary>
+        /// Generate random numerical sequence of <typeparamref name="TNumber"/> using default list of operators
+        /// </summary>
+        /// <typeparam name="TNumber">Type</typeparam>
+        internal static string GenerateRandomNumericalSequence<TNumber>() where TNumber : INumber<TNumber>
+            => GenerateRandomNumericalSequence<TNumber>(new string[] { "+", "-", "*", "/", "^", "|", "&" });
+
+        /// <summary>
+        /// Generate random numerical sequence of <typeparamref name="TNumber"/> using custom list of operators
+        /// </summary>
+        /// <typeparam name="TNumber">Type which implement <typeparamref name="INumber"/></typeparam>
+        /// <param name="operators">Binary operators</param>
+        internal static string GenerateRandomNumericalSequence<TNumber>(string[] operators) where TNumber : INumber<TNumber>
+        {
+            string GenerateNumber() => new Random().Next().ToString();
+            string GenerateBinaryOperator() => operators[new Random().Next(0, operators.Length)];
+            string GenerateUnaryOperator() => new[] { "", "-" }[new Random().Next(0, 2)];
+            var nodesCount = new Random().Next(1, 100);
 
             var source = "";
             for (int i = 0; i < nodesCount; i++)
@@ -76,90 +117,66 @@ namespace Tests
                 var MakeParenthesizedExpression = new Random().Next(0, 2);
                 if (MakeParenthesizedExpression == 1)
                 {
-                    if (source.Length != 0 && source[^1] == ')')
-                        source += operations[new Random().Next(0, operations.Length)];
+                    source += "(";
+                    source += $"{GenerateUnaryOperator()} {GenerateNumber()} ";
+                    source += $"{GenerateBinaryOperator()} ";
+                    source += $"{GenerateUnaryOperator()} {GenerateNumber()}";
+                    source += ") ";
 
-                    source += '(';
-                    source += new Random().Next();
-                    source += operations[new Random().Next(0, operations.Length)];
-                    source += new Random().Next();
-                    source += ')';
+                    source += $"{GenerateBinaryOperator()} ";
                 }
                 else
                 {
-                    if (source.Length != 0 && source[^1] == ')')
-                    {
-                        source += operations[new Random().Next(0, operations.Length)];
-                        source += new Random().Next();
-                    }
-                    else
-                    {
-                        if (source.Length != 0 && char.IsDigit(source[^1]))
-                            source += operations[new Random().Next(0, operations.Length)];
-
-                        source += new Random().Next();
-                        source += operations[new Random().Next(0, operations.Length)];
-                    }
-
+                    source += $"{GenerateUnaryOperator()} {GenerateNumber()} ";
+                    source += $"{GenerateBinaryOperator()} ";
                 }
             }
 
-            if (operations.Contains(source[^1].ToString()))
-                source += new Random().Next();
+            source += GenerateNumber();
 
             return source;
         }
 
+        /// <summary>
+        /// Generate random boolean sequence using default list of operators
+        /// </summary>
         internal static string GenerateRandomBooleanSequence()
-            => GenerateRandomBooleanSequence(new string[] { "&&", "||" }, new string[] { "!" });
+            => GenerateRandomBooleanSequence(new string[] { "&&", "||" }, new string[] { "!", "" });
 
-        internal static string GenerateRandomBooleanSequence(string[] binaryOperations, string[] unaryOperations)
+        /// <summary>
+        /// Generate random boolean sequence using custom list of operators
+        /// </summary>
+        internal static string GenerateRandomBooleanSequence(string[] binaryOperators, string[] unaryOperators)
         {
             string MapBool(int i) => (i == 1).ToString().ToLower();
+            string GenerateBinaryOperator() => binaryOperators[new Random().Next(0, binaryOperators.Length)];
+            string GenerateUnaryOperator() => unaryOperators[new Random().Next(0, unaryOperators.Length)];
+            string GenerateBool() => MapBool(new Random().Next(0, 2));
 
             var source = string.Empty;
 
-            var nodesCount = new Random().Next(0, 100);
+            var nodesCount = new Random().Next(1, 100);
             for (int i = 0; i < nodesCount; ++i)
             {
                 var MakeParenthesizedExpression = new Random().Next(0, 2) == 1;
-                var UseUnaryOperator = new Random().Next(0, 2) == 1;
                 if (MakeParenthesizedExpression)
                 {
-                    if (source.Length != 0 && source[^1] == ')')
-                        source += binaryOperations[new Random().Next(0, binaryOperations.Length)];
+                    source += "(";
+                    source += $"{GenerateUnaryOperator() + GenerateBool()} ";
+                    source += $"{GenerateBinaryOperator()} ";
+                    source += $"{GenerateUnaryOperator() + GenerateBool()} ";
+                    source += ") ";
 
-                    source += '(';
-                    source += UseUnaryOperator ? unaryOperations[new Random().Next(0, unaryOperations.Length)]
-                        + MapBool(new Random().Next(0, 2)) : MapBool(new Random().Next(0, 2));
-
-                    source += binaryOperations[new Random().Next(0, binaryOperations.Length)];
-
-                    source += UseUnaryOperator ? unaryOperations[new Random().Next(0, unaryOperations.Length)]
-                        + MapBool(new Random().Next(0, 2)) : MapBool(new Random().Next(0, 2));
-                    source += ')';
+                    source += $"{GenerateBinaryOperator()} ";
                 }
                 else
                 {
-                    if (source.Length != 0 && source[^1] == ')')
-                    {
-                        source += binaryOperations[new Random().Next(0, binaryOperations.Length)];
-                        source += MapBool(new Random().Next(0, 2));
-                    }
-                    else
-                    {
-                        if (source.Length != 0 && char.IsLetter(source[^1]))
-                            source += binaryOperations[new Random().Next(0, binaryOperations.Length)];
-
-                        source += MapBool(new Random().Next(0, 2));
-                        source += binaryOperations[new Random().Next(0, binaryOperations.Length)];
-                    }
+                    source += $"{GenerateUnaryOperator() + GenerateBool()} ";
+                    source += $"{GenerateBinaryOperator()} ";
                 }
             }
 
-            if (binaryOperations.Contains(source[^1].ToString()))
-                source += MapBool(new Random().Next());
-
+            source += GenerateBool();
             return source;
         }
     }

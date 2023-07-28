@@ -92,7 +92,7 @@ namespace Tests.Scanner
         [Fact]
         public static void RandomNumericalTest()
         {
-            var source = Utils.GenerateRandomNumericalSequence();
+            var source = Utils.GenerateRandomNumericalSequence<int>();
 
             var actual = Utils.GetTokens(source)
                               .MapTokensToBasic();

@@ -9,7 +9,7 @@ using CodeAnalysis.Binder.BoundExpressions;
 
 namespace CodeAnalysis;
 
-internal class Evaluator
+public class Evaluator
 {
     private readonly BoundExpression _root;
 
