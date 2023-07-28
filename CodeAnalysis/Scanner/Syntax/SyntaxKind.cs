@@ -8,6 +8,13 @@ public enum SyntaxKind
     SlashToken,
     OpenParenToken,
     CloseParenToken,
+    ExclamationToken,
+    AmpersandAmpersandToken,
+    AmpersandToken,
+    PipePipeToken,
+    PipeToken,
+    CaretToken,
+
     TrueKeyword,
     FalseKeyword,
 
@@ -21,10 +28,5 @@ public enum SyntaxKind
     UnaryExpression,
     LiteralExpression,
     NameExpression,
-    ExclamationToken,
-    AmpersandAmpersandToken,
-    AmpersandToken,
-    PipePipeToken,
-    PipeToken,
-    CaretToken,
+
 }

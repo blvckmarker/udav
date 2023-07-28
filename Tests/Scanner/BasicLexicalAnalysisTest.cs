@@ -20,26 +20,19 @@ namespace Tests.Scanner
         [Fact]
         public static void AllTokensTest()
         {
-            var source = "+ - * / ( ) true false";
+            var source = "+ - * / ( ) ! && & || | ^";
 
             var expected = Utils.GetTokens(source).MapTokensToBasic().ToList();
 
-            var actual = new SyntaxKind[]
-            {
-                SyntaxKind.PlusToken,
-                SyntaxKind.MinusToken,
-                SyntaxKind.AsteriskToken,
-                SyntaxKind.SlashToken,
-                SyntaxKind.OpenParenToken,
-                SyntaxKind.CloseParenToken,
-                SyntaxKind.TrueKeyword,
-                SyntaxKind.FalseKeyword,
-            };
+            var actual = typeof(SyntaxKind).GetEnumNames()
+                                           .Where(x => x.EndsWith("Token"))
+                                           .SkipLast(3) //eof bad whitespace
+                                           .ToList();
 
-            Assert.True(actual.Length == expected.Count(), "Size of `expected` not equal to `actual`");
+            Assert.True(actual.Count() == expected.Count(), "Size of `expected` not equal to `actual`");
 
-            for (int i = 0; i < actual.Length; i++)
-                Assert.Equal(expected[i].Kind, actual[i]);
+            for (int i = 0; i < actual.Count(); i++)
+                Assert.Equal(expected[i].Kind.ToString(), actual[i]);
         }
 
         [Fact]
