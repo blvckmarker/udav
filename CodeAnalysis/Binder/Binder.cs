@@ -46,19 +46,6 @@ internal sealed class Binder
         return new BoundUnaryExpression(operatorToken, operand);
     }
 
-    private BoundUnaryOperatorKind? BindUnaryOperatorKind(SyntaxKind operatorTokenKind, Type operandType)
-    {
-        if (operandType != typeof(int))
-            return null;
-
-        return operatorTokenKind switch
-        {
-            SyntaxKind.MinusToken => BoundUnaryOperatorKind.Negation,
-            SyntaxKind.PlusToken => BoundUnaryOperatorKind.Identity,
-            _ => throw new InvalidOperationException($"Unexpected unary operator {operatorTokenKind}")
-        };
-    }
-
     private BoundExpression BindBinaryExpression(BinaryExpressionSyntax syntax)
     {
         var left = BindExpression(syntax.Left);
