@@ -1,6 +1,6 @@
 namespace CodeAnalysis.Binder.BoundExpressions;
 
-internal enum BoundUnaryOperatorKind
+public enum BoundUnaryOperatorKind
 {
     Identity,
     Negation,

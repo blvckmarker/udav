@@ -1,6 +1,6 @@
 namespace CodeAnalysis.Binder;
 
-internal enum BoundNodeKind
+public enum BoundNodeKind
 {
     UnaryExpression,
     LiteralExpression,

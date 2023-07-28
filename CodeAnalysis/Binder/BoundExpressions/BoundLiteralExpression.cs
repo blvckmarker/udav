@@ -1,6 +1,6 @@
 namespace CodeAnalysis.Binder.BoundExpressions;
 
-internal sealed class BoundLiteralExpression : BoundExpression
+public sealed class BoundLiteralExpression : BoundExpression
 {
     public BoundLiteralExpression(object value)
     {

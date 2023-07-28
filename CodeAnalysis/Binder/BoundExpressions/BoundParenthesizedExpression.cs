@@ -1,6 +1,6 @@
 namespace CodeAnalysis.Binder.BoundExpressions;
 
-internal sealed class BoundParenthesizedExpression : BoundExpression
+public sealed class BoundParenthesizedExpression : BoundExpression
 {
     public BoundExpression BoundExpression { get; }
     public override BoundNodeKind Kind => BoundNodeKind.ParenthesizedExpression;

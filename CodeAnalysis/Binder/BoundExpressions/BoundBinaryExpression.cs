@@ -1,6 +1,6 @@
 namespace CodeAnalysis.Binder.BoundExpressions;
 
-internal sealed class BoundBinaryExpression : BoundExpression
+public sealed class BoundBinaryExpression : BoundExpression
 {
     public BoundBinaryExpression(BoundExpression left, BoundBinaryOperator operatorToken, BoundExpression right)
     {

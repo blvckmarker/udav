@@ -1,6 +1,6 @@
 namespace CodeAnalysis.Binder.BoundExpressions;
 
-internal enum BoundBinaryOperatorKind
+public enum BoundBinaryOperatorKind
 {
     Addition,
     Subtraction,

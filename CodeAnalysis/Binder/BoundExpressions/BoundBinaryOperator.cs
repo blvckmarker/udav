@@ -2,7 +2,7 @@
 
 namespace CodeAnalysis.Binder.BoundExpressions;
 
-internal class BoundBinaryOperator
+public class BoundBinaryOperator
 {
     private static BoundBinaryOperator[] _operators = new[]
     {

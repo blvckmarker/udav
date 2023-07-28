@@ -1,6 +1,6 @@
 namespace CodeAnalysis.Binder.BoundExpressions;
 
-internal sealed class BoundUnaryExpression : BoundExpression
+public sealed class BoundUnaryExpression : BoundExpression
 {
     public BoundUnaryExpression(BoundUnaryOperator? operatorToken, BoundExpression operand)
     {

@@ -8,7 +8,7 @@ using CodeAnalysis.Scanner.Syntax;
 
 namespace CodeAnalysis.Binder;
 
-internal sealed class Binder
+public sealed class Binder
 {
     private readonly List<string> _diagnostics = new();
     public IEnumerable<string> Diagnostics => _diagnostics;
