@@ -4,6 +4,7 @@ using CodeAnalysis.Parser.Expressions;
 using CodeAnalysis.Parser.Syntax;
 using CodeAnalysis.Scanner.Shared;
 using CodeAnalysis.Scanner.Syntax;
+using CodeAnalysis.Text;
 
 #endregion
 
@@ -11,7 +12,7 @@ namespace CodeAnalysis.Parser;
 
 public class Parser
 {
-    private readonly List<string> _diagnostics = new();
+    private readonly DiagnosticsBase _diagnostics;
     private readonly List<SyntaxToken> _tokens = new();
     private int _position;
 
@@ -22,11 +23,11 @@ public class Parser
         _tokens = lexer.LexAll()
             .Where(token => token.Kind is not SyntaxKind.WhitespaceToken and not SyntaxKind.BadToken)
             .ToList();
-        _diagnostics.AddRange(lexer.Diagnostics);
+        _diagnostics = lexer.Diagnostics;
     }
 
     private SyntaxToken Current => Peek(0);
-    public IEnumerable<string> Diagnostics => _diagnostics;
+    public DiagnosticsBase Diagnostics => _diagnostics;
 
     private SyntaxToken TakeToken()
     {
@@ -39,7 +40,7 @@ public class Parser
     {
         if (Current.Kind == kind)
             return TakeToken();
-        _diagnostics.Add($"ERROR: Unexpected token <{Current.Kind}> expected <{kind}>");
+        _diagnostics.MakeIssue($"Unexpected token <{Current.Kind}> expected <{kind}>", Current.Text, _position);
         return new SyntaxToken(kind, Current.Position, null, null);
     }
 

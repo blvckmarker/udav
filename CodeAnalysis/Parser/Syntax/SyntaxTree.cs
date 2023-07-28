@@ -1,19 +1,19 @@
 using CodeAnalysis.Parser.Expressions;
 using CodeAnalysis.Scanner.Shared;
 using CodeAnalysis.Scanner.Syntax;
-using System.Collections.Immutable;
+using CodeAnalysis.Text;
 
 namespace CodeAnalysis.Parser.Syntax;
 
 public sealed class SyntaxTree
 {
-    public ImmutableArray<string> Diagnostics { get; }
+    public DiagnosticsBase Diagnostics { get; }
     public ExpressionSyntax Root { get; }
     public SyntaxToken EofToken { get; }
 
-    public SyntaxTree(IEnumerable<string> diagnostics, ExpressionSyntax root, SyntaxToken eofToken)
+    public SyntaxTree(DiagnosticsBase diagnostics, ExpressionSyntax root, SyntaxToken eofToken)
     {
-        Diagnostics = diagnostics.ToImmutableArray();
+        Diagnostics = diagnostics;
         Root = root;
         EofToken = eofToken;
     }

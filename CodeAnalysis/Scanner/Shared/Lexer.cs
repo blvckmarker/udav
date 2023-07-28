@@ -1,21 +1,25 @@
 #region
 using CodeAnalysis.Parser.Syntax;
 using CodeAnalysis.Scanner.Syntax;
+using CodeAnalysis.Text;
 #endregion
 
 namespace CodeAnalysis.Scanner.Shared;
 
 public class Lexer
 {
-    private readonly List<string> _diagnostics = new();
+    private readonly DiagnosticsBase _diagnostics = new Diagnostics();
     private readonly string _text;
     private bool isAlreadyLexicalized = false;
     private int _position;
 
     private char CurrentChar => _position >= _text.Length ? '\0' : _text[_position];
-    public IEnumerable<string> Diagnostics => _diagnostics;
+    public DiagnosticsBase Diagnostics => _diagnostics;
 
-    public Lexer(string text) => _text = text;
+    public Lexer(string text)
+    {
+        _text = text;
+    }
     private void Next() => _position++;
     private char Lookahead(int count) => _position + count >= _text.Length ? _text.Last() : _text[_position + count];
 
@@ -44,7 +48,7 @@ public class Lexer
             var text = _text[start.._position];
 
             if (!int.TryParse(text, out var value))
-                _diagnostics.Add($"ERROR: The number {text} cannot be represented as int32");
+                _diagnostics.MakeIssue($"ERROR: The number {text} cannot be represented as int32", text, start);
 
             return new SyntaxToken(SyntaxKind.NumberExpression, start, text, value);
         }
@@ -112,7 +116,7 @@ public class Lexer
                 return new SyntaxToken(SyntaxKind.PipeToken, _position++, "|", null);
 
             default:
-                _diagnostics.Add($"ERROR: Bad character input: {CurrentChar}");
+                _diagnostics.MakeIssue($"Bad character input: {CurrentChar}", CurrentChar.ToString(), _position);
                 return new SyntaxToken(SyntaxKind.BadToken, _position++, _text.Substring(_position - 1, 1), null);
         }
     }

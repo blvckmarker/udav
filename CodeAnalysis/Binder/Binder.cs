@@ -3,6 +3,7 @@
 using CodeAnalysis.Binder.BoundExpressions;
 using CodeAnalysis.Parser.Expressions;
 using CodeAnalysis.Scanner.Syntax;
+using CodeAnalysis.Text;
 
 #endregion
 
@@ -10,8 +11,8 @@ namespace CodeAnalysis.Binder;
 
 public sealed class Binder
 {
-    private readonly List<string> _diagnostics = new();
-    public IEnumerable<string> Diagnostics => _diagnostics;
+    private readonly DiagnosticsBase _diagnostics = new Diagnostics();
+    public DiagnosticsBase Diagnostics => _diagnostics;
 
     public BoundExpression BindExpression(ExpressionSyntax syntax)
     {
@@ -41,7 +42,7 @@ public sealed class Binder
         var operatorToken = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, operand.Type);
 
         if (operatorToken is null)
-            _diagnostics.Add($"Unary operator {operatorToken} is not defined for type {operand.Type}");
+            _diagnostics.MakeIssue($"Unary operator {operatorToken} is not defined for type {operand.Type}", syntax.OperatorToken.Text, syntax.OperatorToken.Position);
 
         return new BoundUnaryExpression(operatorToken, operand);
     }
@@ -54,7 +55,7 @@ public sealed class Binder
 
         if (operatorToken is null)
         {
-            _diagnostics.Add($"Unknown operator `{syntax.OperatorToken.Kind}` for types `{left.Type}` and `{right.Type}`");
+            _diagnostics.MakeIssue($"Unknown operator `{syntax.OperatorToken.Kind}` for types `{left.Type}` and `{right.Type}`", syntax.OperatorToken.Text, syntax.OperatorToken.Position);
             return left;
         }
 

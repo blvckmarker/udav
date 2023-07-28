@@ -30,11 +30,14 @@ while (true)
     if (showTree)
         PrettySyntaxPrint(expressionTree.Root);
 
-    if (diagnostics.Any())
+    if (diagnostics.Where(x => x.Kind == CodeAnalysis.Text.IssueKind.Problem).Any())
         foreach (var diagnostic in diagnostics)
             Console.WriteLine(diagnostic);
     else
     {
+        foreach (var diagnostic in diagnostics)
+            Console.WriteLine(diagnostic);
+
         var e = new Evaluator(boundExpression);
         Console.WriteLine(e.Evaluate());
     }
