@@ -21,14 +21,14 @@ while (true)
         continue;
     }
     var lexer = new Lexer(line);
-    var expressionTree = SyntaxTree.Parse(lexer);
+    var syntaxTree = SyntaxTree.Parse(lexer);
 
-    var binder = new Binder();
-    var boundExpression = binder.BindExpression(expressionTree.Root);
+    var binder = new Binder(syntaxTree.Diagnostics);
+    var boundTree = binder.BindExpression(syntaxTree.Root);
+    var diagnostics = binder.Diagnostics;
 
-    var diagnostics = expressionTree.Diagnostics.Concat(binder.Diagnostics);
     if (showTree)
-        PrettySyntaxPrint(expressionTree.Root);
+        PrettySyntaxPrint(syntaxTree.Root);
 
     if (diagnostics.Where(x => x.Kind == CodeAnalysis.Text.IssueKind.Problem).Any())
         foreach (var diagnostic in diagnostics)
@@ -58,7 +58,7 @@ while (true)
                 Console.WriteLine(diagnostic.Message);
         }
 
-        var e = new Evaluator(boundExpression);
+        var e = new Evaluator(boundTree);
         Console.WriteLine(e.Evaluate());
     }
 }

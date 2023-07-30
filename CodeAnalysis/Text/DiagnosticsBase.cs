@@ -5,13 +5,19 @@ namespace CodeAnalysis.Text
     public abstract class DiagnosticsBase : IEnumerable<DiagnosticsBag>
     {
         protected readonly IList<DiagnosticsBag> _diagnostics;
+        public string SourceText { get; }
 
-        public DiagnosticsBase(IList<DiagnosticsBag> _diagnostics)
+        public DiagnosticsBase(string text)
         {
-            this._diagnostics = _diagnostics;
+            _diagnostics = new List<DiagnosticsBag>();
+            SourceText = text;
         }
-        public DiagnosticsBase() : this(new List<DiagnosticsBag>()) { }
 
+        public void Extend(IEnumerable<DiagnosticsBag> diagnostics)
+        {
+            foreach (var diagnostic in diagnostics)
+                _diagnostics.Add(diagnostic);
+        }
         public abstract void MakeIssue(string message, IssueKind issueKind = IssueKind.Problem);
         public abstract void MakeIssue(string message, string problemText, int startPosition, IssueKind issueKind = IssueKind.Problem);
         public abstract void MakeIssue(DiagnosticsBag issue);

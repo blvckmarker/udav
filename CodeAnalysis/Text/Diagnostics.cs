@@ -2,9 +2,7 @@
 {
     public class Diagnostics : DiagnosticsBase, IEnumerable<DiagnosticsBag>
     {
-        public Diagnostics(IList<DiagnosticsBag> diagnostics) : base(diagnostics) { }
-        public Diagnostics() : base() { }
-
+        public Diagnostics(string text) : base(text) { }
 
         public override void MakeIssue(string message, IssueKind issueKind = IssueKind.Problem)
             => MakeIssue(message, null, 0, issueKind);

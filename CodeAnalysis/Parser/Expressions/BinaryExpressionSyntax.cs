@@ -22,6 +22,9 @@ public sealed class BinaryExpressionSyntax : ExpressionSyntax
 
     public override SyntaxKind Kind => SyntaxKind.BinaryExpression;
 
+    public override int StartPosition => Left.StartPosition;
+    public override int EndPosition => Right.EndPosition;
+
     public override IEnumerable<SyntaxNode> GetChildren()
     {
         yield return Left;

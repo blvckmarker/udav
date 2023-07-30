@@ -14,7 +14,6 @@ public class Parser
 {
     private readonly DiagnosticsBase _diagnostics;
     private readonly List<SyntaxToken> _tokens = new();
-    private readonly string _text;
     private int _position;
 
     public Parser(string text) : this(new Lexer(text)) { }
@@ -24,7 +23,6 @@ public class Parser
             .Where(token => token.Kind is not SyntaxKind.WhitespaceToken and not SyntaxKind.BadToken)
             .ToList();
         _diagnostics = lexer.Diagnostics;
-        _text = lexer.SourceText;
     }
 
     private SyntaxToken Current => Peek(0);
@@ -42,11 +40,8 @@ public class Parser
         if (Current.Kind == kind)
             return TakeToken();
 
-        var start = Current.Position;
-        var end = Current.Position + Current.Text.Length;
-        var problemText = _text[start..end];
-        _diagnostics.MakeIssue($"Unexpected token <{Current.Kind}> expected <{kind}>", problemText, start);
-        return new SyntaxToken(kind, Current.Position, null, null);
+        _diagnostics.MakeIssue($"Unexpected token <{Current.Kind}> expected <{kind}>", Current.Text, Current.StartPosition);
+        return new SyntaxToken(kind, Current.StartPosition, Current.EndPosition, null, null);
     }
 
     public SyntaxTree Parse()

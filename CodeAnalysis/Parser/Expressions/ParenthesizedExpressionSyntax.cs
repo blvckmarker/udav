@@ -17,6 +17,10 @@ public sealed class ParenthesizedExpressionSyntax : ExpressionSyntax
     }
 
     public override SyntaxKind Kind => SyntaxKind.ParenthesizedExpression;
+
+    public override int StartPosition => Open.StartPosition;
+    public override int EndPosition => Close.EndPosition;
+
     public override IEnumerable<SyntaxNode> GetChildren()
     {
         yield return Open;

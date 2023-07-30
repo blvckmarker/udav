@@ -11,8 +11,13 @@ namespace CodeAnalysis.Binder;
 
 public sealed class Binder
 {
-    private readonly DiagnosticsBase _diagnostics = new Diagnostics();
+    private readonly DiagnosticsBase _diagnostics;
     public DiagnosticsBase Diagnostics => _diagnostics;
+
+    public Binder(DiagnosticsBase diagnostics)
+    {
+        _diagnostics = diagnostics;
+    }
 
     public BoundExpression BindExpression(ExpressionSyntax syntax)
     {
@@ -42,7 +47,8 @@ public sealed class Binder
         var operatorToken = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, operand.Type);
 
         if (operatorToken is null)
-            _diagnostics.MakeIssue($"Unary operator {syntax.OperatorToken.Text} is not defined for type {operand.Type}", syntax.OperatorToken.Text, syntax.OperatorToken.Position);
+            _diagnostics.MakeIssue($"Unary operator {syntax.OperatorToken.Text} is not defined for type {operand.Type}",
+                                    _diagnostics.SourceText[syntax.StartPosition..syntax.EndPosition], syntax.StartPosition);
 
         return new BoundUnaryExpression(operatorToken, operand);
     }
@@ -55,7 +61,8 @@ public sealed class Binder
 
         if (operatorToken is null)
         {
-            _diagnostics.MakeIssue($"Unknown operator `{syntax.OperatorToken.Kind}` for types `{left.Type}` and `{right.Type}`", syntax.OperatorToken.Text, syntax.OperatorToken.Position);
+            _diagnostics.MakeIssue($"Unknown operator `{syntax.OperatorToken.Kind}` for types `{left.Type}` and `{right.Type}`",
+                                    _diagnostics.SourceText[syntax.StartPosition..syntax.EndPosition], syntax.StartPosition);
             return left;
         }
 
@@ -64,7 +71,7 @@ public sealed class Binder
 
     private BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax)
     {
-        var value = syntax.Value ?? 0;
+        var value = syntax.Value ?? new object();
         return new BoundLiteralExpression(value);
     }
 }

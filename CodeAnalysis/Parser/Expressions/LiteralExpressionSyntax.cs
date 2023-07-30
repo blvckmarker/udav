@@ -18,6 +18,9 @@ public sealed class LiteralExpressionSyntax : ExpressionSyntax
     public SyntaxToken LiteralToken { get; }
     public object? Value { get; }
 
+    public override int StartPosition => LiteralToken.StartPosition;
+    public override int EndPosition => LiteralToken.EndPosition;
+
     public override IEnumerable<SyntaxNode> GetChildren()
     {
         yield return LiteralToken;
