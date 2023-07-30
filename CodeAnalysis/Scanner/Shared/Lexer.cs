@@ -9,19 +9,19 @@ namespace CodeAnalysis.Scanner.Shared;
 public class Lexer
 {
     private readonly DiagnosticsBase _diagnostics = new Diagnostics();
-    private readonly string _text;
     private bool isAlreadyLexicalized = false;
     private int _position;
 
-    private char CurrentChar => _position >= _text.Length ? '\0' : _text[_position];
+    internal string SourceText { get; }
+    private char CurrentChar => _position >= SourceText.Length ? '\0' : SourceText[_position];
     public DiagnosticsBase Diagnostics => _diagnostics;
 
     public Lexer(string text)
     {
-        _text = text;
+        SourceText = text;
     }
     private void Next() => _position++;
-    private char Lookahead(int count) => _position + count >= _text.Length ? _text.Last() : _text[_position + count];
+    private char Lookahead(int count) => _position + count >= SourceText.Length ? SourceText.Last() : SourceText[_position + count];
 
     public SyntaxToken Lex()
     {
@@ -45,10 +45,10 @@ public class Lexer
                 Next();
 
             var length = _position - start;
-            var text = _text[start.._position];
+            var text = SourceText[start.._position];
 
             if (!int.TryParse(text, out var value))
-                _diagnostics.MakeIssue($"ERROR: The number {text} cannot be represented as int32", text, start);
+                _diagnostics.MakeIssue($"The number {text} cannot be represented as int32", text, start);
 
             return new SyntaxToken(SyntaxKind.NumberExpression, start, text, value);
         }
@@ -61,7 +61,7 @@ public class Lexer
                 Next();
 
             var length = _position - start;
-            var text = _text[start.._position];
+            var text = SourceText[start.._position];
 
             return new SyntaxToken(SyntaxKind.WhitespaceToken, start, text, null);
         }
@@ -73,7 +73,7 @@ public class Lexer
                 Next();
 
             var length = _position - start;
-            var text = _text[start.._position];
+            var text = SourceText[start.._position];
 
             if (SyntaxFacts.GetKeywordKind(text) is { } keywordKind && keywordKind != SyntaxKind.LiteralExpression)
                 return new SyntaxToken(keywordKind, start, text, text);
@@ -117,7 +117,7 @@ public class Lexer
 
             default:
                 _diagnostics.MakeIssue($"Bad character input: {CurrentChar}", CurrentChar.ToString(), _position);
-                return new SyntaxToken(SyntaxKind.BadToken, _position++, _text.Substring(_position - 1, 1), null);
+                return new SyntaxToken(SyntaxKind.BadToken, _position++, SourceText.Substring(_position - 1, 1), null);
         }
     }
     public IEnumerable<SyntaxToken> LexAll()

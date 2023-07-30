@@ -32,11 +32,31 @@ while (true)
 
     if (diagnostics.Where(x => x.Kind == CodeAnalysis.Text.IssueKind.Problem).Any())
         foreach (var diagnostic in diagnostics)
-            Console.WriteLine(diagnostic);
+        {
+            if (diagnostic.ProblemText is { } text)
+            {
+                Console.Write($"At:{diagnostic.StartPosition} {diagnostic.Message}: ");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(text);
+                Console.ResetColor();
+            }
+            else
+                Console.WriteLine(diagnostic.Message);
+        }
     else
     {
-        foreach (var diagnostic in diagnostics)
-            Console.WriteLine(diagnostic);
+        foreach (var diagnostic in diagnostics.Where(x => x.Kind == CodeAnalysis.Text.IssueKind.Warning))
+        {
+            if (diagnostic.ProblemText is { } text)
+            {
+                Console.Write($"At:{diagnostic.StartPosition} {diagnostic.Message}");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine(text);
+                Console.ResetColor();
+            }
+            else
+                Console.WriteLine(diagnostic.Message);
+        }
 
         var e = new Evaluator(boundExpression);
         Console.WriteLine(e.Evaluate());

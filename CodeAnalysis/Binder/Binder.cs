@@ -42,7 +42,7 @@ public sealed class Binder
         var operatorToken = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, operand.Type);
 
         if (operatorToken is null)
-            _diagnostics.MakeIssue($"Unary operator {operatorToken} is not defined for type {operand.Type}", syntax.OperatorToken.Text, syntax.OperatorToken.Position);
+            _diagnostics.MakeIssue($"Unary operator {syntax.OperatorToken.Text} is not defined for type {operand.Type}", syntax.OperatorToken.Text, syntax.OperatorToken.Position);
 
         return new BoundUnaryExpression(operatorToken, operand);
     }

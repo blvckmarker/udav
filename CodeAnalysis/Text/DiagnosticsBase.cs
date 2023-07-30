@@ -4,19 +4,19 @@ namespace CodeAnalysis.Text
 {
     public abstract class DiagnosticsBase : IEnumerable<DiagnosticsBag>
     {
-        protected readonly IEnumerable<DiagnosticsBag> _diagnostics;
+        protected readonly IList<DiagnosticsBag> _diagnostics;
 
-        public DiagnosticsBase(IEnumerable<DiagnosticsBag> _diagnostics)
+        public DiagnosticsBase(IList<DiagnosticsBag> _diagnostics)
         {
             this._diagnostics = _diagnostics;
         }
         public DiagnosticsBase() : this(new List<DiagnosticsBag>()) { }
 
         public abstract void MakeIssue(string message, IssueKind issueKind = IssueKind.Problem);
-        public abstract void MakeIssue(string message, string problemString, int startPosition, IssueKind issueKind = IssueKind.Problem);
+        public abstract void MakeIssue(string message, string problemText, int startPosition, IssueKind issueKind = IssueKind.Problem);
         public abstract void MakeIssue(DiagnosticsBag issue);
 
-        public abstract IEnumerator<DiagnosticsBag> GetEnumerator();
+        public IEnumerator<DiagnosticsBag> GetEnumerator() => _diagnostics.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

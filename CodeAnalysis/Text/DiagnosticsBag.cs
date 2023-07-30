@@ -3,15 +3,17 @@
     public class DiagnosticsBag
     {
         public DiagnosticsBag(string message, IssueKind issueKind) : this(message, null, 0, issueKind) { }
-        public DiagnosticsBag(string message, string? problemString, int startPosition, IssueKind issueKind)
+        public DiagnosticsBag(string message, string? problemText, int startPosition, IssueKind issueKind)
         {
             Message = message;
-            ProblemMessage = problemString;
+            ProblemText = problemText;
+            StartPosition = startPosition;
             Kind = issueKind;
         }
 
+        public int StartPosition { get; }
         public string Message { get; }
-        public string? ProblemMessage { get; }
+        public string? ProblemText { get; }
         public IssueKind Kind { get; }
     }
 }
