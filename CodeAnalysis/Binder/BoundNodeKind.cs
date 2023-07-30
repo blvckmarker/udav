@@ -5,5 +5,6 @@ public enum BoundNodeKind
     UnaryExpression,
     LiteralExpression,
     BinaryExpression,
-    ParenthesizedExpression
+    ParenthesizedExpression,
+    AssignmentStatement
 }

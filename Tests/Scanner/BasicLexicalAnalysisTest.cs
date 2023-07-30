@@ -20,7 +20,7 @@ namespace Tests.Scanner
         [Fact]
         public static void AllTokensTest()
         {
-            var source = "+ - * / ( ) ! && & || | ^";
+            var source = "+ - * / ( ) ! && & || | ^ = ==";
 
             var expected = Utils.GetTokens(source).MapTokensToBasic().ToList();
 
@@ -49,8 +49,8 @@ namespace Tests.Scanner
         {
             var expected = new List<BasicTokenModel>
             {
-                new(SyntaxKind.NumberExpression, "111"),
-                new(SyntaxKind.LiteralExpression, "a"),
+                new(SyntaxKind.NumericExpression, "111"),
+                new(SyntaxKind.NameExpression, "a"),
                 new(SyntaxKind.MinusToken, "-"),
                 new(SyntaxKind.PlusToken, "+"),
             };
@@ -65,7 +65,7 @@ namespace Tests.Scanner
         {
             var primaryExpected = new List<BasicTokenModel>
             {
-                new(SyntaxKind.LiteralExpression, "abc"),
+                new(SyntaxKind.NameExpression, "abc"),
             };
             var actual = Utils.MapTokensToBasic(Utils.GetTokens("abc"));
             Assert.Equal(actual, primaryExpected);

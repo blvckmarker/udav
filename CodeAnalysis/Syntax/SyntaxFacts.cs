@@ -27,8 +27,9 @@ internal static class SyntaxFacts
     public static SyntaxKind GetKeywordKind(string text)
         => text switch
         {
+            "let" => SyntaxKind.LetKeyword,
             "true" => SyntaxKind.TrueKeyword,
             "false" => SyntaxKind.FalseKeyword,
-            _ => SyntaxKind.LiteralExpression
+            _ => SyntaxKind.NameExpression
         };
 }

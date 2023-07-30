@@ -49,7 +49,7 @@ public class Lexer
             if (!int.TryParse(text, out var value))
                 _diagnostics.MakeIssue($"The number {text} cannot be represented as int32", text, start);
 
-            return new SyntaxToken(SyntaxKind.NumberExpression, start, text, value);
+            return new SyntaxToken(SyntaxKind.NumericExpression, start, text, value);
         }
 
         if (char.IsWhiteSpace(CurrentChar))
@@ -74,10 +74,9 @@ public class Lexer
             var length = _position - start;
             var text = _text[start.._position];
 
-            if (SyntaxFacts.GetKeywordKind(text) is { } keywordKind && keywordKind != SyntaxKind.LiteralExpression)
-                return new SyntaxToken(keywordKind, start, text, text);
+            var kind = SyntaxFacts.GetKeywordKind(text); // it maybe literal expression by default
 
-            return new SyntaxToken(SyntaxKind.LiteralExpression, start, text, text);
+            return new SyntaxToken(kind, start, text, text);
         }
 
         switch (CurrentChar) // &&  || !
@@ -98,6 +97,13 @@ public class Lexer
                 return new SyntaxToken(SyntaxKind.ExclamationToken, _position++, "!", null);
             case '^':
                 return new SyntaxToken(SyntaxKind.CaretToken, _position++, "^", null);
+            case '=':
+                if (Lookahead(1) == '=')
+                {
+                    _position += 2;
+                    return new SyntaxToken(SyntaxKind.EqualEqualToken, _position, "==", null);
+                }
+                return new SyntaxToken(SyntaxKind.EqualToken, _position++, "=", null);
             case '&':
                 if (Lookahead(1) == '&')
                 {

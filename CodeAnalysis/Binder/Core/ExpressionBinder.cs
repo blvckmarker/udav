@@ -1,25 +1,13 @@
-#region
-
 using CodeAnalysis.Binder.BoundExpressions;
 using CodeAnalysis.Syntax;
 using CodeAnalysis.Syntax.Parser.Expressions;
 using CodeAnalysis.Text;
 
-#endregion
-
 namespace CodeAnalysis.Binder;
 
-public sealed class Binder
+public sealed partial class Binder
 {
-    private readonly DiagnosticsBase _diagnostics;
-    public DiagnosticsBase Diagnostics => _diagnostics;
-
-    public Binder(DiagnosticsBase diagnostics)
-    {
-        _diagnostics = diagnostics;
-    }
-
-    public BoundExpression BindExpression(ExpressionSyntax syntax)
+    public partial BoundExpression BindExpression(ExpressionSyntax syntax)
     {
         switch (syntax.Kind)
         {
@@ -32,16 +20,16 @@ public sealed class Binder
             case SyntaxKind.ParenthesizedExpression:
                 return BindParenthesizedExpression(syntax as ParenthesizedExpressionSyntax);
             default:
-                throw new Exception($"Unknown syntax expression {syntax.Kind}");
+                throw new NotSupportedException(syntax.Kind.ToString());
         }
     }
 
-    private BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax)
+    private partial BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax)
     {
         var boundExpression = BindExpression(syntax.Expression);
         return new BoundParenthesizedExpression(boundExpression);
     }
-    private BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
+    private partial BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
     {
         var operand = BindExpression(syntax.Operand);
         var operatorToken = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, operand.Type);
@@ -52,8 +40,7 @@ public sealed class Binder
 
         return new BoundUnaryExpression(operatorToken, operand);
     }
-
-    private BoundExpression BindBinaryExpression(BinaryExpressionSyntax syntax)
+    private partial BoundExpression BindBinaryExpression(BinaryExpressionSyntax syntax)
     {
         var left = BindExpression(syntax.Left);
         var right = BindExpression(syntax.Right);
@@ -68,10 +55,26 @@ public sealed class Binder
 
         return new BoundBinaryExpression(left, operatorToken, right);
     }
-
-    private BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax)
+    private partial BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax)
     {
-        var value = syntax.Value ?? new object();
-        return new BoundLiteralExpression(value);
+        switch (syntax.LiteralToken.Kind)
+        {
+            case SyntaxKind.NameExpression:
+                {
+                    if (_localVariables.TryGetValue(syntax.Value.ToString(), out var localValue))
+                        return new BoundLiteralExpression(localValue);
+                    _diagnostics.MakeIssue($"Undefined local variable {syntax.Value}", syntax.LiteralToken.Text, syntax.LiteralToken.StartPosition, IssueKind.Problem);
+                    return new BoundLiteralExpression(null);
+                }
+
+            case SyntaxKind.TrueKeyword:
+            case SyntaxKind.FalseKeyword:
+                return new BoundLiteralExpression((bool)syntax.Value);
+
+            default:
+                var value = syntax.Value ?? new object();
+                return new BoundLiteralExpression(value);
+        }
     }
+
 }

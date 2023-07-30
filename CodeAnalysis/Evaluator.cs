@@ -6,24 +6,46 @@
 
 using CodeAnalysis.Binder;
 using CodeAnalysis.Binder.BoundExpressions;
+using CodeAnalysis.Binder.BoundStatements;
+using CodeAnalysis.Text;
 
 namespace CodeAnalysis;
 
 public class Evaluator
 {
-    private readonly BoundExpression _root;
-
-    public Evaluator(BoundExpression root)
+    private readonly BoundStatement _root;
+    private readonly Dictionary<string, object> _localVariables;
+    public Evaluator(BoundStatement root, Dictionary<string, object> localVariables)
     {
         _root = root;
+        _localVariables = localVariables;
     }
 
-    public object Evaluate() => EvaluateExpression(_root);
+    public object Evaluate() => EvaluateStatement(_root);
 
+    private object EvaluateStatement(BoundNode node)
+    {
+        if (node is BoundAssignmentStatement assign)
+        {
+            var name = (string)assign.VariableName.Value;
+            var value = EvaluateExpression(assign.BoundExpression);
+            if (!_localVariables.TryAdd(name, value))
+                return new DiagnosticsBag($"Local variable `{name}` is already defined", IssueKind.Problem);
+            return value;
+        }
+        throw new Exception("Unexpected bound node " + node.Kind);
+    }
+
+    // let i = 123
+    // i
     private object EvaluateExpression(BoundNode node)
     {
-        if (node is BoundLiteralExpression number)
-            return number.Value;
+        if (node is BoundLiteralExpression literal)
+        {
+            if (_localVariables.TryGetValue(literal.Value.ToString(), out var value))
+                return value;
+            return literal.Value;
+        }
 
         if (node is BoundUnaryExpression u)
         {

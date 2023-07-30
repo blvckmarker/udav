@@ -14,19 +14,23 @@ public enum SyntaxKind
     PipePipeToken,
     PipeToken,
     CaretToken,
+    EqualToken,
+    EqualEqualToken,
 
     TrueKeyword,
     FalseKeyword,
+    LetKeyword,
 
     WhitespaceToken,
     BadToken,
     EofToken,
 
-    NumberExpression,
+    NumericExpression,
     BinaryExpression,
     ParenthesizedExpression,
     UnaryExpression,
     LiteralExpression,
     NameExpression,
 
+    AssignmentStatement,
 }

@@ -43,7 +43,7 @@ namespace Tests
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.EndOfFileToken => SyntaxKind.EofToken,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.OpenParenToken => SyntaxKind.OpenParenToken,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.CloseParenToken => SyntaxKind.CloseParenToken,
-                Microsoft.CodeAnalysis.CSharp.SyntaxKind.NumericLiteralToken => SyntaxKind.NumberExpression,
+                Microsoft.CodeAnalysis.CSharp.SyntaxKind.NumericLiteralToken => SyntaxKind.NumericExpression,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.WhitespaceTrivia => SyntaxKind.WhitespaceToken,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.BadToken => SyntaxKind.BadToken,
                 _ => throw new NotImplementedException(kind.ToString()) // ? BinaryExpression
@@ -86,8 +86,8 @@ namespace Tests
         {
             var parser = SyntaxTree.Parse(source);
             var binder = new Binder(parser.Diagnostics);
-            var boundTree = binder.BindExpression(parser.Root);
-            var eval = new Evaluator(boundTree);
+            var boundTree = binder.BindStatement(parser.Root);
+            var eval = new Evaluator(boundTree, new());
 
             return (TResult)eval.Evaluate();
         }

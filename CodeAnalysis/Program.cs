@@ -8,6 +8,7 @@ using CodeAnalysis.Syntax.Scanner;
 #endregion
 
 var showTree = false;
+var localVariables = new Dictionary<string, object>();
 while (true)
 {
     Console.Write(">");
@@ -20,11 +21,17 @@ while (true)
         showTree = !showTree;
         continue;
     }
+    if (line == "#showvars")
+    {
+        foreach (var variable in localVariables)
+            Console.WriteLine($"{variable.Key}:{variable.Value}");
+        continue;
+    }
     var lexer = new Lexer(line);
     var syntaxTree = SyntaxTree.Parse(lexer);
 
-    var binder = new Binder(syntaxTree.Diagnostics);
-    var boundTree = binder.BindExpression(syntaxTree.Root);
+    var binder = new Binder(syntaxTree.Diagnostics, localVariables);
+    var boundTree = binder.BindStatement(syntaxTree.Root);
     var diagnostics = binder.Diagnostics;
 
     if (showTree)
@@ -58,7 +65,7 @@ while (true)
                 Console.WriteLine(diagnostic.Message);
         }
 
-        var e = new Evaluator(boundTree);
+        var e = new Evaluator(boundTree, localVariables);
         Console.WriteLine(e.Evaluate());
     }
 }

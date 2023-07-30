@@ -1,6 +1,7 @@
 #region
 
 using CodeAnalysis.Syntax.Parser.Expressions;
+using CodeAnalysis.Syntax.Parser.Statements;
 using CodeAnalysis.Syntax.Scanner;
 using CodeAnalysis.Text;
 
@@ -18,7 +19,7 @@ public class Parser
     public Parser(Lexer lexer)
     {
         _tokens = lexer.LexAll()
-            .Where(token => token.Kind is not SyntaxKind.WhitespaceToken and not SyntaxKind.BadToken)
+            .Where(token => token.Kind is not SyntaxKind.WhitespaceToken)
             .ToList();
         _diagnostics = lexer.Diagnostics;
     }
@@ -42,14 +43,20 @@ public class Parser
         return new SyntaxToken(kind, Current.StartPosition, Current.EndPosition, null, null);
     }
 
-    public SyntaxTree Parse()
+    public SyntaxTree ParseTree()
     {
-        var expression = ParseExpression();
+        var statement = ParseAssignmentStatement();
         var eofToken = MatchToken(SyntaxKind.EofToken);
-        return new SyntaxTree(_diagnostics, expression, eofToken);
+        return new SyntaxTree(_diagnostics, statement, eofToken);
     }
 
-    /* expression : 
+    /*
+     * 
+     * 
+     * assignment_statement : LET_KEYWORD name EQUALTOKEN expression
+     * 
+     * 
+     * expression : 
      *            | ('-' | '+') expression
      *            | expression op=('*' | '+') expression
      *            | expression op=('+' | '-') expression
@@ -64,7 +71,19 @@ public class Parser
      *         | number
      *         | boolean
      */
-    private ExpressionSyntax ParseExpression(int parentPrecedence = 0) // false || !false && false -> false || true && false -> false || false -> false
+
+    private StatementSyntax ParseAssignmentStatement()
+    {
+        var letToken = MatchToken(SyntaxKind.LetKeyword);
+        var nameExpression = ParseNameExpression();
+        var equalToken = MatchToken(SyntaxKind.EqualToken);
+        var expression = ParseExpression();
+        return new AssignmentStatementSyntax(letToken, nameExpression, equalToken, expression);
+    }
+
+
+
+    private ExpressionSyntax ParseExpression(int parentPrecedence = 0)
     {
         ExpressionSyntax left;
         var unaryOperatorPrecedence = Current.Kind.GetUnaryOperatorPrecedence();
@@ -108,8 +127,8 @@ public class Parser
             case SyntaxKind.FalseKeyword:
                 return ParseBooleanExpression();
 
-            case SyntaxKind.NumberExpression:
-                return ParseNumberExpression();
+            case SyntaxKind.NumericExpression:
+                return ParseNumericExpression();
 
             default:
                 return ParseNameExpression();
@@ -123,10 +142,10 @@ public class Parser
         return new LiteralExpressionSyntax(matchToken, booleanValue);
     }
 
-    private ExpressionSyntax ParseNumberExpression()
+    private ExpressionSyntax ParseNumericExpression()
     {
-        var numberToken = MatchToken(SyntaxKind.NumberExpression);
-        return new LiteralExpressionSyntax(numberToken);
+        var numberToken = MatchToken(SyntaxKind.NumericExpression);
+        return new LiteralExpressionSyntax(numberToken, (int)numberToken.Value);
     }
 
     private ExpressionSyntax ParseNameExpression()

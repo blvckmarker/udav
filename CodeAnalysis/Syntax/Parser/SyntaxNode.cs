@@ -1,8 +1,3 @@
-#region
-
-
-#endregion
-
 namespace CodeAnalysis.Syntax.Parser;
 
 public abstract class SyntaxNode

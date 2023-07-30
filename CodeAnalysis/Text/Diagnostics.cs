@@ -10,6 +10,5 @@
             => _diagnostics.Add(new DiagnosticsBag(message, problemText, startPosition, issueKind));
         public override void MakeIssue(DiagnosticsBag issue)
             => _diagnostics.Add(issue);
-
     }
 }
