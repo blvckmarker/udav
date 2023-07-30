@@ -2,9 +2,9 @@
 
 using CodeAnalysis;
 using CodeAnalysis.Binder;
-using CodeAnalysis.Parser.Syntax;
-using CodeAnalysis.Scanner.Shared;
-using CodeAnalysis.Scanner.Syntax;
+using CodeAnalysis.Syntax;
+using CodeAnalysis.Syntax.Parser;
+using CodeAnalysis.Syntax.Scanner;
 #endregion
 
 var showTree = false;

@@ -1,4 +1,4 @@
-﻿using CodeAnalysis.Scanner.Syntax;
+﻿using CodeAnalysis.Syntax;
 
 namespace CodeAnalysis.Binder.BoundExpressions;
 

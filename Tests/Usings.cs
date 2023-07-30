@@ -1,5 +1,3 @@
-global using CodeAnalysis.Parser;
-global using CodeAnalysis.Scanner.Shared;
+global using CodeAnalysis.Syntax.Scanner;
 global using Xunit;
-
 

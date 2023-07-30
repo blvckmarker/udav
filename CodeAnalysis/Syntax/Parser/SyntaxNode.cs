@@ -1,10 +1,9 @@
 #region
 
-using CodeAnalysis.Scanner.Syntax;
 
 #endregion
 
-namespace CodeAnalysis.Parser.Syntax;
+namespace CodeAnalysis.Syntax.Parser;
 
 public abstract class SyntaxNode
 {

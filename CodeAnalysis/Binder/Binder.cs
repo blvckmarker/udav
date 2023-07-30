@@ -1,8 +1,8 @@
 #region
 
 using CodeAnalysis.Binder.BoundExpressions;
-using CodeAnalysis.Parser.Expressions;
-using CodeAnalysis.Scanner.Syntax;
+using CodeAnalysis.Syntax;
+using CodeAnalysis.Syntax.Parser.Expressions;
 using CodeAnalysis.Text;
 
 #endregion

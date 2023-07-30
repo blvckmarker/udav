@@ -1,11 +1,9 @@
 #region
 
-using CodeAnalysis.Parser.Syntax;
-using CodeAnalysis.Scanner.Syntax;
 
 #endregion
 
-namespace CodeAnalysis.Parser.Expressions;
+namespace CodeAnalysis.Syntax.Parser.Expressions;
 
 public sealed class BinaryExpressionSyntax : ExpressionSyntax
 {

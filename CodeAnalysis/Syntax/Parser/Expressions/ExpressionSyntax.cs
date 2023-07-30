@@ -3,9 +3,8 @@
 
 #endregion
 
-using CodeAnalysis.Parser.Syntax;
 
-namespace CodeAnalysis.Parser.Expressions;
+namespace CodeAnalysis.Syntax.Parser.Expressions;
 
 public abstract class ExpressionSyntax : SyntaxNode
 {

@@ -1,6 +1,4 @@
-using CodeAnalysis.Scanner.Syntax;
-
-namespace CodeAnalysis.Parser.Syntax;
+namespace CodeAnalysis.Syntax;
 
 internal static class SyntaxFacts
 {

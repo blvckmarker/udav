@@ -1,4 +1,4 @@
-namespace CodeAnalysis.Scanner.Syntax;
+namespace CodeAnalysis.Syntax;
 
 public enum SyntaxKind
 {

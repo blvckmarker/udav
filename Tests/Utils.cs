@@ -5,9 +5,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Data;
 using System.Numerics;
-using SyntaxKind = CodeAnalysis.Scanner.Syntax.SyntaxKind;
-using SyntaxToken = CodeAnalysis.Scanner.Syntax.SyntaxToken;
-using SyntaxTree = CodeAnalysis.Parser.Syntax.SyntaxTree;
+using SyntaxKind = CodeAnalysis.Syntax.SyntaxKind;
+using SyntaxToken = CodeAnalysis.Syntax.SyntaxToken;
+using SyntaxTree = CodeAnalysis.Syntax.Parser.SyntaxTree;
 
 namespace Tests
 {

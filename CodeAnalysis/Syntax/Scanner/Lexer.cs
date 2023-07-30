@@ -1,10 +1,8 @@
 #region
-using CodeAnalysis.Parser.Syntax;
-using CodeAnalysis.Scanner.Syntax;
 using CodeAnalysis.Text;
 #endregion
 
-namespace CodeAnalysis.Scanner.Shared;
+namespace CodeAnalysis.Syntax.Scanner;
 
 public class Lexer
 {

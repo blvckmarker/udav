@@ -1,9 +1,8 @@
-using CodeAnalysis.Parser.Expressions;
-using CodeAnalysis.Scanner.Shared;
-using CodeAnalysis.Scanner.Syntax;
+using CodeAnalysis.Syntax.Parser.Expressions;
+using CodeAnalysis.Syntax.Scanner;
 using CodeAnalysis.Text;
 
-namespace CodeAnalysis.Parser.Syntax;
+namespace CodeAnalysis.Syntax.Parser;
 
 public sealed class SyntaxTree
 {

@@ -1,7 +1,4 @@
-using CodeAnalysis.Parser.Syntax;
-using CodeAnalysis.Scanner.Syntax;
-
-namespace CodeAnalysis.Parser.Expressions;
+namespace CodeAnalysis.Syntax.Parser.Expressions;
 
 public sealed class ParenthesizedExpressionSyntax : ExpressionSyntax
 {

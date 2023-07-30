@@ -1,14 +1,12 @@
 #region
 
-using CodeAnalysis.Parser.Expressions;
-using CodeAnalysis.Parser.Syntax;
-using CodeAnalysis.Scanner.Shared;
-using CodeAnalysis.Scanner.Syntax;
+using CodeAnalysis.Syntax.Parser.Expressions;
+using CodeAnalysis.Syntax.Scanner;
 using CodeAnalysis.Text;
 
 #endregion
 
-namespace CodeAnalysis.Parser;
+namespace CodeAnalysis.Syntax.Parser;
 
 public class Parser
 {

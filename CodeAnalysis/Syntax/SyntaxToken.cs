@@ -1,10 +1,10 @@
 #region
 
-using CodeAnalysis.Parser.Syntax;
+using CodeAnalysis.Syntax.Parser;
 
 #endregion
 
-namespace CodeAnalysis.Scanner.Syntax;
+namespace CodeAnalysis.Syntax;
 
 public class SyntaxToken : SyntaxNode
 {

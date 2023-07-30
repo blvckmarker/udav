@@ -1,4 +1,4 @@
-using SyntaxKind = CodeAnalysis.Scanner.Syntax.SyntaxKind;
+using SyntaxKind = CodeAnalysis.Syntax.SyntaxKind;
 
 namespace Tests.Scanner
 {
