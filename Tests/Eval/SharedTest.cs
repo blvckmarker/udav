@@ -1,4 +1,4 @@
-﻿namespace Tests.BasicParserTest;
+﻿namespace Tests.Eval;
 
 public class SharedTest
 {
@@ -16,8 +16,18 @@ public class SharedTest
     public static void RandomNumericalTest()
     {
         var source = Utils.GenerateRandomNumericalSequence<int>();
-        var actual = Utils.EvaluateInternal<int>(source);
-        var expected = Utils.EvaluateExternal<int>(source);
+        int actual = 0;
+        int expected = -1;
+        try
+        {
+            actual = Utils.EvaluateInternal<int>(source);
+            expected = Utils.EvaluateExternal<int>(source);
+        }
+        catch (DivideByZeroException)
+        {
+            RandomNumericalTest();
+        }
+
 
         Assert.Equal(expected, actual);
     }

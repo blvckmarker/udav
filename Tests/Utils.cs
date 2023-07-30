@@ -82,10 +82,10 @@ namespace Tests
         /// Provides evaluating using Udav API
         /// </summary>
         /// <typeparam name="TResult">Output type</typeparam>
-        internal static object EvaluateInternal<TResult>(string source)
+        internal static TResult EvaluateInternal<TResult>(string source)
         {
             var parser = SyntaxTree.Parse(source);
-            var binder = new Binder();
+            var binder = new Binder(parser.Diagnostics);
             var boundTree = binder.BindExpression(parser.Root);
             var eval = new Evaluator(boundTree);
 
