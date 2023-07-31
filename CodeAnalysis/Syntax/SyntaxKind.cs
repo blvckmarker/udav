@@ -16,6 +16,12 @@ public enum SyntaxKind
     CaretToken,
     EqualToken,
     EqualEqualToken,
+    ExclamationEqualToken,
+    TildeToken,
+    LessEqualToken,
+    GreaterToken,
+    GreaterEqualToken,
+    LessToken,
 
     TrueKeyword,
     FalseKeyword,
@@ -33,4 +39,5 @@ public enum SyntaxKind
     NameExpression,
 
     AssignmentStatement,
+    PercentToken,
 }

@@ -30,7 +30,6 @@ while (true)
     var syntaxTree = SyntaxTree.Parse(lexer);
     if (HasIssue(syntaxTree.Diagnostics))
         continue;
-
     var binder = new Binder(syntaxTree, localVariables);
     var boundTree = binder.BindTree();
 
@@ -73,5 +72,5 @@ static bool HasIssue(DiagnosticsBase diagnostics)
         else
             Console.WriteLine(diagnostic.Message);
     }
-    return diagnostics.Count() != 0;
+    return diagnostics.Any();
 }

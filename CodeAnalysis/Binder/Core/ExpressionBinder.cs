@@ -33,7 +33,7 @@ public sealed partial class Binder
     {
         var operand = BindExpression(syntax.Operand);
 
-        if ((operand as BoundLiteralExpression).Value is null)
+        if (operand.Kind == BoundNodeKind.LiteralExpression && (operand as BoundLiteralExpression).Value is null)
             return operand;
 
         var operatorToken = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, operand.Type);
@@ -49,8 +49,8 @@ public sealed partial class Binder
         var left = BindExpression(syntax.Left);
         var right = BindExpression(syntax.Right);
 
-        if ((left.Kind == BoundNodeKind.LiteralExpression && (left as BoundLiteralExpression).Value is null) ||
-            (right.Kind == BoundNodeKind.LiteralExpression && (right as BoundLiteralExpression).Value is null))
+        if ((left.Kind == BoundNodeKind.LiteralExpression && (left as BoundLiteralExpression).Value is null)
+         || (right.Kind == BoundNodeKind.LiteralExpression && (right as BoundLiteralExpression).Value is null))
             return left;
 
         var operatorToken = BoundBinaryOperator.Bind(syntax.OperatorToken.Kind, left.Type, right.Type);

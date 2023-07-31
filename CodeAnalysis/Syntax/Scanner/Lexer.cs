@@ -93,10 +93,33 @@ public class Lexer
                 return new SyntaxToken(SyntaxKind.OpenParenToken, _position++, "(", null);
             case ')':
                 return new SyntaxToken(SyntaxKind.CloseParenToken, _position++, ")", null);
-            case '!':
-                return new SyntaxToken(SyntaxKind.ExclamationToken, _position++, "!", null);
+            case '~':
+                return new SyntaxToken(SyntaxKind.TildeToken, _position++, "~", null);
             case '^':
                 return new SyntaxToken(SyntaxKind.CaretToken, _position++, "^", null);
+            case '%':
+                return new SyntaxToken(SyntaxKind.PercentToken, _position++, "%", null);
+            case '>':
+                if (Lookahead(1) == '=')
+                {
+                    _position += 2;
+                    return new SyntaxToken(SyntaxKind.GreaterEqualToken, _position, ">=", null);
+                }
+                return new SyntaxToken(SyntaxKind.GreaterToken, _position++, ">", null);
+            case '<':
+                if (Lookahead(1) == '=')
+                {
+                    _position += 2;
+                    return new SyntaxToken(SyntaxKind.LessEqualToken, _position, "<=", null);
+                }
+                return new SyntaxToken(SyntaxKind.LessToken, _position++, "<", null);
+            case '!':
+                if (Lookahead(1) == '=')
+                {
+                    _position += 2;
+                    return new SyntaxToken(SyntaxKind.ExclamationEqualToken, _position, "!=", null);
+                }
+                return new SyntaxToken(SyntaxKind.ExclamationToken, _position++, "!", null);
             case '=':
                 if (Lookahead(1) == '=')
                 {

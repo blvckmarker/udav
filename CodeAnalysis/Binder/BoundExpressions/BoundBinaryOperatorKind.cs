@@ -11,4 +11,11 @@ public enum BoundBinaryOperatorKind
     BitwiseAnd,
     BitwiseXor,
     BitwiseOr,
+    Equals,
+    NotEqual,
+    LessOrEqual,
+    GreaterThan,
+    GreaterOrEqual,
+    LessThan,
+    DivisionRemainder,
 }

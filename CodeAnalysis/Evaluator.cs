@@ -47,7 +47,10 @@ public class Evaluator
             {
                 BoundUnaryOperatorKind.Negation => -(int)operand,
                 BoundUnaryOperatorKind.Identity => (int)operand,
+                BoundUnaryOperatorKind.BitwiseNot => ~(int)operand,
+
                 BoundUnaryOperatorKind.LogicalNot => !(bool)operand,
+
                 _ => throw new InvalidOperationException($"Unexpected unary expression {u.OperatorToken}"),
             };
         }
@@ -63,9 +66,16 @@ public class Evaluator
                 BoundBinaryOperatorKind.Subtraction => (int)left - (int)right,
                 BoundBinaryOperatorKind.Multiplication => (int)left * (int)right,
                 BoundBinaryOperatorKind.Division => (int)left / (int)right,
+                BoundBinaryOperatorKind.DivisionRemainder => (int)left % (int)right,
 
                 BoundBinaryOperatorKind.LogicalOr => (bool)left || (bool)right,
                 BoundBinaryOperatorKind.LogicalAnd => (bool)left && (bool)right,
+                BoundBinaryOperatorKind.Equals => left.Equals(right),
+                BoundBinaryOperatorKind.NotEqual => !left.Equals(right),
+                BoundBinaryOperatorKind.GreaterOrEqual => (int)left >= (int)right,
+                BoundBinaryOperatorKind.GreaterThan => (int)left > (int)right,
+                BoundBinaryOperatorKind.LessOrEqual => (int)left <= (int)right,
+                BoundBinaryOperatorKind.LessThan => (int)left < (int)right,
 
                 BoundBinaryOperatorKind.BitwiseAnd => (int)left & (int)right,
                 BoundBinaryOperatorKind.BitwiseOr => (int)left | (int)right,

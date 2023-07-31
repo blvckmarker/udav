@@ -10,14 +10,22 @@ public class BoundBinaryOperator
         new BoundBinaryOperator(SyntaxKind.SlashToken, BoundBinaryOperatorKind.Division, typeof(int), typeof(int)),
         new BoundBinaryOperator(SyntaxKind.MinusToken, BoundBinaryOperatorKind.Subtraction, typeof(int), typeof(int)),
         new BoundBinaryOperator(SyntaxKind.PlusToken, BoundBinaryOperatorKind.Addition, typeof(int), typeof(int)),
+        new BoundBinaryOperator(SyntaxKind.PercentToken, BoundBinaryOperatorKind.DivisionRemainder, typeof(int), typeof(int)),
 
         new BoundBinaryOperator(SyntaxKind.PipePipeToken, BoundBinaryOperatorKind.LogicalOr, typeof(bool), typeof(bool)),
         new BoundBinaryOperator(SyntaxKind.AmpersandAmpersandToken, BoundBinaryOperatorKind.LogicalAnd, typeof(bool), typeof(bool)),
+        new BoundBinaryOperator(SyntaxKind.EqualEqualToken, BoundBinaryOperatorKind.Equals, typeof(int), typeof(bool)),
+        new BoundBinaryOperator(SyntaxKind.EqualEqualToken, BoundBinaryOperatorKind.Equals, typeof(bool), typeof(bool)),
+        new BoundBinaryOperator(SyntaxKind.ExclamationEqualToken, BoundBinaryOperatorKind.NotEqual, typeof(int), typeof(bool)),
+        new BoundBinaryOperator(SyntaxKind.ExclamationEqualToken, BoundBinaryOperatorKind.NotEqual, typeof(bool), typeof(bool)),
+        new BoundBinaryOperator(SyntaxKind.LessEqualToken, BoundBinaryOperatorKind.LessOrEqual, typeof(int), typeof(bool)),
+        new BoundBinaryOperator(SyntaxKind.LessToken, BoundBinaryOperatorKind.LessThan, typeof(int), typeof(bool)),
+        new BoundBinaryOperator(SyntaxKind.GreaterEqualToken, BoundBinaryOperatorKind.GreaterOrEqual, typeof(int), typeof(bool)),
+        new BoundBinaryOperator(SyntaxKind.GreaterToken, BoundBinaryOperatorKind.GreaterThan, typeof(int), typeof(bool)),
 
         new BoundBinaryOperator(SyntaxKind.PipeToken, BoundBinaryOperatorKind.BitwiseOr, typeof(int), typeof(int)),
         new BoundBinaryOperator(SyntaxKind.AmpersandToken, BoundBinaryOperatorKind.BitwiseAnd, typeof(int), typeof(int)),
         new BoundBinaryOperator(SyntaxKind.CaretToken, BoundBinaryOperatorKind.BitwiseXor, typeof(int), typeof(int)),
-
     };
 
     public SyntaxKind SyntaxKind { get; }
