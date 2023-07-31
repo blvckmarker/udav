@@ -84,10 +84,13 @@ namespace Tests
         /// <typeparam name="TResult">Output type</typeparam>
         internal static TResult EvaluateInternal<TResult>(string source)
         {
-            var parser = SyntaxTree.Parse(source);
-            var binder = new Binder(parser.Diagnostics);
-            var boundTree = binder.BindStatement(parser.Root);
-            var eval = new Evaluator(boundTree, new());
+            var lexer = new Lexer(source);
+            var parser = SyntaxTree.Parse(lexer);
+
+            var binder = new Binder(parser, new Dictionary<string, object>());
+            var boundTree = binder.BindTree();
+
+            var eval = new Evaluator(boundTree, new Dictionary<string, object>());
 
             return (TResult)eval.Evaluate();
         }

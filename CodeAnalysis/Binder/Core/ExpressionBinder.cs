@@ -7,7 +7,7 @@ namespace CodeAnalysis.Binder;
 
 public sealed partial class Binder
 {
-    public partial BoundExpression BindExpression(ExpressionSyntax syntax)
+    private partial BoundExpression BindExpression(ExpressionSyntax syntax)
     {
         switch (syntax.Kind)
         {
@@ -61,10 +61,9 @@ public sealed partial class Binder
         {
             case SyntaxKind.NameExpression:
                 {
-                    if (_localVariables.TryGetValue(syntax.Value.ToString(), out var localValue))
-                        return new BoundLiteralExpression(localValue);
-                    _diagnostics.MakeIssue($"Undefined local variable {syntax.Value}", syntax.LiteralToken.Text, syntax.LiteralToken.StartPosition, IssueKind.Problem);
-                    return new BoundLiteralExpression(null);
+                    if (!_localVariables.TryGetValue(syntax.LiteralToken.Text, out var localValue))
+                        _diagnostics.MakeIssue($"Undefined local variable {syntax.Value}", syntax.LiteralToken.Text, syntax.LiteralToken.StartPosition, IssueKind.Problem);
+                    return new BoundLiteralExpression(localValue);
                 }
 
             case SyntaxKind.TrueKeyword:

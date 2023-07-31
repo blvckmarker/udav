@@ -1,11 +1,9 @@
-﻿#region
-
-using CodeAnalysis;
+﻿using CodeAnalysis;
 using CodeAnalysis.Binder;
 using CodeAnalysis.Syntax;
 using CodeAnalysis.Syntax.Parser;
 using CodeAnalysis.Syntax.Scanner;
-#endregion
+using CodeAnalysis.Text;
 
 var showTree = false;
 var localVariables = new Dictionary<string, object>();
@@ -27,47 +25,23 @@ while (true)
             Console.WriteLine($"{variable.Key}:{variable.Value}");
         continue;
     }
+
     var lexer = new Lexer(line);
     var syntaxTree = SyntaxTree.Parse(lexer);
+    if (HasIssue(syntaxTree.Diagnostics))
+        continue;
 
-    var binder = new Binder(syntaxTree.Diagnostics, localVariables);
-    var boundTree = binder.BindStatement(syntaxTree.Root);
-    var diagnostics = binder.Diagnostics;
+    var binder = new Binder(syntaxTree, localVariables);
+    var boundTree = binder.BindTree();
+
+    if (HasIssue(binder.Diagnostics))
+        continue;
 
     if (showTree)
         PrettySyntaxPrint(syntaxTree.Root);
 
-    if (diagnostics.Where(x => x.Kind == CodeAnalysis.Text.IssueKind.Problem).Any())
-        foreach (var diagnostic in diagnostics)
-        {
-            if (diagnostic.ProblemText is { } text)
-            {
-                Console.Write($"At:{diagnostic.StartPosition} {diagnostic.Message}: ");
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(text);
-                Console.ResetColor();
-            }
-            else
-                Console.WriteLine(diagnostic.Message);
-        }
-    else
-    {
-        foreach (var diagnostic in diagnostics.Where(x => x.Kind == CodeAnalysis.Text.IssueKind.Warning))
-        {
-            if (diagnostic.ProblemText is { } text)
-            {
-                Console.Write($"At:{diagnostic.StartPosition} {diagnostic.Message}");
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine(text);
-                Console.ResetColor();
-            }
-            else
-                Console.WriteLine(diagnostic.Message);
-        }
-
-        var e = new Evaluator(boundTree, localVariables);
-        Console.WriteLine(e.Evaluate());
-    }
+    var e = new Evaluator(boundTree, localVariables);
+    Console.WriteLine(e.Evaluate());
 }
 
 static void PrettySyntaxPrint(SyntaxNode node, string shift = "")
@@ -83,4 +57,21 @@ static void PrettySyntaxPrint(SyntaxNode node, string shift = "")
 
     foreach (var child in node.GetChildren())
         PrettySyntaxPrint(child, shift);
+}
+
+static bool HasIssue(DiagnosticsBase diagnostics)
+{
+    foreach (var diagnostic in diagnostics)
+    {
+        if (diagnostic.ProblemText is { } text)
+        {
+            Console.Write($"At:{diagnostic.StartPosition} {diagnostic.Message} ");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(text);
+            Console.ResetColor();
+        }
+        else
+            Console.WriteLine(diagnostic.Message);
+    }
+    return diagnostics.Count() != 0;
 }

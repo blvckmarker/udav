@@ -17,6 +17,5 @@ public sealed class SyntaxTree
         EofToken = eofToken;
     }
 
-    public static SyntaxTree Parse(string text) => new Parser(text).ParseTree();
     public static SyntaxTree Parse(Lexer lexer) => new Parser(lexer).ParseTree();
 }

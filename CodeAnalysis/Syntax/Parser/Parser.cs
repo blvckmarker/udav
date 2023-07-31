@@ -12,10 +12,9 @@ namespace CodeAnalysis.Syntax.Parser;
 public class Parser
 {
     private readonly DiagnosticsBase _diagnostics;
-    private readonly List<SyntaxToken> _tokens = new();
+    private readonly IList<SyntaxToken> _tokens;
     private int _position;
 
-    public Parser(string text) : this(new Lexer(text)) { }
     public Parser(Lexer lexer)
     {
         _tokens = lexer.LexAll()
@@ -40,12 +39,12 @@ public class Parser
             return TakeToken();
 
         _diagnostics.MakeIssue($"Unexpected token <{Current.Kind}> expected <{kind}>", Current.Text, Current.StartPosition);
-        return new SyntaxToken(kind, Current.StartPosition, Current.EndPosition, null, null);
+        return new SyntaxToken(kind, Current.StartPosition, Current.EndPosition, Current.Text, null);
     }
 
     public SyntaxTree ParseTree()
     {
-        var statement = ParseAssignmentStatement();
+        var statement = ParseStatement();
         var eofToken = MatchToken(SyntaxKind.EofToken);
         return new SyntaxTree(_diagnostics, statement, eofToken);
     }
@@ -72,13 +71,19 @@ public class Parser
      *         | boolean
      */
 
+    private StatementSyntax ParseStatement()
+    {
+        var statement = ParseAssignmentStatement();
+        return statement;
+    }
+
     private StatementSyntax ParseAssignmentStatement()
     {
         var letToken = MatchToken(SyntaxKind.LetKeyword);
-        var nameExpression = ParseNameExpression();
+        var identifierName = MatchToken(SyntaxKind.NameExpression);
         var equalToken = MatchToken(SyntaxKind.EqualToken);
         var expression = ParseExpression();
-        return new AssignmentStatementSyntax(letToken, nameExpression, equalToken, expression);
+        return new AssignmentStatementSyntax(letToken, identifierName, equalToken, expression);
     }
 
 
@@ -135,26 +140,26 @@ public class Parser
         }
     }
 
-    private ExpressionSyntax ParseBooleanExpression()
+    private LiteralExpressionSyntax ParseBooleanExpression()
     {
         var booleanValue = Current.Kind == SyntaxKind.TrueKeyword;
         var matchToken = booleanValue ? MatchToken(SyntaxKind.TrueKeyword) : MatchToken(SyntaxKind.FalseKeyword);
         return new LiteralExpressionSyntax(matchToken, booleanValue);
     }
 
-    private ExpressionSyntax ParseNumericExpression()
+    private LiteralExpressionSyntax ParseNumericExpression()
     {
         var numberToken = MatchToken(SyntaxKind.NumericExpression);
-        return new LiteralExpressionSyntax(numberToken, (int)numberToken.Value);
+        return new LiteralExpressionSyntax(numberToken, (int)numberToken.Value!);
     }
 
-    private ExpressionSyntax ParseNameExpression()
+    private LiteralExpressionSyntax ParseNameExpression()
     {
         var literalToken = MatchToken(SyntaxKind.NameExpression);
         return new LiteralExpressionSyntax(literalToken);
     }
 
-    private ExpressionSyntax ParseParenthesizedExpression()
+    private ParenthesizedExpressionSyntax ParseParenthesizedExpression()
     {
         var left = TakeToken();
         var expression = ParseExpression();

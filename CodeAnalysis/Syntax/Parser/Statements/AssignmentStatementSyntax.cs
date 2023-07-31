@@ -5,18 +5,18 @@ namespace CodeAnalysis.Syntax.Parser.Statements
     public sealed class AssignmentStatementSyntax : StatementSyntax
     {
         public AssignmentStatementSyntax(SyntaxToken letToken,
-                                   ExpressionSyntax nameExpression,
+                                   SyntaxToken identifierName,
                                    SyntaxToken equalToken,
                                    ExpressionSyntax expression)
         {
             LetKeyword = letToken;
-            NameExpression = nameExpression;
+            IdentifierName = identifierName;
             EqualToken = equalToken;
             Expression = expression;
         }
 
         public SyntaxToken LetKeyword { get; }
-        public ExpressionSyntax NameExpression { get; }
+        public SyntaxToken IdentifierName { get; }
         public SyntaxToken EqualToken { get; }
         public ExpressionSyntax Expression { get; }
 
@@ -27,7 +27,7 @@ namespace CodeAnalysis.Syntax.Parser.Statements
         public override IEnumerable<SyntaxNode> GetChildren()
         {
             yield return LetKeyword;
-            yield return NameExpression;
+            yield return IdentifierName;
             yield return EqualToken;
             yield return Expression;
         }

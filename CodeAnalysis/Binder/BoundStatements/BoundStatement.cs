@@ -2,9 +2,6 @@
 {
     public abstract class BoundStatement : BoundNode
     {
+        public abstract Type Type { get; }
     }
 }
-
-// for (init, expression, step)
-// if (expression)
-// let i = expression

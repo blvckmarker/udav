@@ -1,22 +1,20 @@
 ﻿using CodeAnalysis.Binder.BoundExpressions;
-using CodeAnalysis.Syntax.Parser.Expressions;
+using CodeAnalysis.Syntax;
 
-namespace CodeAnalysis.Binder.BoundStatements
+namespace CodeAnalysis.Binder.BoundStatements;
+public sealed class BoundAssignmentStatement : BoundStatement
 {
-    public sealed class BoundAssignmentStatement : BoundStatement
+    public BoundAssignmentStatement(SyntaxToken identifierName, BoundExpression boundExpression)
     {
-        public BoundAssignmentStatement(LiteralExpressionSyntax variableName, BoundExpression boundExpression)
-        {
-            VariableName = variableName;
-            BoundExpression = boundExpression;
-        }
-
-        public LiteralExpressionSyntax VariableName { get; }
-        public BoundExpression BoundExpression { get; }
-        public Type Type => BoundExpression.Type;
-
-        public override BoundNodeKind Kind => BoundNodeKind.AssignmentStatement;
+        IdentifierName = identifierName;
+        BoundExpression = boundExpression;
     }
 
+    public SyntaxToken IdentifierName { get; }
+    public BoundExpression BoundExpression { get; }
+
+    public override Type Type => BoundExpression.Type;
+    public override BoundNodeKind Kind => BoundNodeKind.AssignmentStatement;
 }
+
 
