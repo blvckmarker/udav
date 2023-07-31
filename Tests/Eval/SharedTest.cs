@@ -5,11 +5,11 @@ public class SharedTest
     [Fact]
     public static void SimpleTest()
     {
-        var source = "1 + 1 * 1";
+        var source = "1 + 1 * 1 - 10";
 
         var actual = Utils.EvaluateInternal<int>(source);
 
-        Assert.Equal(2, actual);
+        Assert.Equal(-8, actual);
     }
 
     [Fact]

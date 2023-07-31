@@ -17,6 +17,9 @@ public class Parser
 
     public Parser(Lexer lexer)
     {
+        if (lexer.Diagnostics.Where(x => x.Kind == IssueKind.Problem).Any())
+            throw new Exception("Unable to create syntax tree when lexer has problem issues");
+
         _tokens = lexer.LexAll()
             .Where(token => token.Kind is not SyntaxKind.WhitespaceToken)
             .ToList();

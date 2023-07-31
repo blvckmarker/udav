@@ -32,6 +32,10 @@ public sealed partial class Binder
     private partial BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
     {
         var operand = BindExpression(syntax.Operand);
+
+        if ((operand as BoundLiteralExpression).Value is null)
+            return operand;
+
         var operatorToken = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, operand.Type);
 
         if (operatorToken is null)
@@ -44,6 +48,11 @@ public sealed partial class Binder
     {
         var left = BindExpression(syntax.Left);
         var right = BindExpression(syntax.Right);
+
+        if ((left.Kind == BoundNodeKind.LiteralExpression && (left as BoundLiteralExpression).Value is null) ||
+            (right.Kind == BoundNodeKind.LiteralExpression && (right as BoundLiteralExpression).Value is null))
+            return left;
+
         var operatorToken = BoundBinaryOperator.Bind(syntax.OperatorToken.Kind, left.Type, right.Type);
 
         if (operatorToken is null)
@@ -62,7 +71,10 @@ public sealed partial class Binder
             case SyntaxKind.NameExpression:
                 {
                     if (!_localVariables.TryGetValue(syntax.LiteralToken.Text, out var localValue))
+                    {
                         _diagnostics.MakeIssue($"Undefined local variable {syntax.Value}", syntax.LiteralToken.Text, syntax.LiteralToken.StartPosition, IssueKind.Problem);
+                        return new BoundLiteralExpression(null);
+                    }
                     return new BoundLiteralExpression(localValue);
                 }
 
