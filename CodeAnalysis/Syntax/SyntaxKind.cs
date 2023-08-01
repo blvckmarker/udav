@@ -14,14 +14,15 @@ public enum SyntaxKind
     PipePipeToken,
     PipeToken,
     CaretToken,
-    EqualToken,
-    EqualEqualToken,
+    EqualsToken,
+    EqualsEqualsToken,
     ExclamationEqualToken,
     TildeToken,
-    LessEqualToken,
-    GreaterToken,
-    GreaterEqualToken,
-    LessToken,
+    LessThanEqualToken,
+    GreaterThanToken,
+    GreaterThanEqualToken,
+    PercentToken,
+    LessThanToken,
 
     TrueKeyword,
     FalseKeyword,
@@ -39,5 +40,4 @@ public enum SyntaxKind
     NameExpression,
 
     AssignmentStatement,
-    PercentToken,
 }

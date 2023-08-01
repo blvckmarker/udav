@@ -70,7 +70,7 @@ public sealed partial class Binder
         {
             case SyntaxKind.NameExpression:
                 {
-                    if (!_localVariables.TryGetValue(syntax.LiteralToken.Text, out var localValue))
+                    if (!_sessionVariables.TryGetValue(syntax.LiteralToken.Text, out var localValue))
                     {
                         _diagnostics.MakeIssue($"Undefined local variable {syntax.Value}", syntax.LiteralToken.Text, syntax.LiteralToken.StartPosition, IssueKind.Problem);
                         return new BoundLiteralExpression(null);

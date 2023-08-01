@@ -1,13 +1,15 @@
-﻿namespace Tests.Eval;
+﻿using System.Reflection;
 
-public class SharedTest
+namespace Tests;
+
+public class EvaluatorTest
 {
     [Fact]
     public static void SimpleTest()
     {
         var source = "1 + 1 * 1 - 10";
 
-        var actual = Utils.EvaluateInternal<int>(source);
+        var actual = Utils.EvaluateExpressionInternal<int>(source);
 
         Assert.Equal(-8, actual);
     }
@@ -20,13 +22,14 @@ public class SharedTest
         int expected = -1;
         try
         {
-            actual = Utils.EvaluateInternal<int>(source);
-            expected = Utils.EvaluateExternal<int>(source);
+            actual = Utils.EvaluateExpressionInternal<int>(source);
         }
-        catch (DivideByZeroException)
+        catch (TargetInvocationException)
         {
             RandomNumericalTest();
+            return;
         }
+        expected = Utils.EvaluateExpressionExternal<int>(source);
 
 
         Assert.Equal(expected, actual);
@@ -36,8 +39,8 @@ public class SharedTest
     public static void RandomBooleanTest()
     {
         var source = Utils.GenerateRandomBooleanSequence();
-        var actual = Utils.EvaluateInternal<bool>(source);
-        var expected = Utils.EvaluateExternal<bool>(source);
+        var actual = Utils.EvaluateExpressionInternal<bool>(source);
+        var expected = Utils.EvaluateExpressionExternal<bool>(source);
 
         Assert.Equal(expected, actual);
     }

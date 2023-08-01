@@ -1,12 +1,11 @@
-﻿using CodeAnalysis;
-using CodeAnalysis.Binder;
-using CodeAnalysis.Syntax;
-using CodeAnalysis.Syntax.Parser;
-using CodeAnalysis.Syntax.Scanner;
+﻿using CodeAnalysis.Compilation;
 using CodeAnalysis.Text;
 
+var showVariables = false;
 var showTree = false;
-var localVariables = new Dictionary<string, object>();
+var sessionVariables = new Dictionary<string, object>();
+var compiler = new Compiler(sessionVariables);
+
 while (true)
 {
     Console.Write(">");
@@ -21,56 +20,48 @@ while (true)
     }
     if (line == "#showvars")
     {
-        foreach (var variable in localVariables)
-            Console.WriteLine($"{variable.Key}:{variable.Value}");
+        showVariables = !showVariables;
         continue;
     }
 
-    var lexer = new Lexer(line);
-    var syntaxTree = SyntaxTree.Parse(lexer);
-    if (HasIssue(syntaxTree.Diagnostics))
+    var environment = new EnvironmentVariables(showTree, showVariables);
+    var compilationResult = compiler.Compile(line, environment);
+
+    if (compilationResult.Kind is not CompilationResultKind.Success)
+    {
+        Console.WriteLine(compilationResult.Kind);
+        PrintDiagnostics(compilationResult.Diagnostics);
         continue;
-    var binder = new Binder(syntaxTree, localVariables);
-    var boundTree = binder.BindTree();
+    }
 
-    if (HasIssue(binder.Diagnostics))
-        continue;
-
-    if (showTree)
-        PrettySyntaxPrint(syntaxTree.Root);
-
-    var e = new Evaluator(boundTree, localVariables);
-    Console.WriteLine(e.Evaluate());
+    PrintDiagnostics(compilationResult.Diagnostics);
+    Console.WriteLine(compilationResult.ReturnResult);
 }
 
-static void PrettySyntaxPrint(SyntaxNode node, string shift = "")
-{
-    Console.Write(shift);
-    Console.Write(node.Kind);
-
-    if (node is SyntaxToken { Value: { } } t)
-        Console.Write(" " + t.Value);
-
-    Console.WriteLine();
-    shift += "    ";
-
-    foreach (var child in node.GetChildren())
-        PrettySyntaxPrint(child, shift);
-}
-
-static bool HasIssue(DiagnosticsBase diagnostics)
+void PrintDiagnostics(IEnumerable<DiagnosticsBag> diagnostics)
 {
     foreach (var diagnostic in diagnostics)
     {
-        if (diagnostic.ProblemText is { } text)
+        var foregroundColor = diagnostic.Kind switch
         {
-            Console.Write($"At:{diagnostic.StartPosition} {diagnostic.Message} ");
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(text);
+            IssueKind.Problem => ConsoleColor.Red,
+            IssueKind.Warning => ConsoleColor.Yellow,
+            _ => ConsoleColor.White,
+        };
+
+        if (diagnostic.ProblemText is null)
+        {
+            Console.ForegroundColor = foregroundColor;
+            Console.WriteLine($"{diagnostic.Kind}. {diagnostic.Message}");
             Console.ResetColor();
         }
         else
-            Console.WriteLine(diagnostic.Message);
+        {
+            Console.ForegroundColor = foregroundColor;
+            Console.Write($"{diagnostic.Kind}. At:{diagnostic.StartPosition} {diagnostic.Message} ");
+            Console.ResetColor();
+
+            Console.WriteLine(diagnostic.ProblemText);
+        }
     }
-    return diagnostics.Any();
 }

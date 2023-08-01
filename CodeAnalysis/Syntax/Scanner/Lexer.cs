@@ -103,16 +103,16 @@ public class Lexer
                 if (Lookahead(1) == '=')
                 {
                     _position += 2;
-                    return new SyntaxToken(SyntaxKind.GreaterEqualToken, _position, ">=", null);
+                    return new SyntaxToken(SyntaxKind.GreaterThanEqualToken, _position, ">=", null);
                 }
-                return new SyntaxToken(SyntaxKind.GreaterToken, _position++, ">", null);
+                return new SyntaxToken(SyntaxKind.GreaterThanToken, _position++, ">", null);
             case '<':
                 if (Lookahead(1) == '=')
                 {
                     _position += 2;
-                    return new SyntaxToken(SyntaxKind.LessEqualToken, _position, "<=", null);
+                    return new SyntaxToken(SyntaxKind.LessThanEqualToken, _position, "<=", null);
                 }
-                return new SyntaxToken(SyntaxKind.LessToken, _position++, "<", null);
+                return new SyntaxToken(SyntaxKind.LessThanToken, _position++, "<", null);
             case '!':
                 if (Lookahead(1) == '=')
                 {
@@ -124,9 +124,9 @@ public class Lexer
                 if (Lookahead(1) == '=')
                 {
                     _position += 2;
-                    return new SyntaxToken(SyntaxKind.EqualEqualToken, _position, "==", null);
+                    return new SyntaxToken(SyntaxKind.EqualsEqualsToken, _position, "==", null);
                 }
-                return new SyntaxToken(SyntaxKind.EqualToken, _position++, "=", null);
+                return new SyntaxToken(SyntaxKind.EqualsToken, _position++, "=", null);
             case '&':
                 if (Lookahead(1) == '&')
                 {

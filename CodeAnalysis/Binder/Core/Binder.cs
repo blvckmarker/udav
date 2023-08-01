@@ -10,18 +10,20 @@ namespace CodeAnalysis.Binder;
 public sealed partial class Binder
 {
     private readonly DiagnosticsBase _diagnostics;
-    private readonly IDictionary<string, object> _localVariables;
     private readonly StatementSyntax _syntaxRoot;
-    public DiagnosticsBase Diagnostics => _diagnostics;
+    private readonly IDictionary<string, object> _sessionVariables;
 
-    public Binder(SyntaxTree syntaxTree, IDictionary<string, object> localVariables)
+    public DiagnosticsBase Diagnostics => _diagnostics;
+    public IDictionary<string, object> SessionVariables => _sessionVariables;
+
+    public Binder(SyntaxTree syntaxTree, IDictionary<string, object> sessionVariables)
     {
         if (syntaxTree.Diagnostics.Where(x => x.Kind == IssueKind.Problem).Any())
             throw new Exception("Unable to bind syntax tree when tree has problem issues");
 
         _syntaxRoot = syntaxTree.Root;
         _diagnostics = syntaxTree.Diagnostics;
-        _localVariables = localVariables;
+        _sessionVariables = sessionVariables;
     }
 
     public BoundStatement BindTree() => BindStatement(_syntaxRoot);

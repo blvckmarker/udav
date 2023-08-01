@@ -13,10 +13,11 @@ namespace CodeAnalysis.Text
             SourceText = text;
         }
 
-        public void Extend(IEnumerable<DiagnosticsBag> diagnostics)
+        public DiagnosticsBase Extend(IEnumerable<DiagnosticsBag> diagnostics)
         {
             foreach (var diagnostic in diagnostics)
                 _diagnostics.Add(diagnostic);
+            return this;
         }
         public abstract void MakeIssue(string message, IssueKind issueKind = IssueKind.Problem);
         public abstract void MakeIssue(string message, string problemText, int startPosition, IssueKind issueKind = IssueKind.Problem);

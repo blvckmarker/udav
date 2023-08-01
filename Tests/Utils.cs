@@ -1,10 +1,14 @@
 ﻿using CodeAnalysis;
-using CodeAnalysis.Binder;
+using CodeAnalysis.Compilation;
+using CodeAnalysis.Syntax.Parser;
 using DynamicExpresso;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Data;
 using System.Numerics;
+using System.Reflection;
+using Binder = CodeAnalysis.Binder.Binder;
+using Diagnostic = CodeAnalysis.Text.Diagnostics;
 using SyntaxKind = CodeAnalysis.Syntax.SyntaxKind;
 using SyntaxToken = CodeAnalysis.Syntax.SyntaxToken;
 using SyntaxTree = CodeAnalysis.Syntax.Parser.SyntaxTree;
@@ -38,6 +42,15 @@ namespace Tests
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.TrueKeyword => SyntaxKind.TrueKeyword,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.FalseKeyword => SyntaxKind.FalseKeyword,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.CaretToken => SyntaxKind.CaretToken,
+                Microsoft.CodeAnalysis.CSharp.SyntaxKind.EqualsToken => SyntaxKind.EqualsToken,
+                Microsoft.CodeAnalysis.CSharp.SyntaxKind.EqualsEqualsToken => SyntaxKind.EqualsEqualsToken,
+                Microsoft.CodeAnalysis.CSharp.SyntaxKind.ExclamationEqualsToken => SyntaxKind.ExclamationEqualToken,
+                Microsoft.CodeAnalysis.CSharp.SyntaxKind.TildeToken => SyntaxKind.TildeToken,
+                Microsoft.CodeAnalysis.CSharp.SyntaxKind.LessThanToken => SyntaxKind.LessThanToken,
+                Microsoft.CodeAnalysis.CSharp.SyntaxKind.LessThanEqualsToken => SyntaxKind.LessThanEqualToken,
+                Microsoft.CodeAnalysis.CSharp.SyntaxKind.GreaterThanEqualsToken => SyntaxKind.GreaterThanEqualToken,
+                Microsoft.CodeAnalysis.CSharp.SyntaxKind.GreaterThanToken => SyntaxKind.GreaterThanToken,
+                Microsoft.CodeAnalysis.CSharp.SyntaxKind.PercentToken => SyntaxKind.PercentToken,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.ExclamationToken => SyntaxKind.ExclamationToken,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.SlashToken => SyntaxKind.SlashToken,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.EndOfFileToken => SyntaxKind.EofToken,
@@ -70,7 +83,7 @@ namespace Tests
         /// Provides evaluating using Roslyn API
         /// </summary>
         /// <typeparam name="TResult">Output type</typeparam>
-        internal static TResult EvaluateExternal<TResult>(string source)
+        internal static TResult EvaluateExpressionExternal<TResult>(string source)
         {
             var interpreter = new Interpreter();
             var result = interpreter.Eval<TResult>(source);
@@ -79,21 +92,50 @@ namespace Tests
         }
 
         /// <summary>
+        /// Provides compilation using Udav API
+        /// </summary>
+        /// <typeparam name="TResult">Output type</typeparam>
+        internal static TResult CompileProgram<TResult>(string source)
+        {
+            var compiler = new Compiler(new Dictionary<string, object>());
+            var compilation = compiler.Compile(source, new());
+
+            if (compilation.Kind is not CompilationResultKind.Success)
+                throw new Exception(compilation.Kind.ToString());
+
+            return (TResult)compilation.ReturnResult!;
+        }
+
+        /// <summary>
         /// Provides evaluating using Udav API
         /// </summary>
         /// <typeparam name="TResult">Output type</typeparam>
-        internal static TResult EvaluateInternal<TResult>(string source)
+        internal static TResult EvaluateExpressionInternal<TResult>(string source, IDictionary<string, object> variables = null) // Прости господи
         {
+            if (variables == null)
+                variables = new Dictionary<string, object>();
+
             var lexer = new Lexer(source);
-            var parser = SyntaxTree.Parse(lexer);
+            var parser = new Parser(lexer);
 
-            var binder = new Binder(parser, new Dictionary<string, object>());
-            var boundTree = binder.BindTree();
+            var expressionSyntax = InvokeMember(MemberTypes.Method, "ParseExpression", parser, 0);
+            var binder = new Binder(new SyntaxTree(new Diagnostic(source), null, null), variables);
+            var boundExpression = InvokeMember(MemberTypes.Method, "BindExpression", binder, expressionSyntax);
+            var evaluator = new Evaluator(null, variables);
+            var result = InvokeMember(MemberTypes.Method, "EvaluateExpression", evaluator, boundExpression);
 
-            var eval = new Evaluator(boundTree, new Dictionary<string, object>());
-
-            return (TResult)eval.Evaluate();
+            return (TResult)result;
         }
+
+        internal static object? InvokeMember(MemberTypes type, string memberName, object obj, params object[]? param)
+            => type switch
+            {
+                MemberTypes.Method => obj.GetType().GetMethod(memberName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static).Invoke(obj, param),
+                MemberTypes.Property => obj.GetType().GetProperty(memberName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static).GetValue(obj),
+                MemberTypes.Field => obj.GetType().GetField(memberName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static).GetValue(obj),
+                _ => throw new NotSupportedException()
+            };
+
 
         /// <summary>
         /// Generate random numerical sequence of <typeparamref name="TNumber"/> using default list of operators

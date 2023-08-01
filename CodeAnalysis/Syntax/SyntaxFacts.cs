@@ -16,9 +16,9 @@ internal static class SyntaxFacts
             SyntaxKind.SlashToken or SyntaxKind.AsteriskToken or SyntaxKind.PercentToken => 9,
             SyntaxKind.MinusToken or SyntaxKind.PlusToken => 8,
 
-            SyntaxKind.LessEqualToken or SyntaxKind.GreaterEqualToken => 7,
-            SyntaxKind.LessToken or SyntaxKind.GreaterToken => 7,
-            SyntaxKind.EqualEqualToken or SyntaxKind.ExclamationEqualToken => 6,
+            SyntaxKind.LessThanEqualToken or SyntaxKind.GreaterThanEqualToken => 7,
+            SyntaxKind.LessThanToken or SyntaxKind.GreaterThanToken => 7,
+            SyntaxKind.EqualsEqualsToken or SyntaxKind.ExclamationEqualToken => 6,
 
             SyntaxKind.AmpersandToken => 5,
             SyntaxKind.CaretToken => 4,

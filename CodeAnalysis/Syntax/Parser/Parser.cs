@@ -84,7 +84,7 @@ public class Parser
     {
         var letToken = MatchToken(SyntaxKind.LetKeyword);
         var identifierName = MatchToken(SyntaxKind.NameExpression);
-        var equalToken = MatchToken(SyntaxKind.EqualToken);
+        var equalToken = MatchToken(SyntaxKind.EqualsToken);
         var expression = ParseExpression();
         return new AssignmentStatementSyntax(letToken, identifierName, equalToken, expression);
     }
