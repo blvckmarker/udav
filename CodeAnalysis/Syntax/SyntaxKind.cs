@@ -23,21 +23,26 @@ public enum SyntaxKind
     GreaterThanEqualToken,
     PercentToken,
     LessThanToken,
+    IdentifierToken,
+    NumericToken,
 
     TrueKeyword,
     FalseKeyword,
+    IntKeyword,
     LetKeyword,
+    BoolKeyword,
 
     WhitespaceToken,
     BadToken,
     EofToken,
 
-    NumericExpression,
     BinaryExpression,
     ParenthesizedExpression,
     UnaryExpression,
     LiteralExpression,
     NameExpression,
+    AssignmentExpression,
+    DeclaredVariableExpression,
 
     AssignmentStatement,
 }

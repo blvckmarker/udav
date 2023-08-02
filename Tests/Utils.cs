@@ -56,7 +56,7 @@ namespace Tests
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.EndOfFileToken => SyntaxKind.EofToken,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.OpenParenToken => SyntaxKind.OpenParenToken,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.CloseParenToken => SyntaxKind.CloseParenToken,
-                Microsoft.CodeAnalysis.CSharp.SyntaxKind.NumericLiteralToken => SyntaxKind.NumericExpression,
+                Microsoft.CodeAnalysis.CSharp.SyntaxKind.NumericLiteralToken => SyntaxKind.NumericToken,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.WhitespaceTrivia => SyntaxKind.WhitespaceToken,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.BadToken => SyntaxKind.BadToken,
                 _ => throw new NotImplementedException(kind.ToString()) // ? BinaryExpression
@@ -97,7 +97,7 @@ namespace Tests
         /// <typeparam name="TResult">Output type</typeparam>
         internal static TResult CompileProgram<TResult>(string source)
         {
-            var compiler = new Compiler(new Dictionary<string, object>());
+            var compiler = new Compiler(new Dictionary<VariableSymbol, object>());
             var compilation = compiler.Compile(source, new());
 
             if (compilation.Kind is not CompilationResultKind.Success)
@@ -110,15 +110,15 @@ namespace Tests
         /// Provides evaluating using Udav API
         /// </summary>
         /// <typeparam name="TResult">Output type</typeparam>
-        internal static TResult EvaluateExpressionInternal<TResult>(string source, IDictionary<string, object> variables = null) // Прости господи
+        internal static TResult EvaluateExpressionInternal<TResult>(string source, IDictionary<VariableSymbol, object> variables = null) // Прости господи
         {
             if (variables == null)
-                variables = new Dictionary<string, object>();
+                variables = new Dictionary<VariableSymbol, object>();
 
             var lexer = new Lexer(source);
             var parser = new Parser(lexer);
 
-            var expressionSyntax = InvokeMember(MemberTypes.Method, "ParseExpression", parser, 0);
+            var expressionSyntax = InvokeMember(MemberTypes.Method, "ParseBinaryExpression", parser, 0);
             var binder = new Binder(new SyntaxTree(new Diagnostic(source), null, null), variables);
             var boundExpression = InvokeMember(MemberTypes.Method, "BindExpression", binder, expressionSyntax);
             var evaluator = new Evaluator(null, variables);
@@ -142,7 +142,7 @@ namespace Tests
         /// </summary>
         /// <typeparam name="TNumber">Type</typeparam>
         internal static string GenerateRandomNumericalSequence<TNumber>() where TNumber : INumber<TNumber>
-            => GenerateRandomNumericalSequence<TNumber>(new string[] { "+", "-", "*", "/", "^", "|", "&" });
+            => GenerateRandomNumericalSequence<TNumber>(new string[] { "+", "-", "*", "/", "^", "|", "&", "%" });
 
         /// <summary>
         /// Generate random numerical sequence of <typeparamref name="TNumber"/> using custom list of operators
@@ -153,7 +153,7 @@ namespace Tests
         {
             string GenerateNumber() => new Random().Next().ToString();
             string GenerateBinaryOperator() => operators[new Random().Next(0, operators.Length)];
-            string GenerateUnaryOperator() => new[] { "", "-" }[new Random().Next(0, 2)];
+            string GenerateUnaryOperator() => new[] { "", "-", "~" }[new Random().Next(0, 2)];
             var nodesCount = new Random().Next(1, 100);
 
             var source = "";
@@ -186,7 +186,7 @@ namespace Tests
         /// Generate random boolean sequence using default list of operators
         /// </summary>
         internal static string GenerateRandomBooleanSequence()
-            => GenerateRandomBooleanSequence(new string[] { "&&", "||" }, new string[] { "!", "" });
+            => GenerateRandomBooleanSequence(new string[] { "&&", "||", "==", "!=" }, new string[] { "!", "" });
 
         /// <summary>
         /// Generate random boolean sequence using custom list of operators

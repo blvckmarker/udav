@@ -9,14 +9,15 @@ namespace CodeAnalysis.Binder;
 
 public sealed partial class Binder
 {
-    private readonly DiagnosticsBase _diagnostics;
+    private readonly string _sourceProgram;
     private readonly StatementSyntax _syntaxRoot;
-    private readonly IDictionary<string, object> _sessionVariables;
+    private readonly DiagnosticsBase _diagnostics;
+    private readonly IDictionary<VariableSymbol, object> _sessionVariables;
 
     public DiagnosticsBase Diagnostics => _diagnostics;
-    public IDictionary<string, object> SessionVariables => _sessionVariables;
+    public IDictionary<VariableSymbol, object> SessionVariables => _sessionVariables;
 
-    public Binder(SyntaxTree syntaxTree, IDictionary<string, object> sessionVariables)
+    public Binder(SyntaxTree syntaxTree, IDictionary<VariableSymbol, object> sessionVariables)
     {
         if (syntaxTree.Diagnostics.Where(x => x.Kind == IssueKind.Problem).Any())
             throw new Exception("Unable to bind syntax tree when tree has problem issues");
@@ -24,6 +25,7 @@ public sealed partial class Binder
         _syntaxRoot = syntaxTree.Root;
         _diagnostics = syntaxTree.Diagnostics;
         _sessionVariables = sessionVariables;
+        _sourceProgram = _diagnostics.SourceText;
     }
 
     public BoundStatement BindTree() => BindStatement(_syntaxRoot);
@@ -33,6 +35,8 @@ public sealed partial class Binder
     private partial BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax);
     private partial BoundExpression BindBinaryExpression(BinaryExpressionSyntax syntax);
     private partial BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax);
+    private partial BoundExpression BindNameExpression(NameExpressionSyntax syntax);
+    private partial BoundExpression BindDeclaredVariableExpression(DeclaredVariableExpressionSyntax syntax);
 
     private partial BoundStatement BindStatement(StatementSyntax syntax);
     private partial BoundStatement BindAssignmentStatement(AssignmentStatementSyntax statement);

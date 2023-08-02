@@ -1,9 +1,10 @@
-﻿using CodeAnalysis.Compilation;
+﻿using CodeAnalysis;
+using CodeAnalysis.Compilation;
 using CodeAnalysis.Text;
 
 var showVariables = false;
 var showTree = false;
-var sessionVariables = new Dictionary<string, object>();
+var sessionVariables = new Dictionary<VariableSymbol, object>();
 var compiler = new Compiler(sessionVariables);
 
 while (true)

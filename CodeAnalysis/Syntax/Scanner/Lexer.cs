@@ -49,7 +49,7 @@ public class Lexer
             if (!int.TryParse(text, out var value))
                 _diagnostics.MakeIssue($"The number {text} cannot be represented as int32", text, start);
 
-            return new SyntaxToken(SyntaxKind.NumericExpression, start, text, value);
+            return new SyntaxToken(SyntaxKind.NumericToken, start, text, value);
         }
 
         if (char.IsWhiteSpace(CurrentChar))
@@ -74,7 +74,7 @@ public class Lexer
             var length = _position - start;
             var text = _text[start.._position];
 
-            var kind = SyntaxFacts.GetKeywordKind(text); // it maybe literal expression by default
+            var kind = SyntaxFacts.GetKeywordKind(text);
 
             return new SyntaxToken(kind, start, text, text);
         }

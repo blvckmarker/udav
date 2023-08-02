@@ -1,16 +1,17 @@
 ﻿using CodeAnalysis.Binder.BoundExpressions;
-using CodeAnalysis.Syntax;
 
 namespace CodeAnalysis.Binder.BoundStatements;
 public sealed class BoundAssignmentStatement : BoundStatement
 {
-    public BoundAssignmentStatement(SyntaxToken identifierName, BoundExpression boundExpression)
+    public BoundAssignmentStatement(BoundIdentifierType boundIdentifierType, BoundDeclaredVariableExpression identifierName, BoundExpression boundExpression)
     {
-        IdentifierName = identifierName;
+        BoundIdentifierType = boundIdentifierType;
+        BoundIdentifier = identifierName;
         BoundExpression = boundExpression;
     }
 
-    public SyntaxToken IdentifierName { get; }
+    public BoundIdentifierType BoundIdentifierType { get; }
+    public BoundDeclaredVariableExpression BoundIdentifier { get; }
     public BoundExpression BoundExpression { get; }
 
     public override Type Type => BoundExpression.Type;

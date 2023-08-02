@@ -7,8 +7,8 @@ namespace CodeAnalysis;
 public class Evaluator
 {
     private readonly BoundStatement _root;
-    public IDictionary<string, object> LocalVariables;
-    public Evaluator(BoundStatement root, IDictionary<string, object> sessionVariables)
+    public IDictionary<VariableSymbol, object> LocalVariables;
+    public Evaluator(BoundStatement root, IDictionary<VariableSymbol, object> sessionVariables)
     {
         _root = root;
         LocalVariables = sessionVariables;
@@ -20,10 +20,10 @@ public class Evaluator
     {
         if (node is BoundAssignmentStatement assign)
         {
-            var name = assign.IdentifierName.Text;
+            var varReference = assign.BoundIdentifier.Variable;
             var value = EvaluateExpression(assign.BoundExpression);
-            if (!LocalVariables.TryAdd(name, value))
-                throw new Exception($"Local variable `{name}` is already defined");
+            LocalVariables.Add(varReference, value);
+
             return value;
         }
         throw new Exception("Unexpected bound node " + node.Kind);
@@ -32,11 +32,10 @@ public class Evaluator
     private object EvaluateExpression(BoundNode node)
     {
         if (node is BoundLiteralExpression literal)
-        {
-            if (LocalVariables.TryGetValue(literal.Value.ToString(), out var value))
-                return value;
             return literal.Value;
-        }
+
+        if (node is BoundNameExpression name)
+            return LocalVariables[name.Reference];
 
         if (node is BoundUnaryExpression u)
         {
@@ -50,7 +49,7 @@ public class Evaluator
 
                 BoundUnaryOperatorKind.LogicalNot => !(bool)operand,
 
-                _ => throw new InvalidOperationException($"Unexpected unary expression {u.OperatorToken}"),
+                _ => throw new InvalidOperationException($"Unexpected unary operator {u.OperatorToken}"),
             };
         }
 
@@ -87,6 +86,6 @@ public class Evaluator
         if (node is BoundParenthesizedExpression p)
             return EvaluateExpression(p.BoundExpression);
 
-        throw new Exception($"Unexpected node {node.Kind}");
+        throw new Exception($"Unexpected bound node {node.Kind}");
     }
 }

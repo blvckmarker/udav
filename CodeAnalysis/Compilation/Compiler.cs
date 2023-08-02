@@ -8,9 +8,9 @@ using CodeAnalysis.Text;
 
 public sealed class Compiler
 {
-    public IDictionary<string, object> SessionVariables { get; private set; }
+    public IDictionary<VariableSymbol, object> SessionVariables { get; private set; }
 
-    public Compiler(IDictionary<string, object> sessionVariables)
+    public Compiler(IDictionary<VariableSymbol, object> sessionVariables)
     {
         SessionVariables = sessionVariables;
     }
@@ -48,7 +48,7 @@ public sealed class Compiler
         SessionVariables = evaluator.LocalVariables;
 
         if (environmentVariables.ShowVariables)
-            showVariables(evaluator.LocalVariables);
+            showVariables(SessionVariables);
 
         var warningDiagnostics = lexer.Diagnostics
                                       .Extend(syntaxTree.Diagnostics)
@@ -56,10 +56,10 @@ public sealed class Compiler
 
         return new CompilationResult(CompilationResultKind.Success, result, warningDiagnostics);
     }
-    private void showVariables(IDictionary<string, object> variables)
+    private void showVariables(IDictionary<VariableSymbol, object> variables)
     {
         foreach (var variable in variables)
-            Console.WriteLine($"{variable.Key}:{variable.Value}");
+            Console.WriteLine($"{variable.Key.Name}:{variable.Key.Type}:{variable.Value}");
     }
     private void showTree(SyntaxNode node, string shift = "")
     {

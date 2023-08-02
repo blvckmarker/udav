@@ -19,7 +19,7 @@ public class LexicalAnalysisTest
     [Fact]
     public static void AllTokensTest()
     {
-        var source = "+ - * / ( ) ! && & || | ^ = == != ~ <= > >= % <";
+        var source = "+ - * / ( ) ! && & || | ^ = == != ~ <= > >= % < a 0";
 
         var expected = Utils.GetTokens(source).MapTokensToBasic().ToList();
 
@@ -37,7 +37,7 @@ public class LexicalAnalysisTest
     [Fact]
     public static void AllKeywordsTest()
     {
-        var source = "true false let";
+        var source = "true false int let bool";
         var expected = Utils.GetTokens(source).MapTokensToBasic().ToList();
         var actual = typeof(SyntaxKind).GetEnumNames()
                                        .Where(x => x.EndsWith("Keyword"))
@@ -63,8 +63,8 @@ public class LexicalAnalysisTest
     {
         var expected = new List<BasicTokenModel>
             {
-                new(SyntaxKind.NumericExpression, "111"),
-                new(SyntaxKind.NameExpression, "a"),
+                new(SyntaxKind.NumericToken, "111"),
+                new(SyntaxKind.IdentifierToken, "a"),
                 new(SyntaxKind.MinusToken, "-"),
                 new(SyntaxKind.PlusToken, "+"),
             };
@@ -79,7 +79,7 @@ public class LexicalAnalysisTest
     {
         var primaryExpected = new List<BasicTokenModel>
             {
-                new(SyntaxKind.NameExpression, "abc"),
+                new(SyntaxKind.IdentifierToken, "abc"),
             };
         var actual = Utils.GetTokens("abc").MapTokensToBasic();
         Assert.Equal(actual, primaryExpected);

@@ -12,16 +12,48 @@ public sealed partial class Binder
         switch (syntax.Kind)
         {
             case SyntaxKind.LiteralExpression:
-                return BindLiteralExpression(syntax as LiteralExpressionSyntax);
+                return BindLiteralExpression((LiteralExpressionSyntax)syntax);
+            case SyntaxKind.NameExpression:
+                return BindNameExpression((NameExpressionSyntax)syntax);
+            case SyntaxKind.DeclaredVariableExpression:
+                return BindDeclaredVariableExpression((DeclaredVariableExpressionSyntax)syntax);
             case SyntaxKind.BinaryExpression:
-                return BindBinaryExpression(syntax as BinaryExpressionSyntax);
+                return BindBinaryExpression((BinaryExpressionSyntax)syntax);
             case SyntaxKind.UnaryExpression:
-                return BindUnaryExpression(syntax as UnaryExpressionSyntax);
+                return BindUnaryExpression((UnaryExpressionSyntax)syntax);
             case SyntaxKind.ParenthesizedExpression:
-                return BindParenthesizedExpression(syntax as ParenthesizedExpressionSyntax);
+                return BindParenthesizedExpression((ParenthesizedExpressionSyntax)syntax);
             default:
                 throw new NotSupportedException(syntax.Kind.ToString());
         }
+    }
+
+    private partial BoundExpression BindDeclaredVariableExpression(DeclaredVariableExpressionSyntax syntax)
+    {
+        var name = syntax.Identifier.Text;
+        var declaredVariable = _sessionVariables.Keys.FirstOrDefault(x => x.Name == name);
+
+        if (declaredVariable is not null)
+        {
+            _diagnostics.MakeIssue($"Local variable is already defined", name, syntax.Identifier.StartPosition, IssueKind.Problem);
+            var variableSymbol = new VariableSymbol(name, typeof(int));
+            return new BoundDeclaredVariableExpression(variableSymbol);
+        }
+
+        var variable = new VariableSymbol(name, null);
+        return new BoundDeclaredVariableExpression(variable);
+    }
+
+    private partial BoundExpression BindNameExpression(NameExpressionSyntax syntax)
+    {
+        var name = syntax.Identifier.Text;
+        var varReference = _sessionVariables.Keys.FirstOrDefault(x => x.Name == name);
+        if (varReference is null)
+        {
+            _diagnostics.MakeIssue($"Undefined local variable", name, syntax.Identifier.StartPosition, IssueKind.Problem);
+            return new BoundLiteralExpression(0);
+        }
+        return new BoundNameExpression(varReference);
     }
 
     private partial BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax)
@@ -32,15 +64,13 @@ public sealed partial class Binder
     private partial BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
     {
         var operand = BindExpression(syntax.Operand);
-
-        if (operand.Kind == BoundNodeKind.LiteralExpression && (operand as BoundLiteralExpression).Value is null)
-            return operand;
-
         var operatorToken = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, operand.Type);
 
         if (operatorToken is null)
-            _diagnostics.MakeIssue($"Unary operator {syntax.OperatorToken.Text} is not defined for type {operand.Type}",
-                                    _diagnostics.SourceText[syntax.StartPosition..syntax.EndPosition], syntax.StartPosition);
+        {
+            _diagnostics.MakeIssue($"Unary operator {syntax.OperatorToken.Text} is not defined for type {operand.Type}", _sourceProgram[syntax.StartPosition..syntax.EndPosition], syntax.StartPosition);
+            return operand;
+        }
 
         return new BoundUnaryExpression(operatorToken, operand);
     }
@@ -48,44 +78,21 @@ public sealed partial class Binder
     {
         var left = BindExpression(syntax.Left);
         var right = BindExpression(syntax.Right);
-
-        if ((left.Kind == BoundNodeKind.LiteralExpression && (left as BoundLiteralExpression).Value is null)
-         || (right.Kind == BoundNodeKind.LiteralExpression && (right as BoundLiteralExpression).Value is null))
-            return left;
-
         var operatorToken = BoundBinaryOperator.Bind(syntax.OperatorToken.Kind, left.Type, right.Type);
 
         if (operatorToken is null)
         {
-            _diagnostics.MakeIssue($"Unknown operator `{syntax.OperatorToken.Kind}` for types `{left.Type}` and `{right.Type}`",
-                                    _diagnostics.SourceText[syntax.StartPosition..syntax.EndPosition], syntax.StartPosition);
+            _diagnostics.MakeIssue($"Unknown operator `{syntax.OperatorToken.Kind}` for types `{left.Type}` and `{right.Type}`", _sourceProgram[syntax.StartPosition..syntax.EndPosition], syntax.StartPosition);
             return left;
         }
 
         return new BoundBinaryExpression(left, operatorToken, right);
     }
+
     private partial BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax)
     {
-        switch (syntax.LiteralToken.Kind)
-        {
-            case SyntaxKind.NameExpression:
-                {
-                    if (!_sessionVariables.TryGetValue(syntax.LiteralToken.Text, out var localValue))
-                    {
-                        _diagnostics.MakeIssue($"Undefined local variable {syntax.Value}", syntax.LiteralToken.Text, syntax.LiteralToken.StartPosition, IssueKind.Problem);
-                        return new BoundLiteralExpression(null);
-                    }
-                    return new BoundLiteralExpression(localValue);
-                }
-
-            case SyntaxKind.TrueKeyword:
-            case SyntaxKind.FalseKeyword:
-                return new BoundLiteralExpression((bool)syntax.Value);
-
-            default:
-                var value = syntax.Value ?? new object();
-                return new BoundLiteralExpression(value);
-        }
+        var value = syntax.Value ?? 0;
+        return new BoundLiteralExpression(value);
     }
 
 }

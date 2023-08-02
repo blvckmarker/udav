@@ -44,6 +44,20 @@ public class Parser
         _diagnostics.MakeIssue($"Unexpected token <{Current.Kind}> expected <{kind}>", Current.Text, Current.StartPosition);
         return new SyntaxToken(kind, Current.StartPosition, Current.EndPosition, Current.Text, null);
     }
+    private SyntaxToken MatchTypeToken()
+    {
+        switch (Current.Kind)
+        {
+            case SyntaxKind.LetKeyword:
+            case SyntaxKind.IntKeyword:
+            case SyntaxKind.BoolKeyword:
+            case SyntaxKind.NameExpression:
+                return TakeToken();
+            default:
+                _diagnostics.MakeIssue($"Unexpected token <{Current.Kind}> expected <NameExpression>", Current.Text, Current.StartPosition);
+                return new SyntaxToken(Current.Kind, Current.StartPosition, Current.EndPosition, Current.Text, null);
+        }
+    }
 
     public SyntaxTree ParseTree()
     {
@@ -53,7 +67,14 @@ public class Parser
     }
 
     /*
+     * block : statement*
      * 
+     * statement : assignment_statement
+     *           | if_statement
+     *           | for_statement
+     *           |
+     *           ...
+     *           
      * 
      * assignment_statement : LET_KEYWORD name EQUALTOKEN expression
      * 
@@ -64,6 +85,7 @@ public class Parser
      *            | expression op=('+' | '-') expression
      *            | '!' expression
      *            | expression op=('&&'| '||') expression
+     *            | name "=" expression
      *            | primary
      * 
      * 
@@ -82,16 +104,31 @@ public class Parser
 
     private StatementSyntax ParseAssignmentStatement()
     {
-        var letToken = MatchToken(SyntaxKind.LetKeyword);
-        var identifierName = MatchToken(SyntaxKind.NameExpression);
+        var typeToken = MatchTypeToken();
+        var identifier = ParseDeclaredVariableExpression(typeToken.Kind);
         var equalToken = MatchToken(SyntaxKind.EqualsToken);
         var expression = ParseExpression();
-        return new AssignmentStatementSyntax(letToken, identifierName, equalToken, expression);
+        return new AssignmentStatementSyntax(typeToken, identifier, equalToken, expression);
     }
 
+    private ExpressionSyntax ParseExpression()
+    {
+        if (Peek(0).Kind == SyntaxKind.IdentifierToken &&
+            Peek(1).Kind == SyntaxKind.EqualsToken)
+            return ParseAssignmentExpression();
 
+        return ParseBinaryExpression();
+    }
 
-    private ExpressionSyntax ParseExpression(int parentPrecedence = 0)
+    private ExpressionSyntax ParseAssignmentExpression()
+    {
+        var name = ParseNameExpression();
+        var equalsToken = TakeToken();
+        var expression = ParseExpression();
+        return new AssignmentExpressionSyntax(name, equalsToken, expression);
+    }
+
+    private ExpressionSyntax ParseBinaryExpression(int parentPrecedence = 0)
     {
         ExpressionSyntax left;
         var unaryOperatorPrecedence = Current.Kind.GetUnaryOperatorPrecedence();
@@ -99,7 +136,7 @@ public class Parser
         if (unaryOperatorPrecedence != 0 && unaryOperatorPrecedence > parentPrecedence)
         {
             var operatorToken = TakeToken();
-            var operand = ParseExpression(unaryOperatorPrecedence);
+            var operand = ParseBinaryExpression(unaryOperatorPrecedence);
 
             left = new UnaryExpressionSyntax(operatorToken, operand);
         }
@@ -116,7 +153,7 @@ public class Parser
                 break;
 
             var operatorToken = TakeToken();
-            var right = ParseExpression(precedence);
+            var right = ParseBinaryExpression(precedence);
 
             left = new BinaryExpressionSyntax(left, operatorToken, right);
         }
@@ -135,7 +172,7 @@ public class Parser
             case SyntaxKind.FalseKeyword:
                 return ParseBooleanExpression();
 
-            case SyntaxKind.NumericExpression:
+            case SyntaxKind.NumericToken:
                 return ParseNumericExpression();
 
             default:
@@ -152,20 +189,26 @@ public class Parser
 
     private LiteralExpressionSyntax ParseNumericExpression()
     {
-        var numberToken = MatchToken(SyntaxKind.NumericExpression);
+        var numberToken = MatchToken(SyntaxKind.NumericToken);
         return new LiteralExpressionSyntax(numberToken, (int)numberToken.Value!);
     }
 
-    private LiteralExpressionSyntax ParseNameExpression()
+    private NameExpressionSyntax ParseNameExpression()
     {
-        var literalToken = MatchToken(SyntaxKind.NameExpression);
-        return new LiteralExpressionSyntax(literalToken);
+        var literalToken = MatchToken(SyntaxKind.IdentifierToken);
+        return new NameExpressionSyntax(literalToken);
+    }
+
+    private DeclaredVariableExpressionSyntax ParseDeclaredVariableExpression(SyntaxKind typeKind)
+    {
+        var variableToken = MatchToken(SyntaxKind.IdentifierToken);
+        return new DeclaredVariableExpressionSyntax(variableToken, typeKind);
     }
 
     private ParenthesizedExpressionSyntax ParseParenthesizedExpression()
     {
         var left = TakeToken();
-        var expression = ParseExpression();
+        var expression = ParseBinaryExpression();
         var right = MatchToken(SyntaxKind.CloseParenToken);
         return new ParenthesizedExpressionSyntax(left, expression, right);
     }

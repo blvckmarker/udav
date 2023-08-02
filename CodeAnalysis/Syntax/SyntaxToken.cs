@@ -28,4 +28,5 @@ public class SyntaxToken : SyntaxNode
     public string Text { get; set; }
     public object? Value { get; set; }
     public override IEnumerable<SyntaxNode> GetChildren() => Enumerable.Empty<SyntaxNode>();
+
 }

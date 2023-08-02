@@ -31,9 +31,11 @@ internal static class SyntaxFacts
     public static SyntaxKind GetKeywordKind(string text)
         => text switch
         {
+            "bool" => SyntaxKind.BoolKeyword,
+            "int" => SyntaxKind.IntKeyword,
             "let" => SyntaxKind.LetKeyword,
             "true" => SyntaxKind.TrueKeyword,
             "false" => SyntaxKind.FalseKeyword,
-            _ => SyntaxKind.NameExpression
+            _ => SyntaxKind.IdentifierToken
         };
 }
