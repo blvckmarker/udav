@@ -6,7 +6,7 @@ namespace Tests;
 public class CompilationTest
 {
     [Fact]
-    public static void SyntaxErrorTestLexer()
+    public static void SyntaxErrorTestTreeSimple()
     {
         var compiler = new Compiler(new Dictionary<VariableSymbol, object>());
         var compResult = compiler.Compile("leee baran", new());
@@ -132,6 +132,43 @@ public class CompilationTest
 
         Assert.Equal(CompilationResultKind.Success, compResult.Kind);
         Assert.Equal(-1, (int)compResult.ReturnResult);
+    }
+
+    [Fact]
+    public static void SemanticErrorTestUsingAssignmentExpressionWrapper()
+    {
+        var compiler = new Compiler(new Dictionary<VariableSymbol, object>());
+        var compResult = compiler.Compile("let a = as", new());
+
+        Assert.Equal(CompilationResultKind.SemanticError, compResult.Kind);
+    }
+
+    [Fact]
+    public static void CorrectProgramTestUsingAssignmentExpressionWrapper()
+    {
+        var compiler = new Compiler(new Dictionary<VariableSymbol, object>());
+        var _ = compiler.Compile("let a = true", new());
+        var compResult = compiler.Compile("a = a || false && a", new());
+
+        Assert.Equal(CompilationResultKind.Success, compResult.Kind);
+        Assert.True((bool)compResult.ReturnResult);
+    }
+
+
+    [Fact]
+    public static void CorrectProgramTestMultiAssignmentExpression()
+    {
+        var compiler = new Compiler(new Dictionary<VariableSymbol, object>());
+        compiler.Compile("let a = 0", new());
+        compiler.Compile("let b = 1", new());
+        compiler.Compile("let c = 2", new());
+        var compResult = compiler.Compile("a = b = c = 3", new());
+
+        Assert.Equal(CompilationResultKind.Success, compResult.Kind);
+        Assert.Equal(3, compResult.ReturnResult);
+
+        foreach (var item in compiler.SessionVariables)
+            Assert.Equal(3, item.Value);
     }
 
 }
