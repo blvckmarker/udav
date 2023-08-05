@@ -1,5 +1,4 @@
 ﻿using CodeAnalysis.Binder.BoundExpressions;
-using CodeAnalysis.Binder.Core;
 
 namespace CodeAnalysis.Binder.BoundStatements;
 public sealed class BoundAssignmentStatement : BoundStatement

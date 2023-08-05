@@ -28,13 +28,13 @@ public sealed partial class Binder
         }
     }
 
-    private partial BoundExpression BindAssignmentExpression(AssignmentExpressionSyntax expressionSyntax)
+    private partial BoundAssignmentExpression BindAssignmentExpression(AssignmentExpressionSyntax expressionSyntax)
     {
         var boundIdentifier = (BoundNameExpression)BindNameExpression(expressionSyntax.Name);
         var boundExpression = BindExpression(expressionSyntax.Expression);
         return new BoundAssignmentExpression(boundIdentifier, boundExpression);
     }
-    private partial BoundExpression BindNameExpression(NameExpressionSyntax syntax)
+    private partial BoundNameExpression BindNameExpression(NameExpressionSyntax syntax)
     {
         var name = syntax.Identifier.Text;
         var varReference = _sessionVariables.Keys.FirstOrDefault(x => x.Name == name);
@@ -47,40 +47,34 @@ public sealed partial class Binder
         return new BoundNameExpression(varReference);
     }
 
-    private partial BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax)
+    private partial BoundParenthesizedExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax)
     {
         var boundExpression = BindExpression(syntax.Expression);
         return new BoundParenthesizedExpression(boundExpression);
     }
-    private partial BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
+    private partial BoundUnaryExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
     {
         var operand = BindExpression(syntax.Operand);
         var operatorToken = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, operand.Type);
 
         if (operatorToken is null)
-        {
             _diagnostics.MakeIssue($"Unary operator {syntax.OperatorToken.Text} is not defined for type {operand.Type}", _sourceProgram[syntax.StartPosition..syntax.EndPosition], syntax.StartPosition);
-            return operand;
-        }
 
         return new BoundUnaryExpression(operatorToken, operand);
     }
-    private partial BoundExpression BindBinaryExpression(BinaryExpressionSyntax syntax)
+    private partial BoundBinaryExpression BindBinaryExpression(BinaryExpressionSyntax syntax)
     {
         var left = BindExpression(syntax.Left);
         var right = BindExpression(syntax.Right);
         var operatorToken = BoundBinaryOperator.Bind(syntax.OperatorToken.Kind, left.Type, right.Type);
 
         if (operatorToken is null)
-        {
             _diagnostics.MakeIssue($"Unknown operator `{syntax.OperatorToken.Kind}` for types `{left.Type}` and `{right.Type}`", _sourceProgram[syntax.StartPosition..syntax.EndPosition], syntax.StartPosition);
-            return left;
-        }
 
         return new BoundBinaryExpression(left, operatorToken, right);
     }
 
-    private partial BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax)
+    private partial BoundLiteralExpression BindLiteralExpression(LiteralExpressionSyntax syntax)
     {
         var value = syntax.Value ?? 0;
         return new BoundLiteralExpression(value);

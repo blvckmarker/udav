@@ -31,14 +31,14 @@ public sealed partial class Binder
     public BoundStatement BindTree() => BindStatement(_syntaxRoot);
 
     private partial BoundExpression BindExpression(ExpressionSyntax syntax);
-    private partial BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax);
-    private partial BoundExpression BindAssignmentExpression(AssignmentExpressionSyntax expressionSyntax);
-    private partial BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax);
-    private partial BoundExpression BindBinaryExpression(BinaryExpressionSyntax syntax);
-    private partial BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax);
-    private partial BoundExpression BindNameExpression(NameExpressionSyntax syntax);
+    private partial BoundParenthesizedExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax);
+    private partial BoundAssignmentExpression BindAssignmentExpression(AssignmentExpressionSyntax expressionSyntax);
+    private partial BoundUnaryExpression BindUnaryExpression(UnaryExpressionSyntax syntax);
+    private partial BoundBinaryExpression BindBinaryExpression(BinaryExpressionSyntax syntax);
+    private partial BoundLiteralExpression BindLiteralExpression(LiteralExpressionSyntax syntax);
+    private partial BoundNameExpression BindNameExpression(NameExpressionSyntax syntax);
 
     private partial BoundStatement BindStatement(StatementSyntax syntax);
-    private partial BoundStatement BindAssignmentExpressionStatement(AssignmentExpressionStatementSyntax syntax);
-    private partial BoundStatement BindAssignmentStatement(AssignmentStatementSyntax statement);
+    private partial BoundAssignmentExpressionStatement BindAssignmentExpressionStatement(AssignmentExpressionStatementSyntax syntax);
+    private partial BoundAssignmentStatement BindAssignmentStatement(AssignmentStatementSyntax statement);
 }

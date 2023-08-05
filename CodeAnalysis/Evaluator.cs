@@ -29,8 +29,7 @@ public class Evaluator
 
             return value;
         }
-
-        if (node is BoundAssignmentExpressionStatement assignWrap) // a = b = c
+        if (node is BoundAssignmentExpressionStatement assignWrap)
         {
             var value = EvaluateExpression(assignWrap.BoundExpression);
             _localVariables[assignWrap.BoundIdentifier.Reference] = value;

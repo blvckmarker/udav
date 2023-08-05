@@ -1,5 +1,4 @@
-﻿using CodeAnalysis.Binder.BoundExpressions;
-using CodeAnalysis.Binder.BoundStatements;
+﻿using CodeAnalysis.Binder.BoundStatements;
 using CodeAnalysis.Syntax;
 using CodeAnalysis.Syntax.Parser.Expressions;
 using CodeAnalysis.Syntax.Parser.Statements;
@@ -17,14 +16,15 @@ public sealed partial class Binder
             _ => throw new NotSupportedException(syntax.Kind.ToString())
         };
 
-    private partial BoundStatement BindAssignmentExpressionStatement(AssignmentExpressionStatementSyntax syntax)
+    private partial BoundAssignmentExpressionStatement BindAssignmentExpressionStatement(AssignmentExpressionStatementSyntax syntax)
     {
-        var expressionSyntax = new AssignmentExpressionSyntax(syntax.Identifier, syntax.EqualsToken, syntax.Expression);
-        var assignmentExpression = (BoundAssignmentExpression)BindAssignmentExpression(expressionSyntax);
+        var asExpressionSyntax = new AssignmentExpressionSyntax(syntax.Identifier, syntax.EqualsToken, syntax.Expression);
+        var assignmentExpression = BindAssignmentExpression(asExpressionSyntax);
+
         return new BoundAssignmentExpressionStatement(assignmentExpression.BoundIdentifier, assignmentExpression.BoundExpression);
     }
 
-    private partial BoundStatement BindAssignmentStatement(AssignmentStatementSyntax statement)
+    private partial BoundAssignmentStatement BindAssignmentStatement(AssignmentStatementSyntax statement)
     {
         var boundType = BoundIdentifierType.Bind(statement.TypeToken.Kind);
         var identifierName = statement.IdentifierToken.Text;

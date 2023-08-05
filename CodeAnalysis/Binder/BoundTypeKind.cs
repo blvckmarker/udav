@@ -1,4 +1,4 @@
-﻿namespace CodeAnalysis.Binder.Core;
+﻿namespace CodeAnalysis.Binder;
 public enum BoundTypeKind
 {
     DefinedType,
