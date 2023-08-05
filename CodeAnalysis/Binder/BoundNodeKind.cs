@@ -8,5 +8,7 @@ public enum BoundNodeKind
     ParenthesizedExpression,
     AssignmentStatement,
     NameExpression,
-    DeclaredVariableExpression
+    DeclaredVariableExpression,
+    AssignmentExpression,
+    AssignmentExpressionStatement
 }

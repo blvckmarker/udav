@@ -1,5 +1,5 @@
 ﻿using CodeAnalysis;
-using CodeAnalysis.Binder;
+using CodeAnalysis.Binder.Core;
 using CodeAnalysis.Compilation;
 using CodeAnalysis.Syntax;
 using CodeAnalysis.Syntax.Parser;

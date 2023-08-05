@@ -3,7 +3,7 @@ using CodeAnalysis.Syntax;
 using CodeAnalysis.Syntax.Parser.Expressions;
 using CodeAnalysis.Text;
 
-namespace CodeAnalysis.Binder;
+namespace CodeAnalysis.Binder.Core;
 
 public sealed partial class Binder
 {
@@ -15,8 +15,8 @@ public sealed partial class Binder
                 return BindLiteralExpression((LiteralExpressionSyntax)syntax);
             case SyntaxKind.NameExpression:
                 return BindNameExpression((NameExpressionSyntax)syntax);
-            case SyntaxKind.DeclaredVariableExpression:
-                return BindDeclaredVariableExpression((DeclaredVariableExpressionSyntax)syntax);
+            case SyntaxKind.AssignmentExpression:
+                return BindAssignmentExpression((AssignmentExpressionSyntax)syntax);
             case SyntaxKind.BinaryExpression:
                 return BindBinaryExpression((BinaryExpressionSyntax)syntax);
             case SyntaxKind.UnaryExpression:
@@ -28,22 +28,12 @@ public sealed partial class Binder
         }
     }
 
-    private partial BoundExpression BindDeclaredVariableExpression(DeclaredVariableExpressionSyntax syntax)
+    private partial BoundExpression BindAssignmentExpression(AssignmentExpressionSyntax expressionSyntax)
     {
-        var name = syntax.Identifier.Text;
-        var declaredVariable = _sessionVariables.Keys.FirstOrDefault(x => x.Name == name);
-
-        if (declaredVariable is not null)
-        {
-            _diagnostics.MakeIssue($"Local variable is already defined", name, syntax.Identifier.StartPosition, IssueKind.Problem);
-            var variableSymbol = new VariableSymbol(name, typeof(int));
-            return new BoundDeclaredVariableExpression(variableSymbol);
-        }
-
-        var variable = new VariableSymbol(name, null);
-        return new BoundDeclaredVariableExpression(variable);
+        var boundIdentifier = (BoundNameExpression)BindNameExpression(expressionSyntax.Name);
+        var boundExpression = BindExpression(expressionSyntax.Expression);
+        return new BoundAssignmentExpression(boundIdentifier, boundExpression);
     }
-
     private partial BoundExpression BindNameExpression(NameExpressionSyntax syntax)
     {
         var name = syntax.Identifier.Text;
@@ -51,7 +41,8 @@ public sealed partial class Binder
         if (varReference is null)
         {
             _diagnostics.MakeIssue($"Undefined local variable", name, syntax.Identifier.StartPosition, IssueKind.Problem);
-            return new BoundLiteralExpression(0);
+            var errorSymbol = new VariableSymbol(name, null);
+            return new BoundNameExpression(errorSymbol);
         }
         return new BoundNameExpression(varReference);
     }

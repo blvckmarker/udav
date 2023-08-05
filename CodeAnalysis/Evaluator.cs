@@ -7,11 +7,14 @@ namespace CodeAnalysis;
 public class Evaluator
 {
     private readonly BoundStatement _root;
-    public IDictionary<VariableSymbol, object> LocalVariables;
+    private IDictionary<VariableSymbol, object> _localVariables;
+
+    public IDictionary<VariableSymbol, object> LocalVariables => _localVariables;
+
     public Evaluator(BoundStatement root, IDictionary<VariableSymbol, object> sessionVariables)
     {
         _root = root;
-        LocalVariables = sessionVariables;
+        _localVariables = sessionVariables;
     }
 
     public object Evaluate() => EvaluateStatement(_root);
@@ -20,12 +23,21 @@ public class Evaluator
     {
         if (node is BoundAssignmentStatement assign)
         {
-            var varReference = assign.BoundIdentifier.Variable;
+            var newVariable = assign.BoundIdentifier;
             var value = EvaluateExpression(assign.BoundExpression);
-            LocalVariables.Add(varReference, value);
+            _localVariables.Add(newVariable, value);
 
             return value;
         }
+
+        if (node is BoundAssignmentExpressionStatement assignWrap) // a = b = c
+        {
+            var value = EvaluateExpression(assignWrap.BoundExpression);
+            _localVariables[assignWrap.BoundIdentifier.Reference] = value;
+
+            return value;
+        }
+
         throw new Exception("Unexpected bound node " + node.Kind);
     }
 
@@ -35,7 +47,15 @@ public class Evaluator
             return literal.Value;
 
         if (node is BoundNameExpression name)
-            return LocalVariables[name.Reference];
+            return _localVariables[name.Reference];
+
+        if (node is BoundAssignmentExpression assignment)
+        {
+            var rightExpression = EvaluateExpression(assignment.BoundExpression);
+            _localVariables[assignment.BoundIdentifier.Reference] = rightExpression;
+
+            return rightExpression;
+        }
 
         if (node is BoundUnaryExpression u)
         {

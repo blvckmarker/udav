@@ -1,6 +1,6 @@
 ﻿using CodeAnalysis.Syntax;
 
-namespace CodeAnalysis.Binder.BoundExpressions;
+namespace CodeAnalysis.Binder.Core;
 
 public class BoundIdentifierType
 {

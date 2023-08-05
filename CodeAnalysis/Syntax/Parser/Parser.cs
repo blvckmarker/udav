@@ -51,10 +51,10 @@ public class Parser
             case SyntaxKind.LetKeyword:
             case SyntaxKind.IntKeyword:
             case SyntaxKind.BoolKeyword:
-            case SyntaxKind.NameExpression:
+            case SyntaxKind.IdentifierToken:
                 return TakeToken();
             default:
-                _diagnostics.MakeIssue($"Unexpected token <{Current.Kind}> expected <NameExpression>", Current.Text, Current.StartPosition);
+                _diagnostics.MakeIssue($"Unexpected token <{Current.Kind}> expected <IdentifierToken>", Current.Text, Current.StartPosition);
                 return new SyntaxToken(Current.Kind, Current.StartPosition, Current.EndPosition, Current.Text, null);
         }
     }
@@ -98,17 +98,29 @@ public class Parser
 
     private StatementSyntax ParseStatement()
     {
-        var statement = ParseAssignmentStatement();
-        return statement;
+        if (Peek(0).Kind == SyntaxKind.LetKeyword)
+            return ParseAssignmentStatement();
+
+        return ParseAssignmentExpressionStatement();
     }
 
     private StatementSyntax ParseAssignmentStatement()
     {
         var typeToken = MatchTypeToken();
-        var identifier = ParseDeclaredVariableExpression(typeToken.Kind);
+        var identifier = MatchToken(SyntaxKind.IdentifierToken);
         var equalToken = MatchToken(SyntaxKind.EqualsToken);
         var expression = ParseExpression();
+
         return new AssignmentStatementSyntax(typeToken, identifier, equalToken, expression);
+    }
+
+    private StatementSyntax ParseAssignmentExpressionStatement()
+    {
+        var assignmentExpression = (AssignmentExpressionSyntax)ParseAssignmentExpression();
+        return new AssignmentExpressionStatementSyntax(
+            assignmentExpression.Name,
+            assignmentExpression.EqualsToken,
+            assignmentExpression.Expression);
     }
 
     private ExpressionSyntax ParseExpression()
@@ -123,7 +135,7 @@ public class Parser
     private ExpressionSyntax ParseAssignmentExpression()
     {
         var name = ParseNameExpression();
-        var equalsToken = TakeToken();
+        var equalsToken = MatchToken(SyntaxKind.EqualsToken);
         var expression = ParseExpression();
         return new AssignmentExpressionSyntax(name, equalsToken, expression);
     }
@@ -180,6 +192,7 @@ public class Parser
         }
     }
 
+
     private LiteralExpressionSyntax ParseBooleanExpression()
     {
         var booleanValue = Current.Kind == SyntaxKind.TrueKeyword;
@@ -197,12 +210,6 @@ public class Parser
     {
         var literalToken = MatchToken(SyntaxKind.IdentifierToken);
         return new NameExpressionSyntax(literalToken);
-    }
-
-    private DeclaredVariableExpressionSyntax ParseDeclaredVariableExpression(SyntaxKind typeKind)
-    {
-        var variableToken = MatchToken(SyntaxKind.IdentifierToken);
-        return new DeclaredVariableExpressionSyntax(variableToken, typeKind);
     }
 
     private ParenthesizedExpressionSyntax ParseParenthesizedExpression()

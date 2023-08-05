@@ -5,7 +5,7 @@ using CodeAnalysis.Syntax.Parser.Expressions;
 using CodeAnalysis.Syntax.Parser.Statements;
 using CodeAnalysis.Text;
 
-namespace CodeAnalysis.Binder;
+namespace CodeAnalysis.Binder.Core;
 
 public sealed partial class Binder
 {
@@ -32,12 +32,13 @@ public sealed partial class Binder
 
     private partial BoundExpression BindExpression(ExpressionSyntax syntax);
     private partial BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax);
+    private partial BoundExpression BindAssignmentExpression(AssignmentExpressionSyntax expressionSyntax);
     private partial BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax);
     private partial BoundExpression BindBinaryExpression(BinaryExpressionSyntax syntax);
     private partial BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax);
     private partial BoundExpression BindNameExpression(NameExpressionSyntax syntax);
-    private partial BoundExpression BindDeclaredVariableExpression(DeclaredVariableExpressionSyntax syntax);
 
     private partial BoundStatement BindStatement(StatementSyntax syntax);
+    private partial BoundStatement BindAssignmentExpressionStatement(AssignmentExpressionStatementSyntax syntax);
     private partial BoundStatement BindAssignmentStatement(AssignmentStatementSyntax statement);
 }

@@ -1,9 +1,10 @@
 ﻿using CodeAnalysis.Binder.BoundExpressions;
+using CodeAnalysis.Binder.Core;
 
 namespace CodeAnalysis.Binder.BoundStatements;
 public sealed class BoundAssignmentStatement : BoundStatement
 {
-    public BoundAssignmentStatement(BoundIdentifierType boundIdentifierType, BoundDeclaredVariableExpression identifierName, BoundExpression boundExpression)
+    public BoundAssignmentStatement(BoundIdentifierType boundIdentifierType, VariableSymbol identifierName, BoundExpression boundExpression)
     {
         BoundIdentifierType = boundIdentifierType;
         BoundIdentifier = identifierName;
@@ -11,7 +12,7 @@ public sealed class BoundAssignmentStatement : BoundStatement
     }
 
     public BoundIdentifierType BoundIdentifierType { get; }
-    public BoundDeclaredVariableExpression BoundIdentifier { get; }
+    public VariableSymbol BoundIdentifier { get; }
     public BoundExpression BoundExpression { get; }
 
     public override Type Type => BoundExpression.Type;

@@ -45,4 +45,5 @@ public enum SyntaxKind
     DeclaredVariableExpression,
 
     AssignmentStatement,
+    AssignmentExpressionStatement,
 }

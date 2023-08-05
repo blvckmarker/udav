@@ -7,7 +7,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using System.Data;
 using System.Numerics;
 using System.Reflection;
-using Binder = CodeAnalysis.Binder.Binder;
+
+using Binder = CodeAnalysis.Binder.Core.Binder;
 using Diagnostic = CodeAnalysis.Text.Diagnostics;
 using SyntaxKind = CodeAnalysis.Syntax.SyntaxKind;
 using SyntaxToken = CodeAnalysis.Syntax.SyntaxToken;
