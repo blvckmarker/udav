@@ -30,17 +30,17 @@ public sealed partial class Binder
 
     private partial BoundAssignmentExpression BindAssignmentExpression(AssignmentExpressionSyntax expressionSyntax)
     {
-        var boundIdentifier = (BoundNameExpression)BindNameExpression(expressionSyntax.Name);
+        var boundIdentifier = BindNameExpression(expressionSyntax.Name);
         var boundExpression = BindExpression(expressionSyntax.Expression);
         return new BoundAssignmentExpression(boundIdentifier, boundExpression);
     }
     private partial BoundNameExpression BindNameExpression(NameExpressionSyntax syntax)
     {
-        var name = syntax.Identifier.Text;
+        var name = syntax.Name.Text;
         var varReference = _sessionVariables.Keys.FirstOrDefault(x => x.Name == name);
         if (varReference is null)
         {
-            _diagnostics.MakeIssue($"Undefined local variable", name, syntax.Identifier.StartPosition, IssueKind.Problem);
+            _diagnostics.MakeIssue($"Undefined local variable", name, syntax.Name.StartPosition, IssueKind.Problem);
             var errorSymbol = new VariableSymbol(name, null);
             return new BoundNameExpression(errorSymbol);
         }

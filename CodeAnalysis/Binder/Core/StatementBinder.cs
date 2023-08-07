@@ -19,9 +19,14 @@ public sealed partial class Binder
     private partial BoundAssignmentExpressionStatement BindAssignmentExpressionStatement(AssignmentExpressionStatementSyntax syntax)
     {
         var asExpressionSyntax = new AssignmentExpressionSyntax(syntax.Identifier, syntax.EqualsToken, syntax.Expression);
-        var assignmentExpression = BindAssignmentExpression(asExpressionSyntax);
+        var boundAssignmentExpression = BindAssignmentExpression(asExpressionSyntax);
 
-        return new BoundAssignmentExpressionStatement(assignmentExpression.BoundIdentifier, assignmentExpression.BoundExpression);
+        var expression = boundAssignmentExpression.BoundExpression;
+        var identifier = boundAssignmentExpression.BoundIdentifier;
+        if (expression.Type != identifier.Type)
+            _diagnostics.MakeIssue($"Cannot cast type {expression.Type} to {identifier.Type}", _sourceProgram[syntax.Expression.StartPosition..syntax.Expression.EndPosition], syntax.Expression.StartPosition);
+
+        return new BoundAssignmentExpressionStatement(boundAssignmentExpression.BoundIdentifier, boundAssignmentExpression.BoundExpression);
     }
 
     private partial BoundAssignmentStatement BindAssignmentStatement(AssignmentStatementSyntax statement)

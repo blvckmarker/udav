@@ -45,7 +45,7 @@ namespace Tests
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.CaretToken => SyntaxKind.CaretToken,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.EqualsToken => SyntaxKind.EqualsToken,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.EqualsEqualsToken => SyntaxKind.EqualsEqualsToken,
-                Microsoft.CodeAnalysis.CSharp.SyntaxKind.ExclamationEqualsToken => SyntaxKind.ExclamationEqualToken,
+                Microsoft.CodeAnalysis.CSharp.SyntaxKind.ExclamationEqualsToken => SyntaxKind.ExclamationEqualsToken,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.TildeToken => SyntaxKind.TildeToken,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.LessThanToken => SyntaxKind.LessThanToken,
                 Microsoft.CodeAnalysis.CSharp.SyntaxKind.LessThanEqualsToken => SyntaxKind.LessThanEqualToken,

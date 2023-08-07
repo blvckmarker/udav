@@ -11,6 +11,10 @@ public class Lexer
     private bool isAlreadyLexicalized = false;
     private int _position;
 
+    private object? _value;
+    private SyntaxKind _kind;
+    private int _startPosition;
+
     private char CurrentChar => _position >= _text.Length ? '\0' : _text[_position];
     public DiagnosticsBase Diagnostics => _diagnostics;
 
@@ -27,127 +31,181 @@ public class Lexer
         if (isAlreadyLexicalized)
             throw new Exception("The source program is already lexicalized");
 
-        // numbers 
-        // + - * / ()
-        // <whitespace>
-        if (CurrentChar is '\0')
+        _value = null;
+        _startPosition = _position;
+        _kind = SyntaxKind.BadToken;
+
+        switch (CurrentChar)
         {
-            isAlreadyLexicalized = true;
-            return new SyntaxToken(SyntaxKind.EofToken, _position - 1, CurrentChar.ToString(), null);
-        }
-
-        if (char.IsDigit(CurrentChar))
-        {
-            var start = _position;
-
-            while (char.IsDigit(CurrentChar))
-                Next();
-
-            var length = _position - start;
-            var text = _text[start.._position];
-
-            if (!int.TryParse(text, out var value))
-                _diagnostics.MakeIssue($"The number {text} cannot be represented as int32", text, start);
-
-            return new SyntaxToken(SyntaxKind.NumericToken, start, text, value);
-        }
-
-        if (char.IsWhiteSpace(CurrentChar))
-        {
-            var start = _position;
-
-            while (char.IsWhiteSpace(CurrentChar))
-                Next();
-
-            var length = _position - start;
-            var text = _text[start.._position];
-
-            return new SyntaxToken(SyntaxKind.WhitespaceToken, start, text, null);
-        }
-
-        if (char.IsLetter(CurrentChar))
-        {
-            var start = _position;
-            while (char.IsLetterOrDigit(CurrentChar))
-                Next();
-
-            var length = _position - start;
-            var text = _text[start.._position];
-
-            var kind = SyntaxFacts.GetKeywordKind(text);
-
-            return new SyntaxToken(kind, start, text, text);
-        }
-
-        switch (CurrentChar) // &&  || !
-        {
+            case '\0':
+                _kind = SyntaxKind.EofToken;
+                isAlreadyLexicalized = true;
+                break;
             case '+':
-                return new SyntaxToken(SyntaxKind.PlusToken, _position++, "+", null);
+                _position++;
+                _kind = SyntaxKind.PlusToken;
+                break;
             case '-':
-                return new SyntaxToken(SyntaxKind.MinusToken, _position++, "-", null);
-            case '*':
-                return new SyntaxToken(SyntaxKind.AsteriskToken, _position++, "*", null);
+                _position++;
+                _kind = SyntaxKind.MinusToken;
+                break;
             case '/':
-                return new SyntaxToken(SyntaxKind.SlashToken, _position++, "/", null);
+                _position++;
+                _kind = SyntaxKind.SlashToken;
+                break;
+            case '*':
+                _position++;
+                _kind = SyntaxKind.AsteriskToken;
+                break;
             case '(':
-                return new SyntaxToken(SyntaxKind.OpenParenToken, _position++, "(", null);
+                _position++;
+                _kind = SyntaxKind.OpenParenToken;
+                break;
             case ')':
-                return new SyntaxToken(SyntaxKind.CloseParenToken, _position++, ")", null);
-            case '~':
-                return new SyntaxToken(SyntaxKind.TildeToken, _position++, "~", null);
-            case '^':
-                return new SyntaxToken(SyntaxKind.CaretToken, _position++, "^", null);
+                _position++;
+                _kind = SyntaxKind.CloseParenToken;
+                break;
             case '%':
-                return new SyntaxToken(SyntaxKind.PercentToken, _position++, "%", null);
+                _position++;
+                _kind = SyntaxKind.PercentToken;
+                break;
+            case '~':
+                _position++;
+                _kind = SyntaxKind.TildeToken;
+                break;
+            case '^':
+                _position++;
+                _kind = SyntaxKind.CaretToken;
+                break;
             case '>':
                 if (Lookahead(1) == '=')
                 {
                     _position += 2;
-                    return new SyntaxToken(SyntaxKind.GreaterThanEqualToken, _position, ">=", null);
+                    _kind = SyntaxKind.GreaterThanEqualToken;
+                    break;
                 }
-                return new SyntaxToken(SyntaxKind.GreaterThanToken, _position++, ">", null);
+                _position++;
+                _kind = SyntaxKind.GreaterThanToken;
+                break;
             case '<':
                 if (Lookahead(1) == '=')
                 {
                     _position += 2;
-                    return new SyntaxToken(SyntaxKind.LessThanEqualToken, _position, "<=", null);
+                    _kind = SyntaxKind.LessThanEqualToken;
+                    break;
                 }
-                return new SyntaxToken(SyntaxKind.LessThanToken, _position++, "<", null);
-            case '!':
-                if (Lookahead(1) == '=')
-                {
-                    _position += 2;
-                    return new SyntaxToken(SyntaxKind.ExclamationEqualToken, _position, "!=", null);
-                }
-                return new SyntaxToken(SyntaxKind.ExclamationToken, _position++, "!", null);
-            case '=':
-                if (Lookahead(1) == '=')
-                {
-                    _position += 2;
-                    return new SyntaxToken(SyntaxKind.EqualsEqualsToken, _position, "==", null);
-                }
-                return new SyntaxToken(SyntaxKind.EqualsToken, _position++, "=", null);
+                _position++;
+                _kind = SyntaxKind.LessThanToken;
+                break;
             case '&':
                 if (Lookahead(1) == '&')
                 {
                     _position += 2;
-                    return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, _position, "&&", null);
+                    _kind = SyntaxKind.AmpersandAmpersandToken;
+                    break;
                 }
-                return new SyntaxToken(SyntaxKind.AmpersandToken, _position++, "&", null);
-
+                _position++;
+                _kind = SyntaxKind.AmpersandToken;
+                break;
             case '|':
                 if (Lookahead(1) == '|')
                 {
                     _position += 2;
-                    return new SyntaxToken(SyntaxKind.PipePipeToken, _position, "||", null);
+                    _kind = SyntaxKind.PipePipeToken;
+                    break;
                 }
-                return new SyntaxToken(SyntaxKind.PipeToken, _position++, "|", null);
+                _position++;
+                _kind = SyntaxKind.PipeToken;
+                break;
+            case '!':
+                if (Lookahead(1) == '=')
+                {
+                    _position += 2;
+                    _kind = SyntaxKind.ExclamationEqualsToken;
+                    break;
+                }
+                _position++;
+                _kind = SyntaxKind.ExclamationToken;
+                break;
+            case '=':
+                if (Lookahead(1) == '=')
+                {
+                    _position += 2;
+                    _kind = SyntaxKind.EqualsEqualsToken;
+                    break;
+                }
+                _position++;
+                _kind = SyntaxKind.EqualsToken;
+                break;
+
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                LexNumericToken();
+                break;
+
+            case ' ':
+            case '\n':
+            case '\r':
+            case '\t':
+                LexWhitespaceToken();
+                break;
 
             default:
-                _diagnostics.MakeIssue($"Bad character input: {CurrentChar}", CurrentChar.ToString(), _position);
-                return new SyntaxToken(SyntaxKind.BadToken, _position++, _text.Substring(_position - 1, 1), null);
+                if (char.IsLetter(CurrentChar))
+                    LexIdentifierOrKeywordToken();
+                else if (char.IsWhiteSpace(CurrentChar))
+                    LexWhitespaceToken();
+                else
+                {
+                    _position++;
+                    _diagnostics.MakeIssue($"Bad character input: {CurrentChar}", CurrentChar.ToString(), _startPosition);
+                    _kind = SyntaxKind.BadToken;
+                }
+                break;
         }
+
+        var span = _text[_startPosition.._position];
+        return new SyntaxToken(_kind, _startPosition, span, _value);
     }
+
+    private void LexIdentifierOrKeywordToken()
+    {
+        while (char.IsLetterOrDigit(CurrentChar))
+            Next();
+
+        var span = _text[_startPosition.._position];
+        _kind = SyntaxFacts.GetKeywordKind(span);
+    }
+
+    private void LexWhitespaceToken()
+    {
+        while (char.IsWhiteSpace(CurrentChar))
+            Next();
+
+        _kind = SyntaxKind.WhitespaceToken;
+    }
+
+    private void LexNumericToken()
+    {
+        while (char.IsDigit(CurrentChar))
+            Next();
+
+        var span = _text[_startPosition.._position];
+        if (!int.TryParse(span, out var value))
+            _diagnostics.MakeIssue($"The number {span} cannot be represented as int32", span, _startPosition);
+
+        _value = value;
+        _kind = SyntaxKind.NumericToken;
+    }
+
     public IEnumerable<SyntaxToken> LexAll()
     {
         if (isAlreadyLexicalized)

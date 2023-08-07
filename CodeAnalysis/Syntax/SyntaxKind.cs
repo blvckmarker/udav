@@ -16,7 +16,7 @@ public enum SyntaxKind
     CaretToken,
     EqualsToken,
     EqualsEqualsToken,
-    ExclamationEqualToken,
+    ExclamationEqualsToken,
     TildeToken,
     LessThanEqualToken,
     GreaterThanToken,
@@ -42,7 +42,6 @@ public enum SyntaxKind
     LiteralExpression,
     NameExpression,
     AssignmentExpression,
-    DeclaredVariableExpression,
 
     AssignmentStatement,
     AssignmentExpressionStatement,

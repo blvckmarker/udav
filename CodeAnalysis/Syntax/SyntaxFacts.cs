@@ -18,7 +18,7 @@ internal static class SyntaxFacts
 
             SyntaxKind.LessThanEqualToken or SyntaxKind.GreaterThanEqualToken => 7,
             SyntaxKind.LessThanToken or SyntaxKind.GreaterThanToken => 7,
-            SyntaxKind.EqualsEqualsToken or SyntaxKind.ExclamationEqualToken => 6,
+            SyntaxKind.EqualsEqualsToken or SyntaxKind.ExclamationEqualsToken => 6,
 
             SyntaxKind.AmpersandToken => 5,
             SyntaxKind.CaretToken => 4,

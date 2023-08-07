@@ -98,10 +98,16 @@ public class Parser
 
     private StatementSyntax ParseStatement()
     {
-        if (Peek(0).Kind == SyntaxKind.LetKeyword)
-            return ParseAssignmentStatement();
-
-        return ParseAssignmentExpressionStatement();
+        switch (Peek(0).Kind)
+        {
+            case SyntaxKind.BoolKeyword:
+            case SyntaxKind.IntKeyword:
+            case SyntaxKind.LetKeyword:
+            case SyntaxKind.IdentifierToken when Peek(1).Kind == SyntaxKind.IdentifierToken:
+                return ParseAssignmentStatement();
+            default:
+                return ParseAssignmentExpressionStatement();
+        }
     }
 
     private StatementSyntax ParseAssignmentStatement()

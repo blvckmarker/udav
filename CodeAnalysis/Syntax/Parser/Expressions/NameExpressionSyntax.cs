@@ -3,16 +3,16 @@ public class NameExpressionSyntax : ExpressionSyntax
 {
     public NameExpressionSyntax(SyntaxToken literalToken)
     {
-        Identifier = literalToken;
+        Name = literalToken;
     }
 
-    public SyntaxToken Identifier { get; }
+    public SyntaxToken Name { get; }
     public override SyntaxKind Kind => SyntaxKind.NameExpression;
-    public override int StartPosition => Identifier.StartPosition;
-    public override int EndPosition => Identifier.EndPosition;
+    public override int StartPosition => Name.StartPosition;
+    public override int EndPosition => Name.EndPosition;
 
     public override IEnumerable<SyntaxNode> GetChildren()
     {
-        yield return Identifier;
+        yield return Name;
     }
 }
