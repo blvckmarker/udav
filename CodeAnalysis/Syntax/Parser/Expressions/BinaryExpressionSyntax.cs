@@ -1,7 +1,4 @@
-#region
-
-
-#endregion
+using CodeAnalysis.Text;
 
 namespace CodeAnalysis.Syntax.Parser.Expressions;
 
@@ -20,8 +17,7 @@ public sealed class BinaryExpressionSyntax : ExpressionSyntax
 
     public override SyntaxKind Kind => SyntaxKind.BinaryExpression;
 
-    public override int StartPosition => Left.StartPosition;
-    public override int EndPosition => Right.EndPosition;
+    public override TextSpan Span => TextSpan.FromBounds(Left.Span.Start, Right.Span.End);
 
     public override IEnumerable<SyntaxNode> GetChildren()
     {

@@ -50,8 +50,8 @@ public class Parser
         if (Current.Kind == kind)
             return TakeToken();
 
-        _diagnostics.MakeIssue($"Unexpected token <{Current.Kind}> expected <{kind}>", Current.Text, Current.StartPosition);
-        return new SyntaxToken(kind, Current.StartPosition, Current.EndPosition, Current.Text, null);
+        _diagnostics.MakeIssue($"Unexpected token <{Current.Kind}> expected <{kind}>", Current.Text, Current.Span);
+        return new SyntaxToken(kind, Current.Span, Current.Text, null);
     }
     private SyntaxToken MatchTypeToken()
     {
@@ -63,8 +63,8 @@ public class Parser
             case SyntaxKind.IdentifierToken:
                 return TakeToken();
             default:
-                _diagnostics.MakeIssue($"Unexpected token <{Current.Kind}> expected <IdentifierToken>", Current.Text, Current.StartPosition);
-                return new SyntaxToken(Current.Kind, Current.StartPosition, Current.EndPosition, Current.Text, null);
+                _diagnostics.MakeIssue($"Unexpected token <{Current.Kind}> expected <IdentifierToken>", Current.Text, Current.Span);
+                return new SyntaxToken(Current.Kind, Current.Span, Current.Text, null);
         }
     }
 
@@ -133,7 +133,7 @@ public class Parser
     {
         var assignmentExpression = (AssignmentExpressionSyntax)ParseAssignmentExpression();
         return new AssignmentExpressionStatementSyntax(
-            assignmentExpression.Name,
+            assignmentExpression.Variable,
             assignmentExpression.EqualsToken,
             assignmentExpression.Expression);
     }

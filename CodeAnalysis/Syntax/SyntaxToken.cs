@@ -1,6 +1,7 @@
 #region
 
 using CodeAnalysis.Syntax.Parser;
+using CodeAnalysis.Text;
 
 #endregion
 
@@ -14,16 +15,22 @@ public class SyntaxToken : SyntaxNode
     public SyntaxToken(SyntaxKind kind, int startPosition, int endPosition, string text, object? value)
     {
         Kind = kind;
-        StartPosition = startPosition;
-        EndPosition = endPosition;
+        Text = text;
+        Value = value;
+        Span = TextSpan.FromBounds(startPosition, endPosition);
+    }
+
+    public SyntaxToken(SyntaxKind kind, TextSpan span, string text, object? value)
+    {
+        Kind = kind;
+        Span = span;
         Text = text;
         Value = value;
     }
 
     public override SyntaxKind Kind { get; }
 
-    public override int StartPosition { get; }
-    public override int EndPosition { get; }
+    public override TextSpan Span { get; }
 
     public string Text { get; set; }
     public object? Value { get; set; }

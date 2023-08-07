@@ -1,7 +1,5 @@
-﻿namespace CodeAnalysis.Syntax.Parser.Statements
+﻿namespace CodeAnalysis.Syntax.Parser.Statements;
+public abstract class StatementSyntax : SyntaxNode
 {
-    public abstract class StatementSyntax : SyntaxNode
-    {
 
-    }
 }

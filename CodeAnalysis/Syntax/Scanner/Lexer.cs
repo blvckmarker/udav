@@ -166,7 +166,7 @@ public class Lexer
                     LexWhitespaceToken();
                 else
                 {
-                    _diagnostics.MakeIssue($"Bad character input: {CurrentChar}", CurrentChar.ToString(), _startPosition);
+                    _diagnostics.MakeIssue($"Bad character input: {CurrentChar}", CurrentChar.ToString(), TextSpan.FromBounds(_startPosition, _position));
                     _kind = SyntaxKind.BadToken;
 
                     _position++;
@@ -202,7 +202,7 @@ public class Lexer
 
         var span = _text[_startPosition.._position];
         if (!int.TryParse(span, out var value))
-            _diagnostics.MakeIssue($"The number {span} cannot be represented as int32", span, _startPosition);
+            _diagnostics.MakeIssue($"The number {span} cannot be represented as int32", span, TextSpan.FromBounds(_startPosition, _position));
 
         _value = value;
         _kind = SyntaxKind.NumericToken;

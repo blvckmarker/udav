@@ -1,5 +1,7 @@
-﻿namespace CodeAnalysis.Syntax.Parser.Expressions;
-public class VariableExpressionSyntax : ExpressionSyntax
+﻿using CodeAnalysis.Text;
+
+namespace CodeAnalysis.Syntax.Parser.Expressions;
+public sealed class VariableExpressionSyntax : ExpressionSyntax
 {
     public VariableExpressionSyntax(SyntaxToken literalToken)
     {
@@ -8,8 +10,8 @@ public class VariableExpressionSyntax : ExpressionSyntax
 
     public SyntaxToken Variable { get; }
     public override SyntaxKind Kind => SyntaxKind.VariableExpression;
-    public override int StartPosition => Variable.StartPosition;
-    public override int EndPosition => Variable.EndPosition;
+
+    public override TextSpan Span => TextSpan.FromBounds(Variable.Span.Start, Variable.Span.End);
 
     public override IEnumerable<SyntaxNode> GetChildren()
     {

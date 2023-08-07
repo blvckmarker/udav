@@ -1,4 +1,6 @@
-﻿namespace CodeAnalysis.Syntax.Parser.Expressions;
+﻿using CodeAnalysis.Text;
+
+namespace CodeAnalysis.Syntax.Parser.Expressions;
 
 public sealed class LiteralExpressionSyntax : ExpressionSyntax
 {
@@ -12,8 +14,7 @@ public sealed class LiteralExpressionSyntax : ExpressionSyntax
     public SyntaxToken LiteralToken { get; }
     public object? Value { get; }
 
-    public override int StartPosition => LiteralToken.StartPosition;
-    public override int EndPosition => LiteralToken.EndPosition;
+    public override TextSpan Span => TextSpan.FromBounds(LiteralToken.Span.Start, LiteralToken.Span.End);
 
     public override IEnumerable<SyntaxNode> GetChildren()
     {

@@ -1,7 +1,6 @@
-﻿namespace CodeAnalysis.Binder.BoundStatements
+﻿namespace CodeAnalysis.Binder.BoundStatements;
+
+public abstract class BoundStatement : BoundNode
 {
-    public abstract class BoundStatement : BoundNode
-    {
-        public abstract Type Type { get; }
-    }
+    public abstract Type Type { get; }
 }

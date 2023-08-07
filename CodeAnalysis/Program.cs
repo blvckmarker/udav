@@ -59,7 +59,7 @@ void PrintDiagnostics(IEnumerable<DiagnosticsBag> diagnostics)
         else
         {
             Console.ForegroundColor = foregroundColor;
-            Console.Write($"{diagnostic.Kind}. At:{diagnostic.StartPosition} {diagnostic.Message} ");
+            Console.Write($"{diagnostic.Kind}. At:{diagnostic.Span.Start} {diagnostic.Message} ");
             Console.ResetColor();
 
             Console.WriteLine(diagnostic.ProblemText);

@@ -1,6 +1,6 @@
 ﻿namespace CodeAnalysis.Binder.BoundExpressions;
 
-public class BoundAssignmentExpression : BoundExpression
+public sealed class BoundAssignmentExpression : BoundExpression
 {
     public BoundAssignmentExpression(BoundVariableExpression boundIdentifier, BoundExpression boundExpression)
     {

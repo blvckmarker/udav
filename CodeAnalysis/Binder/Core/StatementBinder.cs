@@ -18,13 +18,13 @@ public sealed partial class Binder
 
     private partial BoundAssignmentExpressionStatement BindAssignmentExpressionStatement(AssignmentExpressionStatementSyntax syntax)
     {
-        var asExpressionSyntax = new AssignmentExpressionSyntax(syntax.Identifier, syntax.EqualsToken, syntax.Expression);
+        var asExpressionSyntax = new AssignmentExpressionSyntax(syntax.Variable, syntax.EqualsToken, syntax.Expression);
         var boundAssignmentExpression = BindAssignmentExpression(asExpressionSyntax);
 
         var expression = boundAssignmentExpression.BoundExpression;
         var identifier = boundAssignmentExpression.BoundIdentifier;
         if (expression.Type != identifier.Type)
-            _diagnostics.MakeIssue($"Cannot cast type {expression.Type} to {identifier.Type}", _sourceProgram[syntax.Expression.StartPosition..syntax.Expression.EndPosition], syntax.Expression.StartPosition);
+            _diagnostics.MakeIssue($"Cannot cast type {expression.Type} to {identifier.Type}", _sourceProgram.Substring(syntax.Expression.Span), syntax.Expression.Span);
 
         return new BoundAssignmentExpressionStatement(boundAssignmentExpression.BoundIdentifier, boundAssignmentExpression.BoundExpression);
     }
@@ -32,11 +32,11 @@ public sealed partial class Binder
     private partial BoundAssignmentStatement BindAssignmentStatement(AssignmentStatementSyntax statement)
     {
         var boundType = BoundIdentifierType.Bind(statement.TypeToken.Kind);
-        var identifierName = statement.IdentifierToken.Text;
+        var identifierName = statement.VariableToken.Text;
 
         if (_sessionVariables.Keys.FirstOrDefault(x => x.Name == identifierName) is not null)
         {
-            _diagnostics.MakeIssue($"Local variable is already defined", identifierName, statement.IdentifierToken.StartPosition, IssueKind.Problem);
+            _diagnostics.MakeIssue($"Local variable is already defined", identifierName, statement.VariableToken.Span);
             var errorSymbol = new VariableSymbol(identifierName, null);
             return new BoundAssignmentStatement(boundType, errorSymbol, null);
         }
@@ -46,9 +46,9 @@ public sealed partial class Binder
         if (boundType.TypeKind is BoundTypeKind.DefinedType)
         {
             if (boundType.Type is null)
-                _diagnostics.MakeIssue("Error type", statement.TypeToken.Text, statement.TypeToken.StartPosition);
+                _diagnostics.MakeIssue("Error type", statement.TypeToken.Text, statement.TypeToken.Span);
             if (boundType.Type != boundExpression.Type)
-                _diagnostics.MakeIssue($"Cannot cast type {boundExpression.Type} to {boundType.Type}", _sourceProgram[statement.StartPosition..statement.EndPosition], statement.StartPosition);
+                _diagnostics.MakeIssue($"Cannot cast type {boundExpression.Type} to {boundType.Type}", _sourceProgram.Substring(statement.Expression.Span), statement.Expression.Span);
         }
 
         var boundIdentifier = new VariableSymbol(identifierName, boundExpression.Type);

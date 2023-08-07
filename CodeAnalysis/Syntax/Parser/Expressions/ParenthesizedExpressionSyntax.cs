@@ -1,3 +1,5 @@
+using CodeAnalysis.Text;
+
 namespace CodeAnalysis.Syntax.Parser.Expressions;
 
 public sealed class ParenthesizedExpressionSyntax : ExpressionSyntax
@@ -15,8 +17,7 @@ public sealed class ParenthesizedExpressionSyntax : ExpressionSyntax
 
     public override SyntaxKind Kind => SyntaxKind.ParenthesizedExpression;
 
-    public override int StartPosition => Open.StartPosition;
-    public override int EndPosition => Close.EndPosition;
+    public override TextSpan Span => TextSpan.FromBounds(Open.Span.Start, Close.Span.End);
 
     public override IEnumerable<SyntaxNode> GetChildren()
     {

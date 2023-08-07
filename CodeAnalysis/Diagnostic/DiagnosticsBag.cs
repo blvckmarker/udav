@@ -2,16 +2,16 @@
 {
     public class DiagnosticsBag
     {
-        public DiagnosticsBag(string message, IssueKind issueKind) : this(message, null, 0, issueKind) { }
-        public DiagnosticsBag(string message, string? problemText, int startPosition, IssueKind issueKind)
+        public DiagnosticsBag(string message, IssueKind issueKind) : this(message, null, new TextSpan(0, 0), issueKind) { }
+        public DiagnosticsBag(string message, string? problemText, TextSpan span, IssueKind issueKind)
         {
             Message = message;
             ProblemText = problemText;
-            StartPosition = startPosition;
+            Span = span;
             Kind = issueKind;
         }
 
-        public int StartPosition { get; }
+        public TextSpan Span { get; }
         public string Message { get; }
         public string? ProblemText { get; }
         public IssueKind Kind { get; }
@@ -20,7 +20,7 @@
         {
             if (ProblemText is null)
                 return Message;
-            return $"At:{StartPosition} {Message}: {ProblemText}";
+            return $"At:{Span.Start} {Message}: {ProblemText}";
         }
     }
 }

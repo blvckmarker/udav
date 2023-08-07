@@ -20,7 +20,7 @@ namespace CodeAnalysis.Text
             return this;
         }
         public abstract void MakeIssue(string message, IssueKind issueKind = IssueKind.Problem);
-        public abstract void MakeIssue(string message, string problemText, int startPosition, IssueKind issueKind = IssueKind.Problem);
+        public abstract void MakeIssue(string message, string problemText, TextSpan textSpan, IssueKind issueKind = IssueKind.Problem);
         public abstract void MakeIssue(DiagnosticsBag issue);
 
         public IEnumerator<DiagnosticsBag> GetEnumerator() => _diagnostics.GetEnumerator();

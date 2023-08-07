@@ -1,3 +1,5 @@
+using CodeAnalysis.Text;
+
 namespace CodeAnalysis.Syntax.Parser.Expressions;
 
 public sealed class UnaryExpressionSyntax : ExpressionSyntax
@@ -13,8 +15,7 @@ public sealed class UnaryExpressionSyntax : ExpressionSyntax
 
     public override SyntaxKind Kind => SyntaxKind.UnaryExpression;
 
-    public override int StartPosition => OperatorToken.StartPosition;
-    public override int EndPosition => Operand.EndPosition;
+    public override TextSpan Span => TextSpan.FromBounds(Operand.Span.Start, Operand.Span.End);
 
     public override IEnumerable<SyntaxNode> GetChildren()
     {

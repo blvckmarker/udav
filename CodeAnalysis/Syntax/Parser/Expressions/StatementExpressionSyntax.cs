@@ -1,27 +1,27 @@
-﻿namespace CodeAnalysis.Syntax.Parser.Expressions
+﻿using CodeAnalysis.Text;
+
+namespace CodeAnalysis.Syntax.Parser.Expressions;
+public sealed class AssignmentExpressionSyntax : ExpressionSyntax
 {
-    internal class AssignmentExpressionSyntax : ExpressionSyntax
+    public AssignmentExpressionSyntax(VariableExpressionSyntax name, SyntaxToken equalsToken, ExpressionSyntax expression)
     {
-        public AssignmentExpressionSyntax(VariableExpressionSyntax name, SyntaxToken equalsToken, ExpressionSyntax expression)
-        {
-            Name = name;
-            EqualsToken = equalsToken;
-            Expression = expression;
-        }
+        Variable = name;
+        EqualsToken = equalsToken;
+        Expression = expression;
+    }
 
-        public override SyntaxKind Kind => SyntaxKind.AssignmentExpression;
-        public override int StartPosition => Name.StartPosition;
-        public override int EndPosition => Expression.EndPosition;
+    public override SyntaxKind Kind => SyntaxKind.AssignmentExpression;
 
-        public VariableExpressionSyntax Name { get; }
-        public SyntaxToken EqualsToken { get; }
-        public ExpressionSyntax Expression { get; }
+    public VariableExpressionSyntax Variable { get; }
+    public SyntaxToken EqualsToken { get; }
+    public ExpressionSyntax Expression { get; }
 
-        public override IEnumerable<SyntaxNode> GetChildren()
-        {
-            yield return Name;
-            yield return EqualsToken;
-            yield return Expression;
-        }
+    public override TextSpan Span => TextSpan.FromBounds(Variable.Span.Start, Expression.Span.End);
+
+    public override IEnumerable<SyntaxNode> GetChildren()
+    {
+        yield return Variable;
+        yield return EqualsToken;
+        yield return Expression;
     }
 }

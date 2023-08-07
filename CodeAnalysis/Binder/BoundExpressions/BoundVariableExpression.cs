@@ -1,5 +1,5 @@
 ﻿namespace CodeAnalysis.Binder.BoundExpressions;
-public class BoundVariableExpression : BoundExpression
+public sealed class BoundVariableExpression : BoundExpression
 {
     public BoundVariableExpression(VariableSymbol variableReference)
     {

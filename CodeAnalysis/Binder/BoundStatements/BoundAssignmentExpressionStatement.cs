@@ -2,7 +2,7 @@
 
 namespace CodeAnalysis.Binder.BoundStatements;
 
-public class BoundAssignmentExpressionStatement : BoundStatement
+public sealed class BoundAssignmentExpressionStatement : BoundStatement
 {
     public BoundAssignmentExpressionStatement(BoundVariableExpression boundIdentifier, BoundExpression boundExpression)
     {
