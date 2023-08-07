@@ -4,6 +4,7 @@ using CodeAnalysis.Syntax.Parser.Expressions;
 using CodeAnalysis.Syntax.Parser.Statements;
 using CodeAnalysis.Syntax.Scanner;
 using CodeAnalysis.Text;
+using System.Collections.Immutable;
 
 #endregion
 
@@ -12,7 +13,7 @@ namespace CodeAnalysis.Syntax.Parser;
 public class Parser
 {
     private readonly DiagnosticsBase _diagnostics;
-    private readonly IList<SyntaxToken> _tokens;
+    private readonly IImmutableList<SyntaxToken> _tokens;
     private int _position;
 
     public Parser(Lexer lexer)
@@ -21,9 +22,17 @@ public class Parser
             throw new Exception("Unable to create syntax tree when lexer has problem issues");
 
         _tokens = lexer.LexAll()
-            .Where(token => token.Kind is not SyntaxKind.WhitespaceToken)
-            .ToList();
-        _diagnostics = lexer.Diagnostics;
+                       .Where(token => token.Kind is not SyntaxKind.WhitespaceToken)
+                       .ToImmutableArray();
+
+        _diagnostics = new Diagnostics(lexer.Diagnostics.SourceText);
+    }
+    public Parser(string sourceProgram, IEnumerable<SyntaxToken> tokens)
+    {
+        _tokens = tokens
+                  .Where(x => x.Kind != SyntaxKind.WhitespaceToken)
+                  .ToImmutableArray();
+        _diagnostics = new Diagnostics(sourceProgram);
     }
 
     private SyntaxToken Current => Peek(0);
@@ -212,10 +221,10 @@ public class Parser
         return new LiteralExpressionSyntax(numberToken, (int)numberToken.Value!);
     }
 
-    private NameExpressionSyntax ParseNameExpression()
+    private VariableExpressionSyntax ParseNameExpression()
     {
         var literalToken = MatchToken(SyntaxKind.IdentifierToken);
-        return new NameExpressionSyntax(literalToken);
+        return new VariableExpressionSyntax(literalToken);
     }
 
     private ParenthesizedExpressionSyntax ParseParenthesizedExpression()

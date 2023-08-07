@@ -17,10 +17,12 @@ public sealed class Compiler
     public CompilationResult Compile(string source, EnvironmentVariables environmentVariables)
     {
         var lexer = new Lexer(source);
+        var tokens = lexer.LexAll();
         if (hasProblem(lexer.Diagnostics))
             return new CompilationResult(CompilationResultKind.SyntaxError, null, lexer.Diagnostics);
 
-        var syntaxTree = SyntaxTree.Parse(lexer);
+        var parser = new Parser(source, tokens);
+        var syntaxTree = parser.ParseTree();
         if (environmentVariables.ShowTree)
             showTree(syntaxTree.Root);
         if (hasProblem(syntaxTree.Diagnostics))

@@ -1,5 +1,6 @@
 #region
 using CodeAnalysis.Text;
+using System.Collections.Immutable;
 #endregion
 
 namespace CodeAnalysis.Syntax.Scanner;
@@ -42,70 +43,70 @@ public class Lexer
                 isAlreadyLexicalized = true;
                 break;
             case '+':
-                _position++;
                 _kind = SyntaxKind.PlusToken;
+                _position++;
                 break;
             case '-':
-                _position++;
                 _kind = SyntaxKind.MinusToken;
+                _position++;
                 break;
             case '/':
-                _position++;
                 _kind = SyntaxKind.SlashToken;
+                _position++;
                 break;
             case '*':
-                _position++;
                 _kind = SyntaxKind.AsteriskToken;
+                _position++;
                 break;
             case '(':
-                _position++;
                 _kind = SyntaxKind.OpenParenToken;
+                _position++;
                 break;
             case ')':
-                _position++;
                 _kind = SyntaxKind.CloseParenToken;
+                _position++;
                 break;
             case '%':
-                _position++;
                 _kind = SyntaxKind.PercentToken;
+                _position++;
                 break;
             case '~':
-                _position++;
                 _kind = SyntaxKind.TildeToken;
+                _position++;
                 break;
             case '^':
-                _position++;
                 _kind = SyntaxKind.CaretToken;
+                _position++;
                 break;
             case '>':
                 if (Lookahead(1) == '=')
                 {
-                    _position += 2;
                     _kind = SyntaxKind.GreaterThanEqualToken;
+                    _position += 2;
                     break;
                 }
-                _position++;
                 _kind = SyntaxKind.GreaterThanToken;
+                _position++;
                 break;
             case '<':
                 if (Lookahead(1) == '=')
                 {
-                    _position += 2;
                     _kind = SyntaxKind.LessThanEqualToken;
+                    _position += 2;
                     break;
                 }
-                _position++;
                 _kind = SyntaxKind.LessThanToken;
+                _position++;
                 break;
             case '&':
                 if (Lookahead(1) == '&')
                 {
-                    _position += 2;
                     _kind = SyntaxKind.AmpersandAmpersandToken;
+                    _position += 2;
                     break;
                 }
-                _position++;
                 _kind = SyntaxKind.AmpersandToken;
+                _position++;
                 break;
             case '|':
                 if (Lookahead(1) == '|')
@@ -114,8 +115,8 @@ public class Lexer
                     _kind = SyntaxKind.PipePipeToken;
                     break;
                 }
-                _position++;
                 _kind = SyntaxKind.PipeToken;
+                _position++;
                 break;
             case '!':
                 if (Lookahead(1) == '=')
@@ -124,8 +125,8 @@ public class Lexer
                     _kind = SyntaxKind.ExclamationEqualsToken;
                     break;
                 }
-                _position++;
                 _kind = SyntaxKind.ExclamationToken;
+                _position++;
                 break;
             case '=':
                 if (Lookahead(1) == '=')
@@ -165,9 +166,10 @@ public class Lexer
                     LexWhitespaceToken();
                 else
                 {
-                    _position++;
                     _diagnostics.MakeIssue($"Bad character input: {CurrentChar}", CurrentChar.ToString(), _startPosition);
                     _kind = SyntaxKind.BadToken;
+
+                    _position++;
                 }
                 break;
         }
@@ -206,7 +208,7 @@ public class Lexer
         _kind = SyntaxKind.NumericToken;
     }
 
-    public IEnumerable<SyntaxToken> LexAll()
+    public IImmutableList<SyntaxToken> LexAll()
     {
         if (isAlreadyLexicalized)
             throw new Exception("The source program is already lexicalized");
@@ -219,6 +221,6 @@ public class Lexer
             currToken = Lex();
         }
         tokens.Add(currToken);
-        return tokens;
+        return tokens.ToImmutableArray();
     }
 }
