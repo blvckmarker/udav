@@ -2,7 +2,7 @@
 {
     internal class AssignmentExpressionSyntax : ExpressionSyntax
     {
-        public AssignmentExpressionSyntax(NameExpressionSyntax name, SyntaxToken equalsToken, ExpressionSyntax expression)
+        public AssignmentExpressionSyntax(VariableExpressionSyntax name, SyntaxToken equalsToken, ExpressionSyntax expression)
         {
             Name = name;
             EqualsToken = equalsToken;
@@ -13,7 +13,7 @@
         public override int StartPosition => Name.StartPosition;
         public override int EndPosition => Expression.EndPosition;
 
-        public NameExpressionSyntax Name { get; }
+        public VariableExpressionSyntax Name { get; }
         public SyntaxToken EqualsToken { get; }
         public ExpressionSyntax Expression { get; }
 

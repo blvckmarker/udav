@@ -13,8 +13,8 @@ public sealed partial class Binder
         {
             case SyntaxKind.LiteralExpression:
                 return BindLiteralExpression((LiteralExpressionSyntax)syntax);
-            case SyntaxKind.NameExpression:
-                return BindNameExpression((NameExpressionSyntax)syntax);
+            case SyntaxKind.VariableExpression:
+                return BindNameExpression((VariableExpressionSyntax)syntax);
             case SyntaxKind.AssignmentExpression:
                 return BindAssignmentExpression((AssignmentExpressionSyntax)syntax);
             case SyntaxKind.BinaryExpression:
@@ -34,17 +34,17 @@ public sealed partial class Binder
         var boundExpression = BindExpression(expressionSyntax.Expression);
         return new BoundAssignmentExpression(boundIdentifier, boundExpression);
     }
-    private partial BoundNameExpression BindNameExpression(NameExpressionSyntax syntax)
+    private partial BoundVariableExpression BindNameExpression(VariableExpressionSyntax syntax)
     {
-        var name = syntax.Name.Text;
+        var name = syntax.Variable.Text;
         var varReference = _sessionVariables.Keys.FirstOrDefault(x => x.Name == name);
         if (varReference is null)
         {
-            _diagnostics.MakeIssue($"Undefined local variable", name, syntax.Name.StartPosition, IssueKind.Problem);
+            _diagnostics.MakeIssue($"Undefined local variable", name, syntax.Variable.StartPosition, IssueKind.Problem);
             var errorSymbol = new VariableSymbol(name, null);
-            return new BoundNameExpression(errorSymbol);
+            return new BoundVariableExpression(errorSymbol);
         }
-        return new BoundNameExpression(varReference);
+        return new BoundVariableExpression(varReference);
     }
 
     private partial BoundParenthesizedExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax)

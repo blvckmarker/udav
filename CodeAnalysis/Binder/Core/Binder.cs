@@ -36,7 +36,7 @@ public sealed partial class Binder
     private partial BoundUnaryExpression BindUnaryExpression(UnaryExpressionSyntax syntax);
     private partial BoundBinaryExpression BindBinaryExpression(BinaryExpressionSyntax syntax);
     private partial BoundLiteralExpression BindLiteralExpression(LiteralExpressionSyntax syntax);
-    private partial BoundNameExpression BindNameExpression(NameExpressionSyntax syntax);
+    private partial BoundVariableExpression BindNameExpression(VariableExpressionSyntax syntax);
 
     private partial BoundStatement BindStatement(StatementSyntax syntax);
     private partial BoundAssignmentExpressionStatement BindAssignmentExpressionStatement(AssignmentExpressionStatementSyntax syntax);

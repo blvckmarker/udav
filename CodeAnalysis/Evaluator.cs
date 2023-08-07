@@ -53,8 +53,8 @@ public class Evaluator
         if (node is BoundLiteralExpression literal)
             return EvaluateLiteralExpression(literal);
 
-        if (node is BoundNameExpression name)
-            return EvaluateNameExpression(name);
+        if (node is BoundVariableExpression name)
+            return EvaluateVariableExpression(name);
 
         if (node is BoundAssignmentExpression assignment)
             return EvaluateAssignmentExpression(assignment);
@@ -130,7 +130,7 @@ public class Evaluator
         return rightExpression;
     }
 
-    private object EvaluateNameExpression(BoundNameExpression name)
+    private object EvaluateVariableExpression(BoundVariableExpression name)
     {
         return _localVariables[name.Reference];
     }

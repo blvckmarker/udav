@@ -2,7 +2,7 @@
 
 public class BoundAssignmentExpression : BoundExpression
 {
-    public BoundAssignmentExpression(BoundNameExpression boundIdentifier, BoundExpression boundExpression)
+    public BoundAssignmentExpression(BoundVariableExpression boundIdentifier, BoundExpression boundExpression)
     {
         BoundIdentifier = boundIdentifier;
         BoundExpression = boundExpression;
@@ -11,6 +11,6 @@ public class BoundAssignmentExpression : BoundExpression
     public override Type Type => BoundExpression.Type;
     public override BoundNodeKind Kind => BoundNodeKind.AssignmentExpression;
 
-    public BoundNameExpression BoundIdentifier { get; }
+    public BoundVariableExpression BoundIdentifier { get; }
     public BoundExpression BoundExpression { get; }
 }

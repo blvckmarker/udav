@@ -4,7 +4,7 @@ namespace CodeAnalysis.Syntax.Parser.Statements
 {
     internal class AssignmentExpressionStatementSyntax : StatementSyntax
     {
-        public AssignmentExpressionStatementSyntax(NameExpressionSyntax identifier, SyntaxToken equalsToken, ExpressionSyntax expression)
+        public AssignmentExpressionStatementSyntax(VariableExpressionSyntax identifier, SyntaxToken equalsToken, ExpressionSyntax expression)
         {
             Identifier = identifier;
             EqualsToken = equalsToken;
@@ -15,7 +15,7 @@ namespace CodeAnalysis.Syntax.Parser.Statements
         public override int StartPosition => Identifier.StartPosition;
         public override int EndPosition => Expression.EndPosition;
 
-        public NameExpressionSyntax Identifier { get; }
+        public VariableExpressionSyntax Identifier { get; }
         public SyntaxToken EqualsToken { get; }
         public ExpressionSyntax Expression { get; }
 

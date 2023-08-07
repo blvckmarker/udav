@@ -1,7 +1,7 @@
 ﻿namespace CodeAnalysis.Binder.BoundExpressions;
-public class BoundNameExpression : BoundExpression
+public class BoundVariableExpression : BoundExpression
 {
-    public BoundNameExpression(VariableSymbol variableReference)
+    public BoundVariableExpression(VariableSymbol variableReference)
     {
         Reference = variableReference;
     }

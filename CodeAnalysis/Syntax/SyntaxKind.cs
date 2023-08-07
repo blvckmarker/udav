@@ -40,7 +40,7 @@ public enum SyntaxKind
     ParenthesizedExpression,
     UnaryExpression,
     LiteralExpression,
-    NameExpression,
+    VariableExpression,
     AssignmentExpression,
 
     AssignmentStatement,
