@@ -20,8 +20,8 @@ public class Lexer
 
     public Lexer(string text)
     {
-        _text = SourceText.From(text);
         _diagnostics = new Diagnostics(text);
+        _text = _diagnostics.SourceProgram;
     }
     private void Next() => _position++;
     private char Lookahead(int count) => _position + count >= _text.Length ? _text.Last() : _text[_position + count];
@@ -196,10 +196,11 @@ public class Lexer
 
     private void LexNumericToken()
     {
-        while (char.IsDigit(CurrentChar))
+        while (char.IsNumber(CurrentChar))
             Next();
 
         var span = _text[_startPosition, _position];
+
         if (!int.TryParse(span, out var value))
             _diagnostics.MakeIssue($"The number {span} cannot be represented as int32", span, TextSpan.FromBounds(_startPosition, _position));
 

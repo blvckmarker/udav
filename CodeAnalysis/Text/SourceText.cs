@@ -23,7 +23,7 @@ public class SourceText : IEnumerable<char>
     public int GetLineIndex(int position)
     {
         var lower = 0;
-        var upper = Lines.Length;
+        var upper = Lines.Length - 1;
         while (lower <= upper)
         {
             var index = lower + (upper - lower) / 2;
@@ -46,9 +46,9 @@ public class SourceText : IEnumerable<char>
         var lineStart = 0;
         var currPosition = 0;
 
-        for (int i = 0; i < source.Length; i++)
+        for (; currPosition < source.Length;)
         {
-            var lineBreakWidth = GetLineBreakWidth(source, i);
+            var lineBreakWidth = GetLineBreakWidth(source, currPosition);
 
             if (lineBreakWidth == 0)
                 currPosition++;

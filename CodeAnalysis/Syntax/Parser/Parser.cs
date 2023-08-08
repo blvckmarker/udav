@@ -27,12 +27,12 @@ public class Parser
 
         _diagnostics = lexer.Diagnostics;
     }
-    public Parser(string sourceProgram, IEnumerable<SyntaxToken> tokens)
+    public Parser(IEnumerable<SyntaxToken> tokens, DiagnosticsBase diagnostics)
     {
         _tokens = tokens
                   .Where(x => x.Kind != SyntaxKind.WhitespaceToken)
                   .ToImmutableArray();
-        _diagnostics = new Diagnostics(sourceProgram);
+        _diagnostics = diagnostics;
     }
 
     private SyntaxToken Current => Peek(0);

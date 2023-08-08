@@ -21,7 +21,7 @@ public sealed class Compiler
         if (hasProblem(lexer.Diagnostics))
             return new CompilationResult(CompilationResultKind.SyntaxError, null, lexer.Diagnostics);
 
-        var parser = new Parser(source, tokens);
+        var parser = new Parser(tokens, lexer.Diagnostics);
         var syntaxTree = parser.ParseTree();
         if (environmentVariables.ShowTree)
             showTree(syntaxTree.Root);

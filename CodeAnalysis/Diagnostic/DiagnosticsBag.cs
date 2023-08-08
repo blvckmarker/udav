@@ -17,12 +17,5 @@ namespace CodeAnalysis.Diagnostic
         public string Message { get; }
         public string? ProblemText { get; }
         public IssueKind Kind { get; }
-
-        public override string ToString()
-        {
-            if (ProblemText is null)
-                return Message;
-            return $"At:{Span.Start} {Message}: {ProblemText}";
-        }
     }
 }

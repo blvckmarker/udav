@@ -1,45 +1,64 @@
 ﻿using CodeAnalysis;
 using CodeAnalysis.Compilation;
 using CodeAnalysis.Diagnostic;
+using System.Text;
 
 var showVariables = false;
 var showTree = false;
 var sessionVariables = new Dictionary<VariableSymbol, object>();
 var compiler = new Compiler(sessionVariables);
 
+var textBuilder = new StringBuilder();
+//> let i = 3
+//| let a = 3
+
+//>
+//
+//
+
 while (true)
 {
-    Console.Write(">");
-    var line = Console.ReadLine();
+    if (textBuilder.Length == 0)
+        Console.Write("> ");
+    else
+        Console.Write("| ");
 
-    if (string.IsNullOrWhiteSpace(line))
-        break;
-    if (line == "#showtree")
+    var line = Console.ReadLine();
+    var isBlank = string.IsNullOrWhiteSpace(line);
+
+    if (textBuilder.Length == 0)
     {
-        showTree = !showTree;
-        continue;
+        if (isBlank)
+            break;
+        if (line == "#showtree")
+        {
+            showTree = !showTree;
+            continue;
+        }
+        if (line == "#showvars")
+        {
+            showVariables = !showVariables;
+            continue;
+        }
+
     }
-    if (line == "#showvars")
-    {
-        showVariables = !showVariables;
-        continue;
-    }
+
+    textBuilder = textBuilder.AppendLine(line);
+    var program = textBuilder.ToString();
 
     var environment = new EnvironmentVariables(showTree, showVariables);
-    var compilationResult = compiler.Compile(line, environment);
+    var compilationResult = compiler.Compile(program, environment);
 
-    if (compilationResult.Kind is not CompilationResultKind.Success)
-    {
-        Console.WriteLine(compilationResult.Kind);
-        PrintDiagnostics(compilationResult.Diagnostics);
+    if (compilationResult.Kind is CompilationResultKind.SyntaxError)
         continue;
-    }
 
     PrintDiagnostics(compilationResult.Diagnostics);
     Console.WriteLine(compilationResult.ReturnResult);
+
+    textBuilder.Clear();
 }
 
-void PrintDiagnostics(IEnumerable<DiagnosticsBag> diagnostics)
+void PrintDiagnostics(DiagnosticsBase diagnostics)
 {
     foreach (var diagnostic in diagnostics)
     {
@@ -58,8 +77,10 @@ void PrintDiagnostics(IEnumerable<DiagnosticsBag> diagnostics)
         }
         else
         {
+            var lineIndex = diagnostics.SourceProgram.GetLineIndex(diagnostic.Span.Start);
+
             Console.ForegroundColor = foregroundColor;
-            Console.Write($"{diagnostic.Kind}. At:{diagnostic.Span.Start} {diagnostic.Message} ");
+            Console.Write($"{diagnostic.Kind}. At {lineIndex}:{diagnostic.Span.Start} {diagnostic.Message} ");
             Console.ResetColor();
 
             Console.WriteLine(diagnostic.ProblemText);
