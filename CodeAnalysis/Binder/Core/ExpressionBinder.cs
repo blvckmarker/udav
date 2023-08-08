@@ -1,7 +1,6 @@
 using CodeAnalysis.Binder.BoundExpressions;
 using CodeAnalysis.Syntax;
 using CodeAnalysis.Syntax.Parser.Expressions;
-using CodeAnalysis.Text;
 
 namespace CodeAnalysis.Binder.Core;
 
@@ -58,7 +57,7 @@ public sealed partial class Binder
         var operatorToken = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, operand.Type);
 
         if (operatorToken is null)
-            _diagnostics.MakeIssue($"Unary operator {syntax.OperatorToken.Text} is not defined for type {operand.Type}", _sourceProgram.Substring(syntax.Span), syntax.Span);
+            _diagnostics.MakeIssue($"Unary operator {syntax.OperatorToken.Text} is not defined for type {operand.Type}", _sourceProgram.ToString(syntax.Span), syntax.Span);
 
         return new BoundUnaryExpression(operatorToken, operand);
     }
@@ -69,7 +68,7 @@ public sealed partial class Binder
         var operatorToken = BoundBinaryOperator.Bind(syntax.OperatorToken.Kind, left.Type, right.Type);
 
         if (operatorToken is null)
-            _diagnostics.MakeIssue($"Unknown operator `{syntax.OperatorToken.Kind}` for types `{left.Type}` and `{right.Type}`", _sourceProgram.Substring(syntax.Span), syntax.Span);
+            _diagnostics.MakeIssue($"Unknown operator `{syntax.OperatorToken.Kind}` for types `{left.Type}` and `{right.Type}`", _sourceProgram.ToString(syntax.Span), syntax.Span);
 
         return new BoundBinaryExpression(left, operatorToken, right);
     }

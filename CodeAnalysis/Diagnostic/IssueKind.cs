@@ -1,8 +1,7 @@
-﻿namespace CodeAnalysis.Text
+﻿namespace CodeAnalysis.Diagnostic;
+
+public enum IssueKind
 {
-    public enum IssueKind
-    {
-        Problem,
-        Warning
-    }
+    Problem,
+    Warning
 }

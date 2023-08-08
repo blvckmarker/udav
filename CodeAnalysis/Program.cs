@@ -1,6 +1,6 @@
 ﻿using CodeAnalysis;
 using CodeAnalysis.Compilation;
-using CodeAnalysis.Text;
+using CodeAnalysis.Diagnostic;
 
 var showVariables = false;
 var showTree = false;

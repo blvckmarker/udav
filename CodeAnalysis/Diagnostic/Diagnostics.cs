@@ -1,4 +1,6 @@
-﻿namespace CodeAnalysis.Text;
+﻿using CodeAnalysis.Text;
+
+namespace CodeAnalysis.Diagnostic;
 
 public class Diagnostics : DiagnosticsBase, IEnumerable<DiagnosticsBag>
 {

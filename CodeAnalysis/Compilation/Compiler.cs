@@ -1,10 +1,10 @@
 ﻿using CodeAnalysis;
 using CodeAnalysis.Binder.Core;
 using CodeAnalysis.Compilation;
+using CodeAnalysis.Diagnostic;
 using CodeAnalysis.Syntax;
 using CodeAnalysis.Syntax.Parser;
 using CodeAnalysis.Syntax.Scanner;
-using CodeAnalysis.Text;
 
 public sealed class Compiler
 {

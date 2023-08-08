@@ -1,9 +1,9 @@
 #region
 
+using CodeAnalysis.Diagnostic;
 using CodeAnalysis.Syntax.Parser.Expressions;
 using CodeAnalysis.Syntax.Parser.Statements;
 using CodeAnalysis.Syntax.Scanner;
-using CodeAnalysis.Text;
 using System.Collections.Immutable;
 
 #endregion
@@ -25,7 +25,7 @@ public class Parser
                        .Where(token => token.Kind is not SyntaxKind.WhitespaceToken)
                        .ToImmutableArray();
 
-        _diagnostics = new Diagnostics(lexer.Diagnostics.SourceText);
+        _diagnostics = lexer.Diagnostics;
     }
     public Parser(string sourceProgram, IEnumerable<SyntaxToken> tokens)
     {

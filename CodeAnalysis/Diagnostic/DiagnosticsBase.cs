@@ -1,29 +1,29 @@
-﻿using System.Collections;
+﻿using CodeAnalysis.Text;
+using System.Collections;
 
-namespace CodeAnalysis.Text
+namespace CodeAnalysis.Diagnostic;
+public abstract class DiagnosticsBase : IEnumerable<DiagnosticsBag>
 {
-    public abstract class DiagnosticsBase : IEnumerable<DiagnosticsBag>
+    protected readonly IList<DiagnosticsBag> _diagnostics;
+    public SourceText SourceProgram { get; }
+
+    public DiagnosticsBase(string text)
     {
-        protected readonly IList<DiagnosticsBag> _diagnostics;
-        public string SourceText { get; }
-
-        public DiagnosticsBase(string text)
-        {
-            _diagnostics = new List<DiagnosticsBag>();
-            SourceText = text;
-        }
-
-        public DiagnosticsBase Extend(IEnumerable<DiagnosticsBag> diagnostics)
-        {
-            foreach (var diagnostic in diagnostics)
-                _diagnostics.Add(diagnostic);
-            return this;
-        }
-        public abstract void MakeIssue(string message, IssueKind issueKind = IssueKind.Problem);
-        public abstract void MakeIssue(string message, string problemText, TextSpan textSpan, IssueKind issueKind = IssueKind.Problem);
-        public abstract void MakeIssue(DiagnosticsBag issue);
-
-        public IEnumerator<DiagnosticsBag> GetEnumerator() => _diagnostics.GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        _diagnostics = new List<DiagnosticsBag>();
+        SourceProgram = SourceText.From(text);
     }
+
+    public DiagnosticsBase Extend(IEnumerable<DiagnosticsBag> diagnostics)
+    {
+        foreach (var diagnostic in diagnostics)
+            _diagnostics.Add(diagnostic);
+        return this;
+    }
+    public abstract void MakeIssue(string message, IssueKind issueKind = IssueKind.Problem);
+    public abstract void MakeIssue(string message, string problemText, TextSpan textSpan, IssueKind issueKind = IssueKind.Problem);
+    public abstract void MakeIssue(DiagnosticsBag issue);
+
+    public IEnumerator<DiagnosticsBag> GetEnumerator() => _diagnostics.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
+

@@ -1,5 +1,6 @@
 ﻿using CodeAnalysis.Binder.BoundExpressions;
 using CodeAnalysis.Binder.BoundStatements;
+using CodeAnalysis.Diagnostic;
 using CodeAnalysis.Syntax.Parser;
 using CodeAnalysis.Syntax.Parser.Expressions;
 using CodeAnalysis.Syntax.Parser.Statements;
@@ -9,7 +10,7 @@ namespace CodeAnalysis.Binder.Core;
 
 public sealed partial class Binder
 {
-    private readonly string _sourceProgram;
+    private readonly SourceText _sourceProgram;
     private readonly StatementSyntax _syntaxRoot;
     private readonly DiagnosticsBase _diagnostics;
     private readonly IDictionary<VariableSymbol, object> _sessionVariables;
@@ -25,7 +26,7 @@ public sealed partial class Binder
         _syntaxRoot = syntaxTree.Root;
         _diagnostics = syntaxTree.Diagnostics;
         _sessionVariables = sessionVariables;
-        _sourceProgram = _diagnostics.SourceText;
+        _sourceProgram = _diagnostics.SourceProgram;
     }
 
     public BoundStatement BindTree() => BindStatement(_syntaxRoot);

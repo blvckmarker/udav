@@ -1,4 +1,4 @@
-﻿using CodeAnalysis.Text;
+﻿using CodeAnalysis.Diagnostic;
 
 namespace CodeAnalysis.Compilation;
 public class CompilationResult

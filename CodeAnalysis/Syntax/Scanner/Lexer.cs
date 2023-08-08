@@ -1,14 +1,13 @@
-#region
+using CodeAnalysis.Diagnostic;
 using CodeAnalysis.Text;
 using System.Collections.Immutable;
-#endregion
 
 namespace CodeAnalysis.Syntax.Scanner;
 
 public class Lexer
 {
     private readonly DiagnosticsBase _diagnostics;
-    private readonly string _text;
+    private readonly SourceText _text;
     private bool isAlreadyLexicalized = false;
     private int _position;
 
@@ -21,7 +20,7 @@ public class Lexer
 
     public Lexer(string text)
     {
-        _text = text;
+        _text = SourceText.From(text);
         _diagnostics = new Diagnostics(text);
     }
     private void Next() => _position++;
@@ -174,7 +173,7 @@ public class Lexer
                 break;
         }
 
-        var span = _text[_startPosition.._position];
+        var span = _text[_startPosition, _position];
         return new SyntaxToken(_kind, _startPosition, span, _value);
     }
 
@@ -183,7 +182,7 @@ public class Lexer
         while (char.IsLetterOrDigit(CurrentChar))
             Next();
 
-        var span = _text[_startPosition.._position];
+        var span = _text[_startPosition, _position];
         _kind = SyntaxFacts.GetKeywordKind(span);
     }
 
@@ -200,7 +199,7 @@ public class Lexer
         while (char.IsDigit(CurrentChar))
             Next();
 
-        var span = _text[_startPosition.._position];
+        var span = _text[_startPosition, _position];
         if (!int.TryParse(span, out var value))
             _diagnostics.MakeIssue($"The number {span} cannot be represented as int32", span, TextSpan.FromBounds(_startPosition, _position));
 

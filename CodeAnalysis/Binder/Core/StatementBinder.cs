@@ -2,7 +2,6 @@
 using CodeAnalysis.Syntax;
 using CodeAnalysis.Syntax.Parser.Expressions;
 using CodeAnalysis.Syntax.Parser.Statements;
-using CodeAnalysis.Text;
 
 namespace CodeAnalysis.Binder.Core;
 
@@ -24,7 +23,7 @@ public sealed partial class Binder
         var expression = boundAssignmentExpression.BoundExpression;
         var identifier = boundAssignmentExpression.BoundIdentifier;
         if (expression.Type != identifier.Type)
-            _diagnostics.MakeIssue($"Cannot cast type {expression.Type} to {identifier.Type}", _sourceProgram.Substring(syntax.Expression.Span), syntax.Expression.Span);
+            _diagnostics.MakeIssue($"Cannot cast type {expression.Type} to {identifier.Type}", _sourceProgram.ToString(syntax.Expression.Span), syntax.Expression.Span);
 
         return new BoundAssignmentExpressionStatement(boundAssignmentExpression.BoundIdentifier, boundAssignmentExpression.BoundExpression);
     }
@@ -48,7 +47,7 @@ public sealed partial class Binder
             if (boundType.Type is null)
                 _diagnostics.MakeIssue("Error type", statement.TypeToken.Text, statement.TypeToken.Span);
             if (boundType.Type != boundExpression.Type)
-                _diagnostics.MakeIssue($"Cannot cast type {boundExpression.Type} to {boundType.Type}", _sourceProgram.Substring(statement.Expression.Span), statement.Expression.Span);
+                _diagnostics.MakeIssue($"Cannot cast type {boundExpression.Type} to {boundType.Type}", _sourceProgram.ToString(statement.Expression.Span), statement.Expression.Span);
         }
 
         var boundIdentifier = new VariableSymbol(identifierName, boundExpression.Type);

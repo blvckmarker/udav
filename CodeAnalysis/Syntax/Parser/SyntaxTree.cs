@@ -1,6 +1,6 @@
+using CodeAnalysis.Diagnostic;
 using CodeAnalysis.Syntax.Parser.Statements;
 using CodeAnalysis.Syntax.Scanner;
-using CodeAnalysis.Text;
 
 namespace CodeAnalysis.Syntax.Parser;
 

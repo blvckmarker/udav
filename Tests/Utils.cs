@@ -9,7 +9,7 @@ using System.Numerics;
 using System.Reflection;
 
 using Binder = CodeAnalysis.Binder.Core.Binder;
-using Diagnostic = CodeAnalysis.Text.Diagnostics;
+using Diagnostics = CodeAnalysis.Diagnostic.Diagnostics;
 using SyntaxKind = CodeAnalysis.Syntax.SyntaxKind;
 using SyntaxToken = CodeAnalysis.Syntax.SyntaxToken;
 using SyntaxTree = CodeAnalysis.Syntax.Parser.SyntaxTree;
@@ -120,7 +120,7 @@ namespace Tests
             var parser = new Parser(lexer);
 
             var expressionSyntax = InvokeMember(MemberTypes.Method, "ParseBinaryExpression", parser, 0);
-            var binder = new Binder(new SyntaxTree(new Diagnostic(source), null, null), variables);
+            var binder = new Binder(new SyntaxTree(new Diagnostics(source), null, null), variables);
             var boundExpression = InvokeMember(MemberTypes.Method, "BindExpression", binder, expressionSyntax);
             var evaluator = new Evaluator(null, variables);
             var result = InvokeMember(MemberTypes.Method, "EvaluateExpression", evaluator, boundExpression);
