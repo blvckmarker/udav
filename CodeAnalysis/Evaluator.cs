@@ -7,14 +7,12 @@ namespace CodeAnalysis;
 public class Evaluator
 {
     private readonly BoundStatement _root;
-    private IDictionary<VariableSymbol, object> _localVariables;
-
-    public IDictionary<VariableSymbol, object> LocalVariables => _localVariables;
+    public IDictionary<VariableSymbol, object> LocalVariables { get; }
 
     public Evaluator(BoundStatement root, IDictionary<VariableSymbol, object> sessionVariables)
     {
         _root = root;
-        _localVariables = sessionVariables;
+        LocalVariables = sessionVariables;
     }
 
     public object Evaluate() => EvaluateStatement(_root);
@@ -33,7 +31,7 @@ public class Evaluator
     private object EvaluateAssignmentExpressionStatement(BoundAssignmentExpressionStatement assignWrap)
     {
         var value = EvaluateExpression(assignWrap.BoundExpression);
-        _localVariables[assignWrap.BoundIdentifier.Reference] = value;
+        LocalVariables[assignWrap.BoundIdentifier.Reference] = value;
 
         return value;
     }
@@ -42,7 +40,7 @@ public class Evaluator
     {
         var newVariable = assign.BoundIdentifier;
         var value = EvaluateExpression(assign.BoundExpression);
-        _localVariables.Add(newVariable, value);
+        LocalVariables.Add(newVariable, value);
 
         return value;
     }
@@ -125,14 +123,14 @@ public class Evaluator
     private object EvaluateAssignmentExpression(BoundAssignmentExpression assignment)
     {
         var rightExpression = EvaluateExpression(assignment.BoundExpression);
-        _localVariables[assignment.BoundIdentifier.Reference] = rightExpression;
+        LocalVariables[assignment.BoundIdentifier.Reference] = rightExpression;
 
         return rightExpression;
     }
 
     private object EvaluateVariableExpression(BoundVariableExpression name)
     {
-        return _localVariables[name.Reference];
+        return LocalVariables[name.Reference];
     }
 
     private object EvaluateLiteralExpression(BoundLiteralExpression literal)

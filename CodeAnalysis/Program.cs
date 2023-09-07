@@ -9,12 +9,6 @@ var sessionVariables = new Dictionary<VariableSymbol, object>();
 var compiler = new Compiler(sessionVariables);
 
 var textBuilder = new StringBuilder();
-//> let i = 3
-//| let a = 3
-
-//>
-//
-//
 
 while (true)
 {
@@ -49,7 +43,7 @@ while (true)
     var environment = new EnvironmentVariables(showTree, showVariables);
     var compilationResult = compiler.Compile(program, environment);
 
-    if (compilationResult.Kind is CompilationResultKind.SyntaxError)
+    if (compilationResult.Kind is CompilationResultKind.SyntaxError && !isBlank)
         continue;
 
     PrintDiagnostics(compilationResult.Diagnostics);
@@ -58,7 +52,7 @@ while (true)
     textBuilder.Clear();
 }
 
-void PrintDiagnostics(DiagnosticsBase diagnostics)
+static void PrintDiagnostics(DiagnosticsBase diagnostics)
 {
     foreach (var diagnostic in diagnostics)
     {
@@ -78,6 +72,13 @@ void PrintDiagnostics(DiagnosticsBase diagnostics)
         else
         {
             var lineIndex = diagnostics.SourceProgram.GetLineIndex(diagnostic.Span.Start);
+
+            // for (int i = 0; i < diagnostics.SourceProgram.Lines.Length; ++i)
+            // {
+            //     var line = diagnostics.SourceProgram.Lines[i];
+            //     Console.WriteLine($"{i} {line.Span} {line.Text}");
+            // }
+
 
             Console.ForegroundColor = foregroundColor;
             Console.Write($"{diagnostic.Kind}. At {lineIndex}:{diagnostic.Span.Start} {diagnostic.Message} ");

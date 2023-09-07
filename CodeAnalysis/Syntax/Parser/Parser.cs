@@ -76,7 +76,7 @@ public class Parser
     }
 
     /*
-     * block : statement*
+     * block :  { statement* }
      * 
      * statement : assignment_statement
      *           | if_statement

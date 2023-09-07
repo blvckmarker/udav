@@ -10,16 +10,13 @@ public class SourceText : IEnumerable<char>
     private SourceText(string source)
     {
         _text = source;
-        Lines = ParseLines(this, source);
+        Lines = ParseLines(source);
     }
 
     public int Length => _text.Length;
     public char this[int index] => _text[index];
     public string this[int start, int end] => _text[start..end];
-    public static SourceText From(string text)
-    {
-        return new SourceText(text);
-    }
+    public static SourceText From(string text) => new SourceText(text);
     public int GetLineIndex(int position)
     {
         var lower = 0;
@@ -27,51 +24,59 @@ public class SourceText : IEnumerable<char>
         while (lower <= upper)
         {
             var index = lower + (upper - lower) / 2;
-            var startLine = Lines[index].Start;
-            var endLine = Lines[index].End;
-
+            var startLine = Lines[index].SpanWithLineBreak.Start;
+            var endLine = Lines[index].SpanWithLineBreak.End;
+            //0 let a =
+            //1 -
+            //2 -
             if (position >= startLine && position <= endLine)
                 return index;
             else if (position < startLine)
-                lower = index + 1;
-            else
                 upper = index - 1;
+            else
+                lower = index + 1;
         }
         return -1;
     }
-    private ImmutableArray<TextLine> ParseLines(SourceText sourceText, string source)
+    private ImmutableArray<TextLine> ParseLines(string source)
     {
         var resultLines = new List<TextLine>();
 
         var lineStart = 0;
         var currPosition = 0;
 
-        for (; currPosition < source.Length;)
+        while (currPosition < source.Length)
         {
             var lineBreakWidth = GetLineBreakWidth(source, currPosition);
 
-            if (lineBreakWidth == 0)
-                currPosition++;
-            else
+            switch (lineBreakWidth)
             {
-                AddLine(resultLines, sourceText, lineStart, currPosition, lineBreakWidth);
+                case 0:
+                    currPosition++;
+                    break;
+                default:
+                    resultLines.Add(MakeTextLine(lineStart, currPosition, lineBreakWidth));
 
-                currPosition += lineBreakWidth;
-                lineStart = currPosition;
+                    currPosition += lineBreakWidth;
+                    lineStart = currPosition;
+                    break;
             }
         }
 
         if (currPosition > lineStart)
-            AddLine(resultLines, sourceText, lineStart, currPosition, 0);
+            resultLines.Add(MakeTextLine(lineStart, currPosition, 0));
 
         return resultLines.ToImmutableArray();
     }
-    private static void AddLine(IList<TextLine> resultLines, SourceText text, int lineStart, int currPosition, int lineBreakWidth)
+    private TextLine MakeTextLine(int lineStart, int currPosition, int lineBreakWidth)
     {
         var lineLength = currPosition - lineStart;
         var lineLengthWithBreak = lineLength + lineBreakWidth;
-        var textLine = new TextLine(text, lineStart, lineLength, lineLengthWithBreak);
-        resultLines.Add(textLine);
+        var textLine = new TextLine(_text.Substring(lineStart, currPosition - lineStart),
+                                    lineStart,
+                                    lineLength,
+                                    lineLengthWithBreak);
+        return textLine;
     }
     private static int GetLineBreakWidth(string source, int i)
     {

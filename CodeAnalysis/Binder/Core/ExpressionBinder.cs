@@ -8,23 +8,16 @@ public sealed partial class Binder
 {
     private partial BoundExpression BindExpression(ExpressionSyntax syntax)
     {
-        switch (syntax.Kind)
+        return syntax.Kind switch
         {
-            case SyntaxKind.LiteralExpression:
-                return BindLiteralExpression((LiteralExpressionSyntax)syntax);
-            case SyntaxKind.VariableExpression:
-                return BindNameExpression((VariableExpressionSyntax)syntax);
-            case SyntaxKind.AssignmentExpression:
-                return BindAssignmentExpression((AssignmentExpressionSyntax)syntax);
-            case SyntaxKind.BinaryExpression:
-                return BindBinaryExpression((BinaryExpressionSyntax)syntax);
-            case SyntaxKind.UnaryExpression:
-                return BindUnaryExpression((UnaryExpressionSyntax)syntax);
-            case SyntaxKind.ParenthesizedExpression:
-                return BindParenthesizedExpression((ParenthesizedExpressionSyntax)syntax);
-            default:
-                throw new NotSupportedException(syntax.Kind.ToString());
-        }
+            SyntaxKind.LiteralExpression => BindLiteralExpression((LiteralExpressionSyntax)syntax),
+            SyntaxKind.VariableExpression => BindNameExpression((VariableExpressionSyntax)syntax),
+            SyntaxKind.AssignmentExpression => BindAssignmentExpression((AssignmentExpressionSyntax)syntax),
+            SyntaxKind.BinaryExpression => BindBinaryExpression((BinaryExpressionSyntax)syntax),
+            SyntaxKind.UnaryExpression => BindUnaryExpression((UnaryExpressionSyntax)syntax),
+            SyntaxKind.ParenthesizedExpression => BindParenthesizedExpression((ParenthesizedExpressionSyntax)syntax),
+            _ => throw new NotSupportedException(syntax.Kind.ToString()),
+        };
     }
 
     private partial BoundAssignmentExpression BindAssignmentExpression(AssignmentExpressionSyntax expressionSyntax)

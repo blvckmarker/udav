@@ -15,16 +15,12 @@ public class BoundIdentifierType
 
     public static BoundIdentifierType Bind(SyntaxKind identifierType)
     {
-        switch (identifierType)
+        return identifierType switch
         {
-            case SyntaxKind.IntKeyword:
-                return new BoundIdentifierType(BoundTypeKind.DefinedType, typeof(int));
-            case SyntaxKind.BoolKeyword:
-                return new BoundIdentifierType(BoundTypeKind.DefinedType, typeof(bool));
-            case SyntaxKind.LetKeyword:
-                return new BoundIdentifierType(BoundTypeKind.UndefinedType, null);
-            default:
-                return new BoundIdentifierType(BoundTypeKind.DefinedType, null);
-        }
+            SyntaxKind.IntKeyword => new BoundIdentifierType(BoundTypeKind.DefinedType, typeof(int)),
+            SyntaxKind.BoolKeyword => new BoundIdentifierType(BoundTypeKind.DefinedType, typeof(bool)),
+            SyntaxKind.LetKeyword => new BoundIdentifierType(BoundTypeKind.UndefinedType, null),
+            _ => new BoundIdentifierType(BoundTypeKind.DefinedType, null),
+        };
     }
 }

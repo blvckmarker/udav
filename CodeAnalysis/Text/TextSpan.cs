@@ -9,7 +9,7 @@ public class TextSpan
     }
 
     public static TextSpan FromBounds(int start, int end) => new TextSpan(start, end - start);
-
+    public override string ToString() => $"{Start}:{End}";
     public int Start { get; }
     public int Length { get; }
     public int End => Start + Length;
