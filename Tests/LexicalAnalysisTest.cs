@@ -1,3 +1,4 @@
+using CodeAnalysis.Text;
 using SyntaxKind = CodeAnalysis.Syntax.SyntaxKind;
 
 namespace Tests;
@@ -88,7 +89,7 @@ public class LexicalAnalysisTest
     [Fact]
     public static void LexicalException1()
     {
-        var lexer = new Lexer("Hello world!");
+        var lexer = new Lexer(SourceText.From("Hello world!"));
         lexer.LexAll();
 
         Assert.Throws<Exception>(lexer.Lex);
@@ -97,7 +98,7 @@ public class LexicalAnalysisTest
     [Fact]
     public static void LexicalException2()
     {
-        var lexer = new Lexer("Hello world!");
+        var lexer = new Lexer(SourceText.From("Hello world!"));
         lexer.LexAll();
 
         Assert.Throws<Exception>(lexer.LexAll);

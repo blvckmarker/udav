@@ -7,10 +7,10 @@ namespace CodeAnalysis.Syntax.Parser;
 public sealed class SyntaxTree
 {
     public DiagnosticsBase Diagnostics { get; }
-    public StatementSyntax Root { get; }
+    public CompilationUnit Root { get; }
     public SyntaxToken EofToken { get; }
 
-    public SyntaxTree(DiagnosticsBase diagnostics, StatementSyntax root, SyntaxToken eofToken)
+    public SyntaxTree(DiagnosticsBase diagnostics, CompilationUnit root, SyntaxToken eofToken)
     {
         Diagnostics = diagnostics;
         Root = root;

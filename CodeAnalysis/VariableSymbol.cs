@@ -10,5 +10,4 @@ public class VariableSymbol
 
     public string Name { get; }
     public Type? Type { get; set; }
-
 }

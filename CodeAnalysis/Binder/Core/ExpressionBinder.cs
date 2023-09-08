@@ -29,14 +29,13 @@ public sealed partial class Binder
     private partial BoundVariableExpression BindNameExpression(VariableExpressionSyntax syntax)
     {
         var name = syntax.Variable.Text;
-        var varReference = _sessionVariables.Keys.FirstOrDefault(x => x.Name == name);
-        if (varReference is null)
+        if (!_currScope.TryGetValueOf(name, out var symbol))
         {
             _diagnostics.MakeIssue($"Undefined local variable", name, syntax.Span);
             var errorSymbol = new VariableSymbol(name, null);
             return new BoundVariableExpression(errorSymbol);
         }
-        return new BoundVariableExpression(varReference);
+        return new BoundVariableExpression(symbol);
     }
 
     private partial BoundParenthesizedExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax)
@@ -50,7 +49,7 @@ public sealed partial class Binder
         var operatorToken = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, operand.Type);
 
         if (operatorToken is null)
-            _diagnostics.MakeIssue($"Unary operator {syntax.OperatorToken.Text} is not defined for type {operand.Type}", _sourceProgram.ToString(syntax.Span), syntax.Span);
+            _diagnostics.MakeIssue($"Unary operator {syntax.OperatorToken.Text} is not defined for type {operand.Type}", syntax.ToString(), syntax.Span);
 
         return new BoundUnaryExpression(operatorToken, operand);
     }
@@ -61,7 +60,7 @@ public sealed partial class Binder
         var operatorToken = BoundBinaryOperator.Bind(syntax.OperatorToken.Kind, left.Type, right.Type);
 
         if (operatorToken is null)
-            _diagnostics.MakeIssue($"Unknown operator `{syntax.OperatorToken.Kind}` for types `{left.Type}` and `{right.Type}`", _sourceProgram.ToString(syntax.Span), syntax.Span);
+            _diagnostics.MakeIssue($"Unknown operator `{syntax.OperatorToken.Kind}` for types `{(left.Type is null ? "ErrorType" : left.Type)}` and `{(right.Type is null ? "ErrorType" : right.Type)}`", syntax.ToString(), syntax.Span);
 
         return new BoundBinaryExpression(left, operatorToken, right);
     }

@@ -1,6 +1,7 @@
 ﻿using CodeAnalysis;
 using CodeAnalysis.Compilation;
 using CodeAnalysis.Syntax.Parser;
+using CodeAnalysis.Text;
 using DynamicExpresso;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -76,7 +77,7 @@ namespace Tests
         /// </summary>
         internal static IEnumerable<SyntaxToken> GetTokens(string source)
         {
-            var lexer = new Lexer(source);
+            var lexer = new Lexer(SourceText.From(source));
             return lexer.LexAll().Where(x => x.Kind is not SyntaxKind.BadToken and not SyntaxKind.WhitespaceToken);
         }
 
@@ -111,16 +112,17 @@ namespace Tests
         /// Provides evaluating using Udav API
         /// </summary>
         /// <typeparam name="TResult">Output type</typeparam>
-        internal static TResult EvaluateExpressionInternal<TResult>(string source, IDictionary<VariableSymbol, object> variables = null) // Прости господи
-        {
-            if (variables == null)
-                variables = new Dictionary<VariableSymbol, object>();
+        internal static TResult EvaluateExpressionInternal<TResult>(string source, IDictionary<VariableSymbol, object> variables = null)
+        { // Прости господи
 
-            var lexer = new Lexer(source);
+            variables ??= new Dictionary<VariableSymbol, object>();
+
+            var sourceText = SourceText.From(source);
+            var lexer = new Lexer(sourceText);
             var parser = new Parser(lexer);
 
             var expressionSyntax = InvokeMember(MemberTypes.Method, "ParseBinaryExpression", parser, 0);
-            var binder = new Binder(new SyntaxTree(new Diagnostics(source), null, null), variables);
+            var binder = new Binder(null);
             var boundExpression = InvokeMember(MemberTypes.Method, "BindExpression", binder, expressionSyntax);
             var evaluator = new Evaluator(null, variables);
             var result = InvokeMember(MemberTypes.Method, "EvaluateExpression", evaluator, boundExpression);

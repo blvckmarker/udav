@@ -18,10 +18,10 @@ public class Lexer
     private char CurrentChar => _position >= _text.Length ? '\0' : _text[_position];
     public DiagnosticsBase Diagnostics => _diagnostics;
 
-    public Lexer(string text)
+    public Lexer(SourceText text)
     {
-        _diagnostics = new Diagnostics(text);
-        _text = _diagnostics.SourceProgram;
+        _diagnostics = new Diagnostics();
+        _text = text;
     }
     private void Next() => _position++;
     private char Lookahead(int count) => _position + count >= _text.Length ? _text.Last() : _text[_position + count];
@@ -75,6 +75,14 @@ public class Lexer
                 break;
             case '^':
                 _kind = SyntaxKind.CaretToken;
+                _position++;
+                break;
+            case '{':
+                _kind = SyntaxKind.OpenBrace;
+                _position++;
+                break;
+            case '}':
+                _kind = SyntaxKind.CloseBrace;
                 _position++;
                 break;
             case '>':

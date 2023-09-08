@@ -1,6 +1,7 @@
 ﻿using CodeAnalysis;
 using CodeAnalysis.Compilation;
 using CodeAnalysis.Diagnostic;
+using CodeAnalysis.Text;
 using System.Text;
 
 var showVariables = false;
@@ -46,13 +47,13 @@ while (true)
     if (compilationResult.Kind is CompilationResultKind.SyntaxError && !isBlank)
         continue;
 
-    PrintDiagnostics(compilationResult.Diagnostics);
+    PrintDiagnostics(program, compilationResult.Diagnostics);
     Console.WriteLine(compilationResult.ReturnResult);
 
     textBuilder.Clear();
 }
 
-static void PrintDiagnostics(DiagnosticsBase diagnostics)
+static void PrintDiagnostics(string source, DiagnosticsBase diagnostics)
 {
     foreach (var diagnostic in diagnostics)
     {
@@ -71,7 +72,7 @@ static void PrintDiagnostics(DiagnosticsBase diagnostics)
         }
         else
         {
-            var lineIndex = diagnostics.SourceProgram.GetLineIndex(diagnostic.Span.Start);
+            var lineIndex = SourceText.From(source).GetLineIndex(diagnostic.Span.Start);
 
             // for (int i = 0; i < diagnostics.SourceProgram.Lines.Length; ++i)
             // {

@@ -1,12 +1,9 @@
-#region
-
 using CodeAnalysis.Diagnostic;
 using CodeAnalysis.Syntax.Parser.Expressions;
 using CodeAnalysis.Syntax.Parser.Statements;
 using CodeAnalysis.Syntax.Scanner;
+using Microsoft.VisualStudio.TestPlatform.Utilities;
 using System.Collections.Immutable;
-
-#endregion
 
 namespace CodeAnalysis.Syntax.Parser;
 
@@ -15,6 +12,9 @@ public class Parser
     private readonly DiagnosticsBase _diagnostics;
     private readonly IImmutableList<SyntaxToken> _tokens;
     private int _position;
+
+    private SyntaxToken Current => Peek(0);
+    public DiagnosticsBase Diagnostics => _diagnostics;
 
     public Parser(Lexer lexer)
     {
@@ -35,9 +35,6 @@ public class Parser
         _diagnostics = diagnostics;
     }
 
-    private SyntaxToken Current => Peek(0);
-    public DiagnosticsBase Diagnostics => _diagnostics;
-
     private SyntaxToken TakeToken()
     {
         var current = Current;
@@ -53,7 +50,7 @@ public class Parser
         _diagnostics.MakeIssue($"Unexpected token <{Current.Kind}> expected <{kind}>", Current.Text, Current.Span);
         return new SyntaxToken(kind, Current.Span, Current.Text, null);
     }
-    private SyntaxToken MatchTypeToken()
+    private SyntaxToken MatchTypeIdentifier()
     {
         switch (Current.Kind)
         {
@@ -70,14 +67,22 @@ public class Parser
 
     public SyntaxTree ParseTree()
     {
-        var statement = ParseStatement();
+        var compilationUnit = ParseCompilationUnit();
         var eofToken = MatchToken(SyntaxKind.EofToken);
-        return new SyntaxTree(_diagnostics, statement, eofToken);
+        return new SyntaxTree(Diagnostics, compilationUnit, eofToken);
+    }
+
+    public CompilationUnit ParseCompilationUnit()
+    {
+        var statement = ParseStatement();
+        return new CompilationUnit(statement);
     }
 
     /*
      * block :  { statement* }
+             | statement     
      * 
+     * if_statement : if_kw (expression) block
      * statement : assignment_statement
      *           | if_statement
      *           | for_statement
@@ -105,10 +110,13 @@ public class Parser
      *         | boolean
      */
 
+
     private StatementSyntax ParseStatement()
     {
         switch (Peek(0).Kind)
         {
+            case SyntaxKind.OpenBrace:
+                return ParseBlockStatement();
             case SyntaxKind.BoolKeyword:
             case SyntaxKind.IntKeyword:
             case SyntaxKind.LetKeyword:
@@ -119,9 +127,24 @@ public class Parser
         }
     }
 
+    private StatementSyntax ParseBlockStatement()
+    {
+        if (Peek().Kind == SyntaxKind.OpenBrace)
+        {
+            var statements = new List<StatementSyntax>();
+            var openBrace = MatchToken(SyntaxKind.OpenBrace);
+
+            while (Peek().Kind != SyntaxKind.CloseBrace && Peek().Kind != SyntaxKind.EofToken)
+                statements.Add(ParseStatement());
+
+            var closeBrace = MatchToken(SyntaxKind.CloseBrace);
+            return new BlockStatementSyntax(openBrace, statements, closeBrace);
+        }
+        return ParseStatement();
+    }
     private StatementSyntax ParseAssignmentStatement()
     {
-        var typeToken = MatchTypeToken();
+        var typeToken = MatchTypeIdentifier();
         var identifier = MatchToken(SyntaxKind.IdentifierToken);
         var equalToken = MatchToken(SyntaxKind.EqualsToken);
         var expression = ParseExpression();
@@ -132,6 +155,7 @@ public class Parser
     private StatementSyntax ParseAssignmentExpressionStatement()
     {
         var assignmentExpression = (AssignmentExpressionSyntax)ParseAssignmentExpression();
+
         return new AssignmentExpressionStatementSyntax(
             assignmentExpression.Variable,
             assignmentExpression.EqualsToken,
@@ -140,7 +164,7 @@ public class Parser
 
     private ExpressionSyntax ParseExpression()
     {
-        if (Peek(0).Kind == SyntaxKind.IdentifierToken &&
+        if (Peek().Kind == SyntaxKind.IdentifierToken &&
             Peek(1).Kind == SyntaxKind.EqualsToken)
             return ParseAssignmentExpression();
 
@@ -235,6 +259,6 @@ public class Parser
         return new ParenthesizedExpressionSyntax(left, expression, right);
     }
 
-    private SyntaxToken Peek(int offset)
+    private SyntaxToken Peek(int offset = 0)
         => _position + offset >= _tokens.Count ? _tokens.Last() : _tokens[_position + offset];
 }

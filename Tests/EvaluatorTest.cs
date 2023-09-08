@@ -18,8 +18,7 @@ public class EvaluatorTest
     public static void RandomNumericalTest()
     {
         var source = Utils.GenerateRandomNumericalSequence<int>();
-        int actual = 0;
-        int expected = -1;
+        int actual;
         try
         {
             actual = Utils.EvaluateExpressionInternal<int>(source);
@@ -29,7 +28,7 @@ public class EvaluatorTest
             RandomNumericalTest();
             return;
         }
-        expected = Utils.EvaluateExpressionExternal<int>(source);
+        int expected = Utils.EvaluateExpressionExternal<int>(source);
 
 
         Assert.Equal(expected, actual);

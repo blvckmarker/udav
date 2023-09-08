@@ -45,4 +45,8 @@ public enum SyntaxKind
 
     AssignmentStatement,
     AssignmentExpressionStatement,
+    OpenBrace,
+    CloseBrace,
+    BlockStatement,
+    CompilationUnit,
 }

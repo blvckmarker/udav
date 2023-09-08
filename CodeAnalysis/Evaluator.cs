@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using CodeAnalysis.Binder;
 using CodeAnalysis.Binder.BoundExpressions;
 using CodeAnalysis.Binder.BoundStatements;
@@ -6,43 +7,64 @@ namespace CodeAnalysis;
 
 public class Evaluator
 {
-    private readonly BoundStatement _root;
-    public IDictionary<VariableSymbol, object> LocalVariables { get; }
+    private readonly BoundNode _root;
+    private object lastValue;
 
-    public Evaluator(BoundStatement root, IDictionary<VariableSymbol, object> sessionVariables)
+    public IDictionary<VariableSymbol, object> Variables { get; }
+
+    public Evaluator(BoundNode root, IDictionary<VariableSymbol, object> _variables)
     {
         _root = root;
-        LocalVariables = sessionVariables;
+        Variables = _variables;
     }
 
-    public object Evaluate() => EvaluateStatement(_root);
+    public object Evaluate()
+    {
+        EvaluateCompilationUnit((BoundCompilationUnit)_root);
+        return lastValue;
+    }
+
+    private void EvaluateCompilationUnit(BoundCompilationUnit unit) => EvaluateStatement(unit.Statement);
 
     // statements
-    private object EvaluateStatement(BoundNode node)
+    private void EvaluateStatement(BoundNode node)
     {
-        if (node is BoundAssignmentStatement assign)
-            return EvaluateAssignmentStatement(assign);
-        if (node is BoundAssignmentExpressionStatement assignWrap)
-            return EvaluateAssignmentExpressionStatement(assignWrap);
+        switch (node.Kind)
+        {
+            case BoundNodeKind.AssignmentStatement:
+                var assign = (BoundAssignmentStatement)node;
+                EvaluateAssignmentStatement(assign);
+                break;
 
-        throw new Exception("Unexpected statement " + node.Kind);
+            case BoundNodeKind.AssignmentExpressionStatement:
+                var assignWrap = (BoundAssignmentExpressionStatement)node;
+                EvaluateAssignmentExpressionStatement(assignWrap);
+                break;
+
+            case BoundNodeKind.BlockStatement:
+                var block = (BoundBlockStatement)node;
+                foreach (var statement in block.Statements)
+                    EvaluateStatement(statement);
+                break;
+
+            default:
+                throw new Exception("Unexpected statement " + node.Kind);
+        }
     }
 
-    private object EvaluateAssignmentExpressionStatement(BoundAssignmentExpressionStatement assignWrap)
+    private void EvaluateAssignmentExpressionStatement(BoundAssignmentExpressionStatement assignWrap)
     {
         var value = EvaluateExpression(assignWrap.BoundExpression);
-        LocalVariables[assignWrap.BoundIdentifier.Reference] = value;
-
-        return value;
+        Variables[assignWrap.BoundIdentifier.Reference] = value;
+        lastValue = value;
     }
 
-    private object EvaluateAssignmentStatement(BoundAssignmentStatement assign)
+    private void EvaluateAssignmentStatement(BoundAssignmentStatement assign)
     {
         var newVariable = assign.BoundIdentifier;
         var value = EvaluateExpression(assign.BoundExpression);
-        LocalVariables.Add(newVariable, value);
-
-        return value;
+        Variables[newVariable] = value;
+        lastValue = value;
     }
 
     // expressions
@@ -123,14 +145,14 @@ public class Evaluator
     private object EvaluateAssignmentExpression(BoundAssignmentExpression assignment)
     {
         var rightExpression = EvaluateExpression(assignment.BoundExpression);
-        LocalVariables[assignment.BoundIdentifier.Reference] = rightExpression;
+        Variables[assignment.BoundIdentifier.Reference] = rightExpression;
 
         return rightExpression;
     }
 
     private object EvaluateVariableExpression(BoundVariableExpression name)
     {
-        return LocalVariables[name.Reference];
+        return Variables[name.Reference];
     }
 
     private object EvaluateLiteralExpression(BoundLiteralExpression literal)

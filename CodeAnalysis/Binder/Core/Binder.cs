@@ -1,5 +1,6 @@
 ﻿using CodeAnalysis.Binder.BoundExpressions;
 using CodeAnalysis.Binder.BoundStatements;
+using CodeAnalysis.Binder.Scopes;
 using CodeAnalysis.Diagnostic;
 using CodeAnalysis.Syntax.Parser;
 using CodeAnalysis.Syntax.Parser.Expressions;
@@ -10,26 +11,24 @@ namespace CodeAnalysis.Binder.Core;
 
 public sealed partial class Binder
 {
-    private readonly SourceText _sourceProgram;
-    private readonly StatementSyntax _syntaxRoot;
     private readonly DiagnosticsBase _diagnostics;
-    private readonly IDictionary<VariableSymbol, object> _sessionVariables;
-
+    private BoundScope _currScope;
     public DiagnosticsBase Diagnostics => _diagnostics;
-    public IDictionary<VariableSymbol, object> SessionVariables => _sessionVariables;
 
-    public Binder(SyntaxTree syntaxTree, IDictionary<VariableSymbol, object> sessionVariables)
+    //public BoundGlobalScope BoundGlobalScope { get; }
+
+    public Binder(BoundScope parent)
     {
-        if (syntaxTree.Diagnostics.Where(x => x.Kind == IssueKind.Problem).Any())
-            throw new Exception("Unable to bind syntax tree when tree has problem issues");
-
-        _syntaxRoot = syntaxTree.Root;
-        _diagnostics = syntaxTree.Diagnostics;
-        _sessionVariables = sessionVariables;
-        _sourceProgram = _diagnostics.SourceProgram;
+        _diagnostics = new Diagnostics();
+        _currScope = new BoundStatementScope(parent);
     }
 
-    public BoundStatement BindTree() => BindStatement(_syntaxRoot);
+    public BoundNode BindTree(SyntaxNode root) => BindCompilationUnit((CompilationUnit)root);
+    private BoundCompilationUnit BindCompilationUnit(CompilationUnit syntax)
+    {
+        var boundStatement = BindStatement(syntax.Statement);
+        return new BoundCompilationUnit(boundStatement);
+    }
 
     private partial BoundExpression BindExpression(ExpressionSyntax syntax);
     private partial BoundParenthesizedExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax);
@@ -40,6 +39,16 @@ public sealed partial class Binder
     private partial BoundVariableExpression BindNameExpression(VariableExpressionSyntax syntax);
 
     private partial BoundStatement BindStatement(StatementSyntax syntax);
+    private partial BoundBlockStatement BindBlockStatement(BlockStatementSyntax syntax);
     private partial BoundAssignmentExpressionStatement BindAssignmentExpressionStatement(AssignmentExpressionStatementSyntax syntax);
     private partial BoundAssignmentStatement BindAssignmentStatement(AssignmentStatementSyntax statement);
+
+    public static BoundGlobalScope BindGlobalScope(BoundGlobalScope previous, SyntaxTree tree)
+    {
+        var binder = new Binder(previous);
+        var boundTree = binder.BindTree(tree.Root);
+        var diagnostics = binder.Diagnostics;
+        var variables = binder._currScope.Variables;
+        return new BoundGlobalScope(previous, boundTree, diagnostics, variables);
+    }
 }

@@ -167,7 +167,7 @@ public class CompilationTest
         Assert.Equal(CompilationResultKind.Success, compResult.Kind);
         Assert.Equal(3, compResult.ReturnResult);
 
-        foreach (var item in compiler.SessionVariables)
+        foreach (var item in compiler.Variables)
             Assert.Equal(3, item.Value);
     }
 

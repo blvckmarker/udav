@@ -5,12 +5,10 @@ namespace CodeAnalysis.Diagnostic;
 public abstract class DiagnosticsBase : IEnumerable<DiagnosticsBag>
 {
     protected readonly IList<DiagnosticsBag> _diagnostics;
-    public SourceText SourceProgram { get; }
 
-    public DiagnosticsBase(string text)
+    public DiagnosticsBase()
     {
         _diagnostics = new List<DiagnosticsBag>();
-        SourceProgram = SourceText.From(text);
     }
 
     public DiagnosticsBase Extend(IEnumerable<DiagnosticsBag> diagnostics)

@@ -4,7 +4,7 @@ namespace CodeAnalysis.Diagnostic;
 
 public class Diagnostics : DiagnosticsBase, IEnumerable<DiagnosticsBag>
 {
-    public Diagnostics(string text) : base(text) { }
+    public Diagnostics() : base() { }
 
     public override void MakeIssue(DiagnosticsBag issue)
         => _diagnostics.Add(issue);

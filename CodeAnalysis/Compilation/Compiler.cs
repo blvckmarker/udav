@@ -1,22 +1,29 @@
 ﻿using CodeAnalysis;
 using CodeAnalysis.Binder.Core;
+using CodeAnalysis.Binder.Scopes;
 using CodeAnalysis.Compilation;
 using CodeAnalysis.Diagnostic;
 using CodeAnalysis.Syntax;
 using CodeAnalysis.Syntax.Parser;
 using CodeAnalysis.Syntax.Scanner;
+using CodeAnalysis.Text;
 
 public sealed class Compiler
 {
-    public IDictionary<VariableSymbol, object> SessionVariables { get; private set; }
+    private BoundGlobalScope _previous;
 
-    public Compiler(IDictionary<VariableSymbol, object> sessionVariables)
+    public IDictionary<VariableSymbol, object> Variables { get; private set; }
+
+
+    public Compiler(IDictionary<VariableSymbol, object> variables)
     {
-        SessionVariables = sessionVariables;
+        Variables = variables;
     }
     public CompilationResult Compile(string source, EnvironmentVariables environmentVariables)
     {
-        var lexer = new Lexer(source);
+        var sourceProgram = SourceText.From(source);
+
+        var lexer = new Lexer(sourceProgram);
         var tokens = lexer.LexAll();
         if (hasProblem(lexer.Diagnostics))
             return new CompilationResult(CompilationResultKind.SyntaxError, null, lexer.Diagnostics);
@@ -28,12 +35,12 @@ public sealed class Compiler
         if (hasProblem(syntaxTree.Diagnostics))
             return new CompilationResult(CompilationResultKind.SyntaxError, null, syntaxTree.Diagnostics);
 
-        var binder = new Binder(syntaxTree, SessionVariables);
-        var boundTree = binder.BindTree();
-        if (hasProblem(binder.Diagnostics))
-            return new CompilationResult(CompilationResultKind.SemanticError, null, binder.Diagnostics);
+        var globalScope = Binder.BindGlobalScope(_previous, syntaxTree);
+        var boundRoot = globalScope.BoundRoot;
+        if (hasProblem(globalScope.Diagnostics))
+            return new CompilationResult(CompilationResultKind.SemanticError, null, globalScope.Diagnostics);
 
-        var evaluator = new Evaluator(boundTree, SessionVariables);
+        var evaluator = new Evaluator(boundRoot, Variables);
         object? result;
         try
         {
@@ -41,21 +48,21 @@ public sealed class Compiler
         }
         catch (Exception exception)
         {
-            var diagnostics = new Diagnostics(source);
+            var diagnostics = new Diagnostics();
             diagnostics.MakeIssue(exception.Message);
 
             return new CompilationResult(CompilationResultKind.RuntimeError, null, diagnostics);
         }
 
-        SessionVariables = evaluator.LocalVariables;
+        Variables = evaluator.Variables;
 
         if (environmentVariables.ShowVariables)
-            showVariables(SessionVariables);
+            showVariables(Variables);
 
         var warningDiagnostics = lexer.Diagnostics
                                       .Extend(syntaxTree.Diagnostics)
-                                      .Extend(binder.Diagnostics);
-
+                                      .Extend(globalScope.Diagnostics);
+        _previous = globalScope;
         return new CompilationResult(CompilationResultKind.Success, result, warningDiagnostics);
     }
     private void showVariables(IDictionary<VariableSymbol, object> variables)

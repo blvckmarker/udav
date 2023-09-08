@@ -1,4 +1,5 @@
 ﻿using CodeAnalysis.Binder.BoundStatements;
+using CodeAnalysis.Binder.Scopes;
 using CodeAnalysis.Syntax;
 using CodeAnalysis.Syntax.Parser.Expressions;
 using CodeAnalysis.Syntax.Parser.Statements;
@@ -10,11 +11,38 @@ public sealed partial class Binder
     private partial BoundStatement BindStatement(StatementSyntax syntax)
         => syntax.Kind switch
         {
+            SyntaxKind.BlockStatement => BindBlockStatement((BlockStatementSyntax)syntax),
             SyntaxKind.AssignmentStatement => BindAssignmentStatement((AssignmentStatementSyntax)syntax),
             SyntaxKind.AssignmentExpressionStatement => BindAssignmentExpressionStatement((AssignmentExpressionStatementSyntax)syntax),
             _ => throw new NotSupportedException(syntax.Kind.ToString())
         };
 
+    private partial BoundBlockStatement BindBlockStatement(BlockStatementSyntax syntax)
+    {
+        var boundStatements = new List<BoundStatement>();
+        _currScope = new BoundStatementScope(_currScope);
+
+        foreach (var statement in syntax.Statements)
+        {
+            var boundStatement = BindStatement(statement);
+            boundStatements.Add(boundStatement);
+        }
+
+        _currScope = _currScope.Previous;
+        return new BoundBlockStatement(boundStatements);
+    }
+    /*
+    {
+        var a = 0
+        {
+            var b = 1
+            {
+                var c = a + b
+            }
+            var d = a
+        }
+    }
+    */
     private partial BoundAssignmentExpressionStatement BindAssignmentExpressionStatement(AssignmentExpressionStatementSyntax syntax)
     {
         var asExpressionSyntax = new AssignmentExpressionSyntax(syntax.Variable, syntax.EqualsToken, syntax.Expression);
@@ -22,36 +50,38 @@ public sealed partial class Binder
 
         var expression = boundAssignmentExpression.BoundExpression;
         var identifier = boundAssignmentExpression.BoundIdentifier;
+
         if (expression.Type != identifier.Type)
-            _diagnostics.MakeIssue($"Cannot cast type {expression.Type} to {identifier.Type}", _sourceProgram.ToString(syntax.Expression.Span), syntax.Expression.Span);
+            _diagnostics.MakeIssue($"Cannot cast type {expression.Type} to {identifier.Type}", syntax.Expression.ToString(), syntax.Expression.Span);
 
         return new BoundAssignmentExpressionStatement(boundAssignmentExpression.BoundIdentifier, boundAssignmentExpression.BoundExpression);
     }
-
+    // TODO: Override ToString() method in syntax nodes
     private partial BoundAssignmentStatement BindAssignmentStatement(AssignmentStatementSyntax statement)
     {
-        var boundType = BoundIdentifierType.Bind(statement.TypeToken.Kind);
+        var primaryType = BoundIdentifierType.Bind(statement.TypeToken.Kind);
         var identifierName = statement.VariableToken.Text;
 
-        if (_sessionVariables.Keys.FirstOrDefault(x => x.Name == identifierName) is not null)
+        if (_currScope.TryGetValueOf(identifierName, out var _))
         {
             _diagnostics.MakeIssue($"Local variable is already defined", identifierName, statement.VariableToken.Span);
             var errorSymbol = new VariableSymbol(identifierName, null);
-            return new BoundAssignmentStatement(boundType, errorSymbol, null);
+            return new BoundAssignmentStatement(errorSymbol, null);
         }
 
         var boundExpression = BindExpression(statement.Expression);
 
-        if (boundType.TypeKind is BoundTypeKind.DefinedType)
+        if (primaryType.TypeKind is BoundTypeKind.DefinedType)
         {
-            if (boundType.Type is null)
+            if (primaryType.Type is null)
                 _diagnostics.MakeIssue("Error type", statement.TypeToken.Text, statement.TypeToken.Span);
-            if (boundType.Type != boundExpression.Type)
-                _diagnostics.MakeIssue($"Cannot cast type {boundExpression.Type} to {boundType.Type}", _sourceProgram.ToString(statement.Expression.Span), statement.Expression.Span);
+            if (primaryType.Type != boundExpression.Type)
+                _diagnostics.MakeIssue($"Cannot cast type {boundExpression.Type} to {primaryType.Type}", statement.Expression.ToString(), statement.Expression.Span);
         }
 
         var boundIdentifier = new VariableSymbol(identifierName, boundExpression.Type);
+        _currScope.TryDeclareVariable(boundIdentifier);
 
-        return new BoundAssignmentStatement(boundType, boundIdentifier, boundExpression);
+        return new BoundAssignmentStatement(boundIdentifier, boundExpression);
     }
 }

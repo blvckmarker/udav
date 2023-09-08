@@ -10,5 +10,7 @@ public enum BoundNodeKind
     NameExpression,
     DeclaredVariableExpression,
     AssignmentExpression,
-    AssignmentExpressionStatement
+    AssignmentExpressionStatement,
+    BlockStatement,
+    CompilationUnit
 }
