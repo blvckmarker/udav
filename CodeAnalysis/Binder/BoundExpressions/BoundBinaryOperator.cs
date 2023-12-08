@@ -45,10 +45,11 @@ public sealed class BoundBinaryOperator
         RightType = rightType;
         ResultType = resultType;
     }
-    internal static BoundBinaryOperator? Bind(SyntaxKind kind, Type leftType, Type rightType)
+    public static BoundBinaryOperator Bind(SyntaxKind kind, Type leftType, Type rightType)
         => _operators.FirstOrDefault(op => op.SyntaxKind == kind
                                    && op.LeftType == leftType
-                                   && op.RightType == rightType);
+                                   && op.RightType == rightType) ?? new BoundBinaryOperator(kind,
+                                                                                            BoundBinaryOperatorKind.IncorrectOperator,
+                                                                                            leftType,
+                                                                                            typeof(BoundErrorType));
 }
-
-

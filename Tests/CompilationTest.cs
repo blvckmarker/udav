@@ -1,4 +1,5 @@
-﻿using CodeAnalysis;
+﻿using System.Net.Http.Headers;
+using CodeAnalysis;
 using CodeAnalysis.Compilation;
 
 namespace Tests;
@@ -171,4 +172,59 @@ public class CompilationTest
             Assert.Equal(3, item.Value);
     }
 
+    [Fact]
+    public static void CorrectSimpleIfStatement()
+    {
+        var compiler = new Compiler(new Dictionary<VariableSymbol, object>());
+        compiler.Compile("let a = 5", new());
+        var compResult = compiler.Compile(
+        """
+        if (a > 5)
+            a = 10
+        else
+            a = 0
+        """, new());
+
+        Assert.Equal(0, compiler.Variables.First().Value);
+    }
+
+    [Fact]
+    public static void CorrectElseIfStatement()
+    {
+        var compiler = new Compiler(new Dictionary<VariableSymbol, object>());
+        compiler.Compile("let a = 5", new());
+        var compResult = compiler.Compile(
+        """
+        if (a > 5)
+            a = 10
+        else if (a < 0)
+            a = -100
+        else if (a == 5)
+            a = 0
+        else
+            a = 666
+        """, new());
+
+        Assert.Equal(0, compiler.Variables.First().Value);
+    }
+
+    [Fact]
+    public void CorrectBlockIfStatements()
+    {
+        var compiler = new Compiler(new Dictionary<VariableSymbol, object>());
+        compiler.Compile("let a = 5", new());
+        var compResult = compiler.Compile(
+        """
+        {
+            if (a > 100)
+            {
+                a = 0
+            }
+            else if (a == 123123) {}
+            else
+                a = a * a
+        }
+        """, new());
+        Assert.Equal(25, compiler.Variables.First().Value);
+    }
 }

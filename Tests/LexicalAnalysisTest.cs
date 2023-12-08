@@ -38,7 +38,7 @@ public class LexicalAnalysisTest
     [Fact]
     public static void AllKeywordsTest()
     {
-        var source = "true false int let bool";
+        var source = "true false int let bool if else";
         var expected = Utils.GetTokens(source).MapTokensToBasic().ToList();
         var actual = typeof(SyntaxKind).GetEnumNames()
                                        .Where(x => x.EndsWith("Keyword"))

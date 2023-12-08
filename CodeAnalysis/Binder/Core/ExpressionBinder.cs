@@ -57,12 +57,12 @@ public sealed partial class Binder
     {
         var left = BindExpression(syntax.Left);
         var right = BindExpression(syntax.Right);
-        var operatorToken = BoundBinaryOperator.Bind(syntax.OperatorToken.Kind, left.Type, right.Type);
+        var boundOperator = BoundBinaryOperator.Bind(syntax.OperatorToken.Kind, left.Type, right.Type);
 
-        if (operatorToken is null)
+        if (boundOperator.ResultType == typeof(BoundErrorType))
             _diagnostics.MakeIssue($"Unknown operator `{syntax.OperatorToken.Kind}` for types `{(left.Type is null ? "ErrorType" : left.Type)}` and `{(right.Type is null ? "ErrorType" : right.Type)}`", syntax.ToString(), syntax.Span);
 
-        return new BoundBinaryExpression(left, operatorToken, right);
+        return new BoundBinaryExpression(left, boundOperator, right);
     }
 
     private partial BoundLiteralExpression BindLiteralExpression(LiteralExpressionSyntax syntax)

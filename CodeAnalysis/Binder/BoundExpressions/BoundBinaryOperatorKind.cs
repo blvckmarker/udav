@@ -18,4 +18,5 @@ public enum BoundBinaryOperatorKind
     GreaterOrEqual,
     LessThan,
     DivisionRemainder,
+    IncorrectOperator
 }

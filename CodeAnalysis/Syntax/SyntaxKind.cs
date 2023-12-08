@@ -31,6 +31,8 @@ public enum SyntaxKind
     IntKeyword,
     LetKeyword,
     BoolKeyword,
+    IfKeyword,
+    ElseKeyword,
 
     WhitespaceToken,
     BadToken,
@@ -49,8 +51,6 @@ public enum SyntaxKind
     CloseBrace,
     BlockStatement,
     CompilationUnit,
-    IfKeyword,
-    ElseKeyword,
     IfStatement,
     ElseStatement,
 }
