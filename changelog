@@ -18,12 +18,4 @@ let a = 123
 }
 ```
 # Plans:
-1) Complete multiline syntax analyze, because at the current moment we can't do this thing:
-    ```
-    {
-        let a = 0
-        if (){}
-    }
-    ```
-    Compiler reads let statement and ends with it
-2) Add if-else expression
+1) Add if-else expression
