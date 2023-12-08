@@ -46,7 +46,14 @@ public class Evaluator
                 foreach (var statement in block.Statements)
                     EvaluateStatement(statement);
                 break;
-
+            case BoundNodeKind.IfStatement:
+                var ifStatement = (BoundIfStatement)node;
+                var condition = (bool)EvaluateExpression(ifStatement.Expression);
+                if (condition)
+                    EvaluateStatement(ifStatement.Statement);
+                else if (ifStatement.ElseStatement is { })
+                    EvaluateStatement(ifStatement.ElseStatement.Statement);
+                break;
             default:
                 throw new Exception("Unexpected statement " + node.Kind);
         }

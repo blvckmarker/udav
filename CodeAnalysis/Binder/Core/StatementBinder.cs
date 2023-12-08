@@ -13,6 +13,7 @@ public sealed partial class Binder
         => syntax.Kind switch
         {
             SyntaxKind.BlockStatement => BindBlockStatement((BlockStatementSyntax)syntax),
+            SyntaxKind.IfStatement => BindIfStatement((IfStatementSyntax)syntax),
             SyntaxKind.AssignmentStatement => BindAssignmentStatement((AssignmentStatementSyntax)syntax),
             SyntaxKind.AssignmentExpressionStatement => BindAssignmentExpressionStatement((AssignmentExpressionStatementSyntax)syntax),
             _ => throw new NotSupportedException(syntax.Kind.ToString())
@@ -46,8 +47,24 @@ public sealed partial class Binder
     */
     private partial BoundIfStatement BindIfStatement(IfStatementSyntax syntax)
     {
-        throw new NotImplementedException();
+        var boundExpression = BindExpression(syntax.Expression);
+        if (boundExpression.Type != typeof(bool))
+            _diagnostics.MakeIssue("Condition expression must be boolean type", syntax.Expression.ToString(), syntax.Expression.Span);
+
+        var boundStatement = BindStatement(syntax.Statement);
+        BoundElseStatement boundElseStatement = null;
+        if (syntax.ElseStatement is { })
+            boundElseStatement = BindElseStatement(syntax.ElseStatement);
+
+        return new BoundIfStatement(boundExpression, boundStatement, boundElseStatement);
     }
+
+    private partial BoundElseStatement BindElseStatement(ElseStatementSyntax syntax)
+    {
+        var statement = BindStatement(syntax.Statement);
+        return new BoundElseStatement(statement);
+    }
+
     private partial BoundAssignmentExpressionStatement BindAssignmentExpressionStatement(AssignmentExpressionStatementSyntax syntax)
     {
         var asExpressionSyntax = new AssignmentExpressionSyntax(syntax.Variable, syntax.EqualsToken, syntax.Expression);

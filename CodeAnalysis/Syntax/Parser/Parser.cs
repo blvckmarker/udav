@@ -122,25 +122,6 @@ public class Parser
      */
 
 
-    private StatementSyntax ParseIfStatement()
-    {
-        var ifKeyword = MatchToken(SyntaxKind.IfKeyword);
-        var leftParenthesis = MatchToken(SyntaxKind.OpenParenToken);
-        var expression = ParseExpression();
-        var rightParenthesis = MatchToken(SyntaxKind.CloseParenToken);
-        var blockStatement = ParseBlockStatement();
-
-        ElseStatementSyntax elseStatement = null;
-        if (Peek(1).Kind == SyntaxKind.ElseKeyword)
-        {
-            var elseKeyword = MatchToken(SyntaxKind.ElseKeyword);
-            var elseBlockStatement = ParseBlockStatement();
-
-            elseStatement = new ElseStatementSyntax(elseKeyword, elseBlockStatement);
-        }
-
-        return new IfStatementSyntax(ifKeyword, leftParenthesis, expression, rightParenthesis, blockStatement, elseStatement);
-    }
     private StatementSyntax ParseStatement()
     {
         switch (Peek(0).Kind)
@@ -159,6 +140,25 @@ public class Parser
         }
     }
 
+    private StatementSyntax ParseIfStatement()
+    {
+        var ifKeyword = MatchToken(SyntaxKind.IfKeyword);
+        var leftParenthesis = MatchToken(SyntaxKind.OpenParenToken);
+        var expression = ParseExpression();
+        var rightParenthesis = MatchToken(SyntaxKind.CloseParenToken);
+        var blockStatement = ParseBlockStatement();
+
+        ElseStatementSyntax elseStatement = null;
+        if (Peek(0).Kind == SyntaxKind.ElseKeyword)
+        {
+            var elseKeyword = MatchToken(SyntaxKind.ElseKeyword);
+            var elseBlockStatement = ParseBlockStatement();
+
+            elseStatement = new ElseStatementSyntax(elseKeyword, elseBlockStatement);
+        }
+
+        return new IfStatementSyntax(ifKeyword, leftParenthesis, expression, rightParenthesis, blockStatement, elseStatement);
+    }
     private StatementSyntax ParseBlockStatement()
     {
         if (Peek().Kind == SyntaxKind.OpenBrace)

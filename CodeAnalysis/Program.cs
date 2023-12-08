@@ -9,6 +9,7 @@ var showTree = false;
 var sessionVariables = new Dictionary<VariableSymbol, object>();
 var compiler = new Compiler(sessionVariables);
 
+var previousLine = string.Empty;
 var textBuilder = new StringBuilder();
 
 while (true)
@@ -23,8 +24,6 @@ while (true)
 
     if (textBuilder.Length == 0)
     {
-        if (isBlank)
-            break;
         if (line == "#showtree")
         {
             showTree = !showTree;
@@ -35,17 +34,20 @@ while (true)
             showVariables = !showVariables;
             continue;
         }
-
     }
 
     textBuilder = textBuilder.AppendLine(line);
+
+    if (!isBlank || !string.IsNullOrEmpty(previousLine))
+    { // twice blank lines
+        previousLine = line;
+        continue;
+    }
+
     var program = textBuilder.ToString();
 
     var environment = new EnvironmentVariables(showTree, showVariables);
     var compilationResult = compiler.Compile(program, environment);
-
-    if (compilationResult.Kind is CompilationResultKind.SyntaxError && !isBlank)
-        continue;
 
     PrintDiagnostics(program, compilationResult.Diagnostics);
     Console.WriteLine(compilationResult.ReturnResult);

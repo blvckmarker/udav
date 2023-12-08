@@ -13,5 +13,6 @@ public enum BoundNodeKind
     AssignmentExpressionStatement,
     BlockStatement,
     CompilationUnit,
-    IfStatement
+    IfStatement,
+    ElseStatement
 }
