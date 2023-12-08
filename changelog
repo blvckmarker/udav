@@ -1,0 +1,29 @@
+### 08.12.2023 ###
+Add primary support for if-else statement. It's primary, because there no if-else expression like in F#.
+Now, Udav supports some typical things like:
+```
+let a = 123
+{
+    if (a > 10)
+        a = 0
+    else if (a < 100){
+        a = a * a
+        if (a > 20)
+            a = 0 // there're no point in values
+        else
+            a = -1
+    }
+    else
+        a = -a
+}
+```
+# Plans:
+1) Complete multiline syntax analyze, because at the current moment we can't do this thing:
+    ```
+    {
+        let a = 0
+        if (){}
+    }
+    ```
+    Compiler reads let statement and ends with it
+2) Add if-else expression
