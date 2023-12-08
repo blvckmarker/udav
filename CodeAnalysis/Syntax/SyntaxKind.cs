@@ -49,4 +49,8 @@ public enum SyntaxKind
     CloseBrace,
     BlockStatement,
     CompilationUnit,
+    IfKeyword,
+    ElseKeyword,
+    IfStatement,
+    ElseStatement,
 }

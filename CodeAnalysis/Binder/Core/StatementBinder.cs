@@ -1,4 +1,5 @@
-﻿using CodeAnalysis.Binder.BoundStatements;
+﻿using System.Xml.Serialization;
+using CodeAnalysis.Binder.BoundStatements;
 using CodeAnalysis.Binder.Scopes;
 using CodeAnalysis.Syntax;
 using CodeAnalysis.Syntax.Parser.Expressions;
@@ -28,7 +29,7 @@ public sealed partial class Binder
             boundStatements.Add(boundStatement);
         }
 
-        _currScope = _currScope.Previous;
+        _currScope = _currScope.Parent;
         return new BoundBlockStatement(boundStatements);
     }
     /*
@@ -43,6 +44,10 @@ public sealed partial class Binder
         }
     }
     */
+    private partial BoundIfStatement BindIfStatement(IfStatementSyntax syntax)
+    {
+        throw new NotImplementedException();
+    }
     private partial BoundAssignmentExpressionStatement BindAssignmentExpressionStatement(AssignmentExpressionStatementSyntax syntax)
     {
         var asExpressionSyntax = new AssignmentExpressionSyntax(syntax.Variable, syntax.EqualsToken, syntax.Expression);

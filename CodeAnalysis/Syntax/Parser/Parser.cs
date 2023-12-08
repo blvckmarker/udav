@@ -76,13 +76,24 @@ public class Parser
     {
         var statement = ParseStatement();
         return new CompilationUnit(statement);
+
+        /*
+            if asd:
+            else:
+                if asd:
+
+            if asd:
+            elif asd:
+
+        */
     }
 
     /*
-     * block :  { statement* }
+     * block :  '{' statement* '}'
              | statement     
      * 
-     * if_statement : if_kw (expression) block
+     * if_statement : if_kw (expression) block [ else_kw (if_statement | block) ]
+
      * statement : assignment_statement
      *           | if_statement
      *           | for_statement
@@ -111,12 +122,33 @@ public class Parser
      */
 
 
+    private StatementSyntax ParseIfStatement()
+    {
+        var ifKeyword = MatchToken(SyntaxKind.IfKeyword);
+        var leftParenthesis = MatchToken(SyntaxKind.OpenParenToken);
+        var expression = ParseExpression();
+        var rightParenthesis = MatchToken(SyntaxKind.CloseParenToken);
+        var blockStatement = ParseBlockStatement();
+
+        ElseStatementSyntax elseStatement = null;
+        if (Peek(1).Kind == SyntaxKind.ElseKeyword)
+        {
+            var elseKeyword = MatchToken(SyntaxKind.ElseKeyword);
+            var elseBlockStatement = ParseBlockStatement();
+
+            elseStatement = new ElseStatementSyntax(elseKeyword, elseBlockStatement);
+        }
+
+        return new IfStatementSyntax(ifKeyword, leftParenthesis, expression, rightParenthesis, blockStatement, elseStatement);
+    }
     private StatementSyntax ParseStatement()
     {
         switch (Peek(0).Kind)
         {
             case SyntaxKind.OpenBrace:
                 return ParseBlockStatement();
+            case SyntaxKind.IfKeyword:
+                return ParseIfStatement();
             case SyntaxKind.BoolKeyword:
             case SyntaxKind.IntKeyword:
             case SyntaxKind.LetKeyword:
@@ -212,7 +244,7 @@ public class Parser
         return left;
     }
 
-    private ExpressionSyntax ParsePrimaryExpression() // literal is atom
+    private ExpressionSyntax ParsePrimaryExpression()
     {
         switch (Current.Kind)
         {

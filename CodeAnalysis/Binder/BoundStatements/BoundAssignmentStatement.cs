@@ -12,7 +12,6 @@ public sealed class BoundAssignmentStatement : BoundStatement
     public VariableSymbol BoundIdentifier { get; }
     public BoundExpression BoundExpression { get; }
 
-    public override Type Type => BoundExpression.Type;
     public override BoundNodeKind Kind => BoundNodeKind.AssignmentStatement;
 }
 

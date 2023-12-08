@@ -10,7 +10,6 @@ public sealed class BoundAssignmentExpressionStatement : BoundStatement
         BoundExpression = boundExpression;
     }
 
-    public override Type Type => BoundExpression.Type;
     public override BoundNodeKind Kind => BoundNodeKind.AssignmentExpressionStatement;
 
     public BoundVariableExpression BoundIdentifier { get; }

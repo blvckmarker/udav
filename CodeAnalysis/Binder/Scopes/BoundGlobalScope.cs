@@ -4,13 +4,13 @@ namespace CodeAnalysis.Binder.Scopes;
 
 public sealed class BoundGlobalScope : BoundScope
 {
-    public override BoundScope Previous { get; }
+    public override BoundScope Parent { get; }
     public BoundNode BoundRoot { get; }
     public DiagnosticsBase Diagnostics { get; }
 
-    public BoundGlobalScope(BoundScope previous, BoundNode root, DiagnosticsBase diagnostics, IDictionary<string, VariableSymbol> variables)
+    public BoundGlobalScope(BoundScope parent, BoundNode root, DiagnosticsBase diagnostics, IDictionary<string, VariableSymbol> variables)
     {
-        Previous = previous;
+        Parent = parent;
         BoundRoot = root;
         Diagnostics = diagnostics;
         _variables = variables;

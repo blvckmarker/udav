@@ -30,8 +30,6 @@ public sealed class Compiler
 
         var parser = new Parser(tokens, lexer.Diagnostics);
         var syntaxTree = parser.ParseTree();
-        if (environmentVariables.ShowTree)
-            showTree(syntaxTree.Root);
         if (hasProblem(syntaxTree.Diagnostics))
             return new CompilationResult(CompilationResultKind.SyntaxError, null, syntaxTree.Diagnostics);
 
@@ -58,6 +56,8 @@ public sealed class Compiler
 
         if (environmentVariables.ShowVariables)
             showVariables(Variables);
+        if (environmentVariables.ShowTree)
+            showTree(syntaxTree.Root);
 
         var warningDiagnostics = lexer.Diagnostics
                                       .Extend(syntaxTree.Diagnostics)

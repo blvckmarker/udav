@@ -7,8 +7,6 @@ public class BoundBlockStatement : BoundStatement
         Statements = statements;
     }
 
-    public override Type Type => typeof(void);
     public override BoundNodeKind Kind => BoundNodeKind.BlockStatement;
-
     public IEnumerable<BoundStatement> Statements { get; }
 }

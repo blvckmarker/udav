@@ -6,7 +6,7 @@ public abstract class BoundScope
 {
     protected IDictionary<string, VariableSymbol> _variables = new Dictionary<string, VariableSymbol>();
 
-    public abstract BoundScope Previous { get; }
+    public abstract BoundScope Parent { get; }
     public IDictionary<string, VariableSymbol> Variables => _variables;
 
 
@@ -25,9 +25,9 @@ public abstract class BoundScope
         if (_variables.TryGetValue(identifier, out variable))
             return true;
 
-        if (Previous == null)
+        if (Parent == null)
             return false;
 
-        return Previous.TryGetValueOf(identifier, out variable);
+        return Parent.TryGetValueOf(identifier, out variable);
     }
 }

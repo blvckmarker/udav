@@ -39,6 +39,7 @@ public sealed partial class Binder
     private partial BoundVariableExpression BindNameExpression(VariableExpressionSyntax syntax);
 
     private partial BoundStatement BindStatement(StatementSyntax syntax);
+    private partial BoundIfStatement BindIfStatement(IfStatementSyntax syntax);
     private partial BoundBlockStatement BindBlockStatement(BlockStatementSyntax syntax);
     private partial BoundAssignmentExpressionStatement BindAssignmentExpressionStatement(AssignmentExpressionStatementSyntax syntax);
     private partial BoundAssignmentStatement BindAssignmentStatement(AssignmentStatementSyntax statement);

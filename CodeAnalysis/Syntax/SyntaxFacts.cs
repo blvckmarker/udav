@@ -36,6 +36,8 @@ internal static class SyntaxFacts
             "let" => SyntaxKind.LetKeyword,
             "true" => SyntaxKind.TrueKeyword,
             "false" => SyntaxKind.FalseKeyword,
+            "if" => SyntaxKind.IfKeyword,
+            "else" => SyntaxKind.ElseKeyword,
             _ => SyntaxKind.IdentifierToken
         };
 }
