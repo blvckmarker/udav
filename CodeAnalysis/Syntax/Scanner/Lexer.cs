@@ -1,3 +1,4 @@
+using CodeAnalysis.Binder.BoundExpressions;
 using CodeAnalysis.Diagnostic;
 using CodeAnalysis.Text;
 using System.Collections.Immutable;
@@ -145,7 +146,10 @@ public class Lexer
                 _position++;
                 _kind = SyntaxKind.EqualsToken;
                 break;
-
+            case ';':
+                _position++;
+                _kind = SyntaxKind.SemicolonToken;
+                break;
             case '0':
             case '1':
             case '2':

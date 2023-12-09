@@ -13,6 +13,7 @@ public sealed partial class Binder
         => syntax.Kind switch
         {
             SyntaxKind.BlockStatement => BindBlockStatement((BlockStatementSyntax)syntax),
+            SyntaxKind.ForStatement => BindForStatement((ForStatementSyntax)syntax),
             SyntaxKind.WhileStatement => BindWhileStatement((WhileStatementSyntax)syntax),
             SyntaxKind.IfStatement => BindIfStatement((IfStatementSyntax)syntax),
             SyntaxKind.AssignmentStatement => BindAssignmentStatement((AssignmentStatementSyntax)syntax),
@@ -33,6 +34,24 @@ public sealed partial class Binder
 
         _currScope = _currScope.Parent;
         return new BoundBlockStatement(boundStatements);
+    }
+
+    private partial BoundForStatement BindForStatement(ForStatementSyntax syntax)
+    {
+        var boundDeclarationStatement = BindStatement(syntax.DeclarationStatement);
+        if (boundDeclarationStatement.Kind is not (BoundNodeKind.AssignmentStatement or BoundNodeKind.AssignmentExpressionStatement))
+            _diagnostics.MakeIssue("Only declarations or assignments are available in this context", syntax.DeclarationStatement.ToString(), syntax.DeclarationStatement.Span);
+
+        var boundExpression = BindExpression(syntax.Expression);
+        if (boundExpression.Type != typeof(bool))
+            _diagnostics.MakeIssue("Condition expression must be boolean type", syntax.Expression.ToString(), syntax.Expression.Span);
+
+        var boundAssignmentStatement = BindStatement(syntax.AssignmentStatement);
+        if (boundAssignmentStatement.Kind is not BoundNodeKind.AssignmentExpressionStatement)
+            _diagnostics.MakeIssue("Only assignments are available in this context", syntax.AssignmentStatement.ToString(), syntax.AssignmentStatement.Span);
+
+        var boundStatement = BindStatement(syntax.Statement);
+        return new BoundForStatement(boundDeclarationStatement, boundExpression, boundAssignmentStatement, boundStatement);
     }
 
     private partial BoundWhileStatement BindWhileStatement(WhileStatementSyntax syntax)

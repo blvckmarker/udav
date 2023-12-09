@@ -15,5 +15,6 @@ public enum BoundNodeKind
     CompilationUnit,
     IfStatement,
     ElseStatement,
-    WhileStatement
+    WhileStatement,
+    ForStatement
 }

@@ -4,6 +4,7 @@ using CodeAnalysis.Syntax.Parser.Statements;
 using CodeAnalysis.Syntax.Scanner;
 using System.Collections.Immutable;
 using System.ComponentModel;
+using System.Text.RegularExpressions;
 
 namespace CodeAnalysis.Syntax.Parser;
 
@@ -64,7 +65,6 @@ public class Parser
 
     public SyntaxTree ParseTree()
     {
-        for (var a = new List<int>(); 0 < 100; ){}
         var compilationUnit = ParseCompilationUnit();
         var eofToken = MatchToken(SyntaxKind.EofToken);
         return new SyntaxTree(Diagnostics, compilationUnit, eofToken);
@@ -79,12 +79,14 @@ public class Parser
 
     private StatementSyntax ParseStatement()
     {
-        switch (Peek(0).Kind)
+        switch (Peek().Kind)
         {
             case SyntaxKind.OpenBrace:
                 return ParseBlockStatement();
             case SyntaxKind.WhileKeyword:
                 return ParseWhileStatement();
+            case SyntaxKind.ForKeyword:
+                return ParseForStatement();
             case SyntaxKind.IfKeyword:
                 return ParseIfStatement();
             case SyntaxKind.BoolKeyword:
@@ -97,15 +99,30 @@ public class Parser
         }
     }
 
+    private StatementSyntax ParseForStatement()
+    {
+        var forKeyword = MatchToken(SyntaxKind.ForKeyword);
+        var leftParenthesis = MatchToken(SyntaxKind.OpenParenToken);
+        var firstStatement = ParseStatement();
+        MatchToken(SyntaxKind.SemicolonToken);
+        var expression = ParseExpression();
+        MatchToken(SyntaxKind.SemicolonToken);
+        var secondStatement = ParseStatement();
+        var rightParenthesis = MatchToken(SyntaxKind.CloseParenToken);
+        var statement = ParseStatement();
+
+        return new ForStatementSyntax(forKeyword, leftParenthesis, firstStatement, expression, secondStatement, rightParenthesis, statement);
+    }
+
     private StatementSyntax ParseWhileStatement()
     {
         var whileKeyword = MatchToken(SyntaxKind.WhileKeyword);
         var leftParenthesis = MatchToken(SyntaxKind.OpenParenToken);
         var expression = ParseExpression();
         var rightParenthesis = MatchToken(SyntaxKind.CloseParenToken);
-        var blockStatement = ParseBlockStatement();
+        var statement = ParseStatement();
 
-        return new WhileStatementSyntax(whileKeyword, leftParenthesis, expression, rightParenthesis, blockStatement);
+        return new WhileStatementSyntax(whileKeyword, leftParenthesis, expression, rightParenthesis, statement);
     }
 
     private StatementSyntax ParseIfStatement()
@@ -114,18 +131,18 @@ public class Parser
         var leftParenthesis = MatchToken(SyntaxKind.OpenParenToken);
         var expression = ParseExpression();
         var rightParenthesis = MatchToken(SyntaxKind.CloseParenToken);
-        var blockStatement = ParseBlockStatement();
+        var statement = ParseStatement();
 
         ElseStatementSyntax? elseStatement = null;
-        if (Peek(0).Kind == SyntaxKind.ElseKeyword)
+        if (Peek().Kind == SyntaxKind.ElseKeyword)
         {
             var elseKeyword = MatchToken(SyntaxKind.ElseKeyword);
-            var elseBlockStatement = ParseBlockStatement();
+            var elseBlockStatement = ParseStatement();
 
             elseStatement = new ElseStatementSyntax(elseKeyword, elseBlockStatement);
         }
 
-        return new IfStatementSyntax(ifKeyword, leftParenthesis, expression, rightParenthesis, blockStatement, elseStatement);
+        return new IfStatementSyntax(ifKeyword, leftParenthesis, expression, rightParenthesis, statement, elseStatement);
     }
     private StatementSyntax ParseBlockStatement()
     {

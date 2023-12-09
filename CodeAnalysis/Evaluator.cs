@@ -51,6 +51,21 @@ public class Evaluator
                         EvaluateStatement(statement);
                     break;
                 }
+            case BoundNodeKind.ForStatement:
+                {
+                    var forStatement = (BoundForStatement)node;
+                    EvaluateStatement(forStatement.DeclarationStatement);
+                    var condition = (bool)EvaluateExpression(forStatement.Expression);
+
+                    while (condition)
+                    {
+                        EvaluateStatement(forStatement.Statement);
+
+                        EvaluateStatement(forStatement.AssignmentStatement);
+                        condition = (bool)EvaluateExpression(forStatement.Expression);
+                    }
+                    break;
+                }
             case BoundNodeKind.WhileStatement:
                 {
                     var whileStatement = (BoundWhileStatement)node;

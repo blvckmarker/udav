@@ -12,6 +12,7 @@ var compiler = new Compiler(sessionVariables);
 var previousLine = string.Empty;
 var textBuilder = new StringBuilder();
 
+
 while (true)
 {
     if (textBuilder.Length == 0)

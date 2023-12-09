@@ -25,6 +25,7 @@ public enum SyntaxKind
     LessThanToken,
     IdentifierToken,
     NumericToken,
+    SemicolonToken,
 
     TrueKeyword,
     FalseKeyword,
@@ -34,6 +35,7 @@ public enum SyntaxKind
     IfKeyword,
     ElseKeyword,
     WhileKeyword,
+    ForKeyword,
 
     WhitespaceToken,
     BadToken,
@@ -55,4 +57,5 @@ public enum SyntaxKind
     IfStatement,
     ElseStatement,
     WhileStatement,
+    ForStatement,
 }
