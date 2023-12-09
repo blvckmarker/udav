@@ -19,3 +19,16 @@ let a = 123
 ```
 # Plans:
 1) Add if-else expression
+
+### 10.12.2023 ### 
+Now for-while statements are available. Fixed an error related to the scope of variables(before it searched for local scope, now it search in all scope-tree)
+```it isn't JS, lol
+let acc = 1
+for (int i = 1; i <= 5; i = i + 1)
+    acc = acc * i
+```
+
+# Plans:
+1) Add if-else expression
+2) Add increment and decrement operations, shorted binary operations (+=, ~=, *=, etc)
+3) Fix the problem related with for-statement scope. In example, 'i' variable placed in global scope, but should be placed in local for-statement scope.
