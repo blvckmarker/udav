@@ -12,7 +12,7 @@ public abstract class BoundScope
 
     public bool TryDeclareVariable(VariableSymbol variableSymbol)
     {
-        if (_variables.ContainsKey(variableSymbol.Name))
+        if (TryGetValueOf(variableSymbol.Name, out var _))
             return false;
 
         _variables.Add(variableSymbol.Name, variableSymbol);
