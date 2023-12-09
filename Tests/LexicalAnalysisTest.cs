@@ -20,7 +20,7 @@ public class LexicalAnalysisTest
     [Fact]
     public static void AllTokensTest()
     {
-        var source = "+ - * / ( ) ! && & || | ^ = == != ~ <= > >= % < a 0";
+        var source = "+ - * / ( ) ! && & || | ^ = == != ~ <= > >= % < a 0 ;";
 
         var expected = Utils.GetTokens(source).MapTokensToBasic().ToList();
 
@@ -38,7 +38,7 @@ public class LexicalAnalysisTest
     [Fact]
     public static void AllKeywordsTest()
     {
-        var source = "true false int let bool if else";
+        var source = "true false int let bool if else while for";
         var expected = Utils.GetTokens(source).MapTokensToBasic().ToList();
         var actual = typeof(SyntaxKind).GetEnumNames()
                                        .Where(x => x.EndsWith("Keyword"))

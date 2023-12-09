@@ -1,10 +1,9 @@
-﻿using System.Net.Http.Headers;
-using CodeAnalysis;
+﻿using CodeAnalysis;
 using CodeAnalysis.Compilation;
 
 namespace Tests;
 
-public class CompilationTest
+public class StatementsTest
 {
     [Fact]
     public static void SyntaxErrorTestTreeSimple()
@@ -213,7 +212,7 @@ public class CompilationTest
     {
         var compiler = new Compiler(new Dictionary<VariableSymbol, object>());
         compiler.Compile("let a = 5", new());
-        var compResult = compiler.Compile(
+        compiler.Compile(
         """
         {
             if (a > 100)
@@ -226,5 +225,37 @@ public class CompilationTest
         }
         """, new());
         Assert.Equal(25, compiler.Variables.First().Value);
+    }
+
+    [Fact]
+    public void CorrectForStatement()
+    {
+        var compiler = new Compiler(new Dictionary<VariableSymbol, object>());
+        compiler.Compile("let acc = 1", new());
+        compiler.Compile(
+        """
+        for (int i = 1; i <= 5; i = i + 1)
+            acc = acc * i
+        """, new());
+
+        Assert.Equal(120, compiler.Variables.First().Value);
+    }
+
+    [Fact]
+    public void CorrectWhileStatement()
+    {
+        var compiler = new Compiler(new Dictionary<VariableSymbol, object>());
+        compiler.Compile("let acc = 1", new());
+        compiler.Compile("let it = 1", new());
+        compiler.Compile(
+        """
+        while (it <= 5)
+        {
+            acc = acc * it
+            it = it + 1
+        }
+        """, new());
+
+        Assert.Equal(120, compiler.Variables.First().Value);
     }
 }
