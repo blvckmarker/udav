@@ -2,8 +2,8 @@ using CodeAnalysis.Diagnostic;
 using CodeAnalysis.Syntax.Parser.Expressions;
 using CodeAnalysis.Syntax.Parser.Statements;
 using CodeAnalysis.Syntax.Scanner;
-using Microsoft.VisualStudio.TestPlatform.Utilities;
 using System.Collections.Immutable;
+using System.ComponentModel;
 
 namespace CodeAnalysis.Syntax.Parser;
 
@@ -18,9 +18,6 @@ public class Parser
 
     public Parser(Lexer lexer)
     {
-        if (lexer.Diagnostics.Where(x => x.Kind == IssueKind.Problem).Any())
-            throw new Exception("Unable to create syntax tree when lexer has problem issues");
-
         _tokens = lexer.LexAll()
                        .Where(token => token.Kind is not SyntaxKind.WhitespaceToken)
                        .ToImmutableArray();
@@ -67,6 +64,7 @@ public class Parser
 
     public SyntaxTree ParseTree()
     {
+        for (var a = new List<int>(); 0 < 100; ){}
         var compilationUnit = ParseCompilationUnit();
         var eofToken = MatchToken(SyntaxKind.EofToken);
         return new SyntaxTree(Diagnostics, compilationUnit, eofToken);
@@ -76,51 +74,7 @@ public class Parser
     {
         var statement = ParseStatement();
         return new CompilationUnit(statement);
-
-        /*
-            if asd:
-            else:
-                if asd:
-
-            if asd:
-            elif asd:
-
-        */
     }
-
-    /*
-     * block :  '{' statement* '}'
-             | statement     
-     * 
-     * while_statement : while_kw '(' expression ')' block
-     * if_statement : if_kw '(' expression ')' block [ else_kw (if_statement | block) ]
-
-     * statement : assignment_statement
-     *           | if_statement
-     *           | for_statement
-     *           |
-     *           ...
-     *           
-     * 
-     * assignment_statement : LET_KEYWORD name EQUALTOKEN expression
-     * 
-     * 
-     * expression : 
-     *            | ('-' | '+') expression
-     *            | expression op=('*' | '+') expression
-     *            | expression op=('+' | '-') expression
-     *            | '!' expression
-     *            | expression op=('&&'| '||') expression
-     *            | name "=" expression
-     *            | primary
-     * 
-     * 
-     * 
-     * primary : '(' expression ')'
-     *         | name
-     *         | number
-     *         | boolean
-     */
 
 
     private StatementSyntax ParseStatement()
@@ -162,7 +116,7 @@ public class Parser
         var rightParenthesis = MatchToken(SyntaxKind.CloseParenToken);
         var blockStatement = ParseBlockStatement();
 
-        ElseStatementSyntax elseStatement = null;
+        ElseStatementSyntax? elseStatement = null;
         if (Peek(0).Kind == SyntaxKind.ElseKeyword)
         {
             var elseKeyword = MatchToken(SyntaxKind.ElseKeyword);
