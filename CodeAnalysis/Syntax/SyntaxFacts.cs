@@ -38,6 +38,7 @@ internal static class SyntaxFacts
             "false" => SyntaxKind.FalseKeyword,
             "if" => SyntaxKind.IfKeyword,
             "else" => SyntaxKind.ElseKeyword,
+            "while" => SyntaxKind.WhileKeyword,
             _ => SyntaxKind.IdentifierToken
         };
 }

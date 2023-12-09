@@ -6,8 +6,8 @@ using CodeAnalysis.Text;
 public class ElseStatementSyntax : StatementSyntax
 {
     public override SyntaxKind Kind => SyntaxKind.ElseStatement;
-    public SyntaxToken ElseToken { get; set; }
-    public StatementSyntax Statement { get; set; }
+    public SyntaxToken ElseToken { get; }
+    public StatementSyntax Statement { get; }
     public override TextSpan Span => TextSpan.FromBounds(ElseToken.Span.Start, Statement.Span.End);
 
     public ElseStatementSyntax(SyntaxToken elseToken, StatementSyntax statement)

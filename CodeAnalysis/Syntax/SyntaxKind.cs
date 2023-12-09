@@ -33,6 +33,7 @@ public enum SyntaxKind
     BoolKeyword,
     IfKeyword,
     ElseKeyword,
+    WhileKeyword,
 
     WhitespaceToken,
     BadToken,
@@ -53,4 +54,5 @@ public enum SyntaxKind
     CompilationUnit,
     IfStatement,
     ElseStatement,
+    WhileStatement,
 }

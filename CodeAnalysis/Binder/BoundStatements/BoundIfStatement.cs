@@ -1,6 +1,5 @@
-using CodeAnalysis.Binder;
 using CodeAnalysis.Binder.BoundExpressions;
-using CodeAnalysis.Binder.BoundStatements;
+namespace CodeAnalysis.Binder.BoundStatements;
 
 public class BoundIfStatement : BoundStatement
 {

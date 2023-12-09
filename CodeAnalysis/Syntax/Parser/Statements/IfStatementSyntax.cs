@@ -7,12 +7,12 @@ using CodeAnalysis.Text;
 public class IfStatementSyntax : StatementSyntax
 {
     public override SyntaxKind Kind => SyntaxKind.IfStatement;
-    public SyntaxToken IfKeyword { get; set; }
-    public SyntaxToken LeftParenthesis { get; set; }
-    public ExpressionSyntax Expression { get; set; }
-    public SyntaxToken RightParenthesis { get; set; }
-    public StatementSyntax Statement { get; set; }
-    public ElseStatementSyntax? ElseStatement { get; set; }
+    public SyntaxToken IfKeyword { get; }
+    public SyntaxToken LeftParenthesis { get; }
+    public ExpressionSyntax Expression { get; }
+    public SyntaxToken RightParenthesis { get; }
+    public StatementSyntax Statement { get; }
+    public ElseStatementSyntax? ElseStatement { get; }
 
     public override TextSpan Span => TextSpan.FromBounds(IfKeyword.Span.Start,
                                                          ElseStatement is { } ? ElseStatement.Span.End : Statement.Span.End);

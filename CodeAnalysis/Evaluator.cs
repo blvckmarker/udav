@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Reflection.Metadata;
 using CodeAnalysis.Binder;
 using CodeAnalysis.Binder.BoundExpressions;
 using CodeAnalysis.Binder.BoundStatements;
@@ -32,28 +33,45 @@ public class Evaluator
         switch (node.Kind)
         {
             case BoundNodeKind.AssignmentStatement:
-                var assign = (BoundAssignmentStatement)node;
-                EvaluateAssignmentStatement(assign);
-                break;
-
+                {
+                    var assign = (BoundAssignmentStatement)node;
+                    EvaluateAssignmentStatement(assign);
+                    break;
+                }
             case BoundNodeKind.AssignmentExpressionStatement:
-                var assignWrap = (BoundAssignmentExpressionStatement)node;
-                EvaluateAssignmentExpressionStatement(assignWrap);
-                break;
-
+                {
+                    var assignWrap = (BoundAssignmentExpressionStatement)node;
+                    EvaluateAssignmentExpressionStatement(assignWrap);
+                    break;
+                }
             case BoundNodeKind.BlockStatement:
-                var block = (BoundBlockStatement)node;
-                foreach (var statement in block.Statements)
-                    EvaluateStatement(statement);
-                break;
+                {
+                    var block = (BoundBlockStatement)node;
+                    foreach (var statement in block.Statements)
+                        EvaluateStatement(statement);
+                    break;
+                }
+            case BoundNodeKind.WhileStatement:
+                {
+                    var whileStatement = (BoundWhileStatement)node;
+                    var condition = (bool)EvaluateExpression(whileStatement.Condition);
+                    while (condition)
+                    {
+                        EvaluateStatement(whileStatement.Statement);
+                        condition = (bool)EvaluateExpression(whileStatement.Condition);
+                    }
+                    break;
+                }
             case BoundNodeKind.IfStatement:
-                var ifStatement = (BoundIfStatement)node;
-                var condition = (bool)EvaluateExpression(ifStatement.Expression);
-                if (condition)
-                    EvaluateStatement(ifStatement.Statement);
-                else if (ifStatement.ElseStatement is { })
-                    EvaluateStatement(ifStatement.ElseStatement.Statement);
-                break;
+                {
+                    var ifStatement = (BoundIfStatement)node;
+                    var condition = (bool)EvaluateExpression(ifStatement.Expression);
+                    if (condition)
+                        EvaluateStatement(ifStatement.Statement);
+                    else if (ifStatement.ElseStatement is { })
+                        EvaluateStatement(ifStatement.ElseStatement.Statement);
+                    break;
+                }
             default:
                 throw new Exception("Unexpected statement " + node.Kind);
         }

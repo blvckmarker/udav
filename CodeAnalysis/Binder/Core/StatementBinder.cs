@@ -13,6 +13,7 @@ public sealed partial class Binder
         => syntax.Kind switch
         {
             SyntaxKind.BlockStatement => BindBlockStatement((BlockStatementSyntax)syntax),
+            SyntaxKind.WhileStatement => BindWhileStatement((WhileStatementSyntax)syntax),
             SyntaxKind.IfStatement => BindIfStatement((IfStatementSyntax)syntax),
             SyntaxKind.AssignmentStatement => BindAssignmentStatement((AssignmentStatementSyntax)syntax),
             SyntaxKind.AssignmentExpressionStatement => BindAssignmentExpressionStatement((AssignmentExpressionStatementSyntax)syntax),
@@ -33,18 +34,16 @@ public sealed partial class Binder
         _currScope = _currScope.Parent;
         return new BoundBlockStatement(boundStatements);
     }
-    /*
+
+    private partial BoundWhileStatement BindWhileStatement(WhileStatementSyntax syntax)
     {
-        var a = 0
-        {
-            var b = 1
-            {
-                var c = a + b
-            }
-            var d = a
-        }
+        var boundExpression = BindExpression(syntax.Expression);
+        if (boundExpression.Type != typeof(bool))
+            _diagnostics.MakeIssue("Condition expression must be boolean type", syntax.Expression.ToString(), syntax.Expression.Span);
+
+        var boundStatement = BindStatement(syntax.Statement);
+        return new BoundWhileStatement(boundExpression, boundStatement);
     }
-    */
     private partial BoundIfStatement BindIfStatement(IfStatementSyntax syntax)
     {
         var boundExpression = BindExpression(syntax.Expression);

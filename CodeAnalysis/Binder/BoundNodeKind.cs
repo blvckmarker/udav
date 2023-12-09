@@ -14,5 +14,6 @@ public enum BoundNodeKind
     BlockStatement,
     CompilationUnit,
     IfStatement,
-    ElseStatement
+    ElseStatement,
+    WhileStatement
 }

@@ -92,7 +92,8 @@ public class Parser
      * block :  '{' statement* '}'
              | statement     
      * 
-     * if_statement : if_kw (expression) block [ else_kw (if_statement | block) ]
+     * while_statement : while_kw '(' expression ')' block
+     * if_statement : if_kw '(' expression ')' block [ else_kw (if_statement | block) ]
 
      * statement : assignment_statement
      *           | if_statement
@@ -128,6 +129,8 @@ public class Parser
         {
             case SyntaxKind.OpenBrace:
                 return ParseBlockStatement();
+            case SyntaxKind.WhileKeyword:
+                return ParseWhileStatement();
             case SyntaxKind.IfKeyword:
                 return ParseIfStatement();
             case SyntaxKind.BoolKeyword:
@@ -138,6 +141,17 @@ public class Parser
             default:
                 return ParseAssignmentExpressionStatement();
         }
+    }
+
+    private StatementSyntax ParseWhileStatement()
+    {
+        var whileKeyword = MatchToken(SyntaxKind.WhileKeyword);
+        var leftParenthesis = MatchToken(SyntaxKind.OpenParenToken);
+        var expression = ParseExpression();
+        var rightParenthesis = MatchToken(SyntaxKind.CloseParenToken);
+        var blockStatement = ParseBlockStatement();
+
+        return new WhileStatementSyntax(whileKeyword, leftParenthesis, expression, rightParenthesis, blockStatement);
     }
 
     private StatementSyntax ParseIfStatement()
