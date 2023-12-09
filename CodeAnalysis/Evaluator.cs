@@ -54,41 +54,56 @@ public class Evaluator
             case BoundNodeKind.ForStatement:
                 {
                     var forStatement = (BoundForStatement)node;
-                    EvaluateStatement(forStatement.DeclarationStatement);
-                    var condition = (bool)EvaluateExpression(forStatement.Expression);
-
-                    while (condition)
-                    {
-                        EvaluateStatement(forStatement.Statement);
-
-                        EvaluateStatement(forStatement.AssignmentStatement);
-                        condition = (bool)EvaluateExpression(forStatement.Expression);
-                    }
+                    EvaluateForStatement(forStatement);
                     break;
                 }
             case BoundNodeKind.WhileStatement:
                 {
                     var whileStatement = (BoundWhileStatement)node;
-                    var condition = (bool)EvaluateExpression(whileStatement.Condition);
-                    while (condition)
-                    {
-                        EvaluateStatement(whileStatement.Statement);
-                        condition = (bool)EvaluateExpression(whileStatement.Condition);
-                    }
+                    EvaluateWhileStatement(whileStatement);
                     break;
                 }
             case BoundNodeKind.IfStatement:
                 {
                     var ifStatement = (BoundIfStatement)node;
-                    var condition = (bool)EvaluateExpression(ifStatement.Expression);
-                    if (condition)
-                        EvaluateStatement(ifStatement.Statement);
-                    else if (ifStatement.ElseStatement is { })
-                        EvaluateStatement(ifStatement.ElseStatement.Statement);
+                    EvaluateIfStatement(ifStatement);
                     break;
                 }
             default:
                 throw new Exception("Unexpected statement " + node.Kind);
+        }
+    }
+
+    private void EvaluateIfStatement(BoundIfStatement ifStatement)
+    {
+        var condition = (bool)EvaluateExpression(ifStatement.Expression);
+        if (condition)
+            EvaluateStatement(ifStatement.Statement);
+        else if (ifStatement.ElseStatement is { })
+            EvaluateStatement(ifStatement.ElseStatement.Statement);
+    }
+
+    private void EvaluateWhileStatement(BoundWhileStatement whileStatement)
+    {
+        var condition = (bool)EvaluateExpression(whileStatement.Condition);
+        while (condition)
+        {
+            EvaluateStatement(whileStatement.Statement);
+            condition = (bool)EvaluateExpression(whileStatement.Condition);
+        }
+    }
+
+    private void EvaluateForStatement(BoundForStatement forStatement)
+    {
+        EvaluateStatement(forStatement.DeclarationStatement);
+        var condition = (bool)EvaluateExpression(forStatement.Expression);
+
+        while (condition)
+        {
+            EvaluateStatement(forStatement.Statement);
+
+            EvaluateStatement(forStatement.AssignmentStatement);
+            condition = (bool)EvaluateExpression(forStatement.Expression);
         }
     }
 
